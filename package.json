@@ -1,0 +1,39 @@
+{
+    "name": "meadow-integration",
+    "version": "1.0.0",
+    "description": "Meadow Data Integration",
+    "main": "source/Meadow-Integration.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node source/Meadow-Integration.js",
+        "tests": "npx mocha -u tdd --exit -R spec --grep",
+        "coverage": "npx nyc --reporter=lcov --reporter=text-lcov npx mocha -- -u tdd -R spec",
+        "build": "npx quack build"
+    },
+    "author": "steven velozo <steven@velozo.com>",
+    "license": "MIT",
+    "devDependencies": {
+        "quackage": "^1.0.28"
+    },
+    "mocha": {
+        "diff": true,
+        "extension": [
+            "js"
+        ],
+        "package": "./package.json",
+        "reporter": "spec",
+        "slow": "75",
+        "timeout": "5000",
+        "ui": "tdd",
+        "watch-files": [
+            "source/**/*.js",
+            "test/**/*.js"
+        ],
+        "watch-ignore": [
+            "lib/vendor"
+        ]
+    },
+    "dependencies": {
+        "fable-serviceproviderbase": "^3.0.12"
+    }
+}
