@@ -18,7 +18,14 @@ let _PictCLIProgram = new libCLIProgram(
 		// CSV file handling
 		require('./commands/Meadow-Integration-Command-CSVCheck.js'),
 		require('./commands/Meadow-Integration-Command-CSVTransform.js'),
+		require('./commands/Meadow-Integration-Command-TSVTransform.js'),
 		require('./commands/Meadow-Integration-Command-CSVIntersect.js'),
+		require('./commands/Meadow-Integration-Command-ObjectArrayToCSV.js'),
+
+		// Comprehension file handling
+		require('./commands/Meadow-Integration-Command-ComprehensionIntersect.js'),
+		require('./commands/Meadow-Integration-Command-ComprehensionArray.js'),
+
 	]);
 
 _PictCLIProgram.instantiateServiceProvider('FilePersistence');
