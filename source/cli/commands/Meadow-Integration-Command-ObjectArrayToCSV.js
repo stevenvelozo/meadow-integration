@@ -32,7 +32,8 @@ class CommandConvertComprehensionToArray extends libCommandLineCommand
 			if (pValue && typeof pValue === 'object' && !Array.isArray(pValue))
 			{
 				Object.assign(tmpFlattenedObject, flatten(pValue, pPropertyPath));
-			} else
+			}
+			else
 			{
 				tmpFlattenedObject[pPropertyPath] = pValue;
 			}

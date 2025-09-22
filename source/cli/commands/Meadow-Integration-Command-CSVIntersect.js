@@ -18,6 +18,8 @@ class QuackageCommandCSVIntersect extends libCommandLineCommand
 		// File Parameters
 		this.options.CommandOptions.push({ Name: '-o, --output [filepath]', Description: 'The comprehension output file.  Defaults to ./CSV-Comprehension-[filename].json'});
 
+		this.options.CommandOptions.push({ Name: '-q, --quotedelimiter [quotedelimiter]', Description: 'The quote delimiter character, defaulted to double quotes for CSV files.  Quote delimiters are required to be doubled ("") if it is a character rather than a delimiter.', Default: '"'});
+
 		this.options.CommandOptions.push({ Name: '-f, --first_entity [first_entity]', Description: 'The first entity we are mapping a synthesized join record for.. the generated Entity will be FirstEntitySecondEntityJoin and it will be joined by GUIDFirstEntity and GUIDSecondEntity.'});
 		this.options.CommandOptions.push({ Name: '-s, --second_entity [second_entity]', Description: 'The second entity we are mapping a synthesized join record for.. the generated Entity will be FirstEntitySecondEntityJoin and it will be joined by GUIDFirstEntity and GUIDSecondEntity.'});
 
@@ -155,6 +157,8 @@ class QuackageCommandCSVIntersect extends libCommandLineCommand
 		// Initialize the fable CSV parser
 		this.fable.instantiateServiceProvider('CSVParser');
 		this.fable.instantiateServiceProvider('FilePersistence');
+
+		this.fable.CSVParser.QuoteCharacter = this.CommandOptions.quotedelimiter;
 
 		// Do some input file housekeeping
 		if (!this.fable.FilePersistence.existsSync(tmpFile))

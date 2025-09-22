@@ -50,6 +50,7 @@ Note command-line will not allow you to use equal signs or commas in the templat
 		this.options.CommandOptions.push({ Name: '-n, --guidname [guidname]', Description: 'The name of the GUID column in the generated comprehension.'});
 		this.options.CommandOptions.push({ Name: '-g, --guidtemplate [template]', Description: 'The Pict template for the entity GUID; for instance if the TSV has a column named "id", you could use {~D:id~} and that would be the GUID for the entity.'});
 		this.options.CommandOptions.push({ Name: '-c, --columns [columns]', Description: 'The columns to map to the comprehension.  Format is "Column1={~D:column1~},Column2={~D:column2~},Column3={~D:column3~}"'});
+		this.options.CommandOptions.push({ Name: '-q, --quotedelimiter [quotedelimiter]', Description: 'The quote delimiter character, defaulted to nothing (no quote delimiter) for TSV files.  Quote delimiters are required to be doubled (e.g. "" if it were double quotes) if it is a character rather than a delimiter.', Default: '"'});
 
 		this.options.CommandOptions.push({ Name: '-x, --extended', Description: 'Enable extended JSON object output (output all application state and not just the outcome Comprehension).'});
 
@@ -206,8 +207,9 @@ Note command-line will not allow you to use equal signs or commas in the templat
 
 		// Initialize the fable TSV parser
 		this.fable.instantiateServiceProvider('CSVParser');
-		this.fable.CSVParser.Delimiter = "\t"; // TSV is tab-delimited
 		this.fable.instantiateServiceProvider('FilePersistence');
+		this.fable.CSVParser.Delimiter = '\t'; // TSV files are tab-delimited
+		this.fable.CSVParser.QuoteCharacter = this.CommandOptions.quotedelimiter;
 
 		// Do some input file housekeeping
 		if (!this.fable.FilePersistence.existsSync(tmpFile))
