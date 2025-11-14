@@ -16,7 +16,7 @@
     "author": "steven velozo <steven@velozo.com>",
     "license": "MIT",
     "devDependencies": {
-        "quackage": "^1.0.42"
+        "quackage": "^1.0.45"
     },
     "mocha": {
         "diff": true,
@@ -38,6 +38,6 @@
     },
     "dependencies": {
         "fable-serviceproviderbase": "^3.0.15",
-        "pict-service-commandlineutility": "^1.0.15"
+        "pict-service-commandlineutility": "^1.0.16"
     }
 }

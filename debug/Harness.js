@@ -4,6 +4,6 @@ const libMeadowIntegrationCLI = require(`../source/cli/Meadow-Integration-CLI-Pr
 
 //libMeadowIntegrationCLI.run(['node', 'Harness.js', 'objectarraytocsv', './Array-Comprehension-Intersected-Comprehension-Set.json.json']);
 
-libMeadowIntegrationCLI.run(['node', 'Harness.js', 'tsvtransform', './RIDOT.tsv', '-g', '{~D:Record.IDDocument~}']);
+//libMeadowIntegrationCLI.run(['node', 'Harness.js', 'tsvtransform', './RIDOT.tsv', '-g', '{~D:Record.IDDocument~}']);
 
 

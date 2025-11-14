@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+const libMeadowIntegrationProgram = require('../source/cli/Meadow-Integration-CLI-Program.js');
+libMeadowIntegrationProgram.run();
