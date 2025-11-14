@@ -1,5 +1,6 @@
 {
-	"Entity": "Book",
+	"Entity": "Author",
+	"GUIDSolvers": [],
 	"GUIDTemplate": "Book_{~D:Record.id~}",
 	"Mappings":
 	{
