@@ -1,15 +1,12 @@
 {
 	"Entity": "Author",
-	"GUIDSolvers": [],
-	"GUIDTemplate": "Book_{~D:Record.id~}",
+	"MultipleGUIDUniqueness": true,
+	"Solvers": [
+		"NewRecordsGUIDUniqueness = STRINGGETSEGMENTS(IncomingRecord.authors,\",\")"
+	],
+	"GUIDTemplate": "Author_{~PascalCaseIdentifier:Record._GUIDUniqueness~}",
 	"Mappings":
 	{
-		"Title": "{~D:Record.title~}",
-		"Language": "{~D:Record.language_code~}",
-		"PublicationYear": "{~D:Fable.Math.roundPrecise(Record.original_publication_year,0)~}",
-		"ISBN": "{~D:Record.isbn~}",
-		"Genre": "Unknown",
-		"Type": "Book",
-		"ImageURL": "{~D:Record.image_url~}"
+		"Name": "{~D:Record._GUIDUniqueness~}"
 	}
 }

@@ -16,60 +16,60 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 		this.options.CommandArguments.push({ Name: '<file>', Description: 'The CSV file to transform.' });
 
 		// File Parameters
-		this.options.CommandOptions.push({ Name: '-i, --incoming [incoming_comprehension]', Description: 'Incoming comprehension file.'});
-		this.options.CommandOptions.push({ Name: '-o, --output [filepath]', Description: 'The comprehension output file.  Defaults to ./CSV-Comprehension-[filename].json'});
+		this.options.CommandOptions.push({ Name: '-i, --incoming [incoming_comprehension]', Description: 'Incoming comprehension file.' });
+		this.options.CommandOptions.push({ Name: '-o, --output [filepath]', Description: 'The comprehension output file.  Defaults to ./CSV-Comprehension-[filename].json' });
 
 		// Comprehension Parameters
 		// This can be *either* a mapping file, in the following format, or a set of parameters listed below.  The mapping file lets you map columns way easier!
-/* Comprehension Mapping File (for the file `/debug/testdata/airports.csv` in this repository):
-{
-	"Entity": "Airport",
-	"GUIDTemplate": "Airport-{~D:iata~}",
-	"Mappings":
-	{
-		"Code": "{~D:iata~}",
-		"Name": "{~D:name~}",
-		"Description": "{~D:name~} airport in {~D:city~} auto-ingested from CSV file.",
-		"City": "{~D:city~}",
-		"State": "{~D:state~}",
-		"Country": "{~D:country~}",
-		"Latitude": "{~D:lat~}",
-		"Longitude": "{~D:long~}"
-	}
-}
+		/* Comprehension Mapping File (for the file `/debug/testdata/airports.csv` in this repository):
+		{
+			"Entity": "Airport",
+			"GUIDTemplate": "Airport-{~D:iata~}",
+			"Mappings":
+			{
+				"Code": "{~D:iata~}",
+				"Name": "{~D:name~}",
+				"Description": "{~D:name~} airport in {~D:city~} auto-ingested from CSV file.",
+				"City": "{~D:city~}",
+				"State": "{~D:state~}",
+				"Country": "{~D:country~}",
+				"Latitude": "{~D:lat~}",
+				"Longitude": "{~D:long~}"
+			}
+		}
+		
+		Alternate command-line only:
+		
+		quack csvtransform testdata/airports.csv -e Airport -n "GUIDAirport" -g "Airport-{~D:iata~}"" -c "Code={~D:iata~},Name={~D:name~},Description={~D:name~} airport in {~D:city~} auto-ingested from CSV file.,City={~D:city~},State={~D:state~},Country={~D:country~},Latitude={~D:lat~},Longitude={~D:long~}"
+		
+		Note command-line will not allow you to use equal signs or commas in the templates at the moment.
+		*/
+		this.options.CommandOptions.push({ Name: '-m, --mappingfile [filepath]', Description: 'The mapping file for the comprehension.' });
 
-Alternate command-line only:
+		this.options.CommandOptions.push({ Name: '-e, --entity [entity]', Description: 'The Entity we are pulling into the comprehension.' });
+		this.options.CommandOptions.push({ Name: '-n, --guidname [guidname]', Description: 'The name of the GUID column in the generated comprehension.' });
+		this.options.CommandOptions.push({ Name: '-g, --guidtemplate [template]', Description: 'The Pict template for the entity GUID; for instance if the CSV has a column named "id", you could use {~D:id~} and that would be the GUID for the entity.' });
+		this.options.CommandOptions.push({ Name: '-c, --columns [columns]', Description: 'The columns to map to the comprehension.  Format is "Column1={~D:column1~},Column2={~D:column2~},Column3={~D:column3~}"' });
+		this.options.CommandOptions.push({ Name: '-q, --quotedelimiter [quotedelimiter]', Description: 'The quote delimiter character, defaulted to double quotes for CSV files.  Quote delimiters are required to be doubled ("") if it is a character rather than a delimiter.', Default: '"' });
 
-quack csvtransform testdata/airports.csv -e Airport -n "GUIDAirport" -g "Airport-{~D:iata~}"" -c "Code={~D:iata~},Name={~D:name~},Description={~D:name~} airport in {~D:city~} auto-ingested from CSV file.,City={~D:city~},State={~D:state~},Country={~D:country~},Latitude={~D:lat~},Longitude={~D:long~}"
-
-Note command-line will not allow you to use equal signs or commas in the templates at the moment.
-*/
-		this.options.CommandOptions.push({ Name: '-m, --mappingfile [filepath]', Description: 'The mapping file for the comprehension.'});
-
-		this.options.CommandOptions.push({ Name: '-e, --entity [entity]', Description: 'The Entity we are pulling into the comprehension.'});
-		this.options.CommandOptions.push({ Name: '-n, --guidname [guidname]', Description: 'The name of the GUID column in the generated comprehension.'});
-		this.options.CommandOptions.push({ Name: '-g, --guidtemplate [template]', Description: 'The Pict template for the entity GUID; for instance if the CSV has a column named "id", you could use {~D:id~} and that would be the GUID for the entity.'});
-		this.options.CommandOptions.push({ Name: '-c, --columns [columns]', Description: 'The columns to map to the comprehension.  Format is "Column1={~D:column1~},Column2={~D:column2~},Column3={~D:column3~}"'});
-		this.options.CommandOptions.push({ Name: '-q, --quotedelimiter [quotedelimiter]', Description: 'The quote delimiter character, defaulted to double quotes for CSV files.  Quote delimiters are required to be doubled ("") if it is a character rather than a delimiter.', Default: '"'});
-
-		this.options.CommandOptions.push({ Name: '-x, --extended', Description: 'Enable extended JSON object output (output all application state and not just the outcome Comprehension).'});
+		this.options.CommandOptions.push({ Name: '-x, --extended', Description: 'Enable extended JSON object output (output all application state and not just the outcome Comprehension).' });
 
 		// Auto add the command on initialization
 		this.addCommand();
 	}
 
-/* Generate a Comprehension
- *
- * This will generate a comprehension from a CSV file.
- * 
- * If a comprehension already exists, it will map the records to the existing comprehension.
- * 
- * Required Data Elements:
- * 
- * - Entity: The entity name for the comprehension.  Generated from the Filename if not provided.
- * - GUIDColumn: The column that contains the GUID for the record.
- * - Mappings: The mappings for the comprehension.  if not provided, will be generated from the first row of the CSV.
- */
+	/* Generate a Comprehension
+	 *
+	 * This will generate a comprehension from a CSV file.
+	 * 
+	 * If a comprehension already exists, it will map the records to the existing comprehension.
+	 * 
+	 * Required Data Elements:
+	 * 
+	 * - Entity: The entity name for the comprehension.  Generated from the Filename if not provided.
+	 * - GUIDColumn: The column that contains the GUID for the record.
+	 * - Mappings: The mappings for the comprehension.  if not provided, will be generated from the first row of the CSV.
+	 */
 	generateMappingFromRecord(pFileName, pRecord)
 	{
 		let tmpMapping = {};
@@ -99,9 +99,9 @@ Note command-line will not allow you to use equal signs or commas in the templat
 		return tmpMapping;
 	}
 
-	createRecordFromMapping(pRecord, pMapping)
+	createRecordFromMapping(pRecord, pMapping, pRecordPrototype)
 	{
-		let tmpRecord = {};
+		let tmpRecord = ((typeof(pRecordPrototype) == 'object') && (pRecordPrototype != null)) ? JSON.parse(JSON.stringify(pRecordPrototype)) : {};
 
 		tmpRecord[pMapping.GUIDName] = this.pict.parseTemplate(pMapping.GUIDTemplate, pRecord);
 
@@ -115,24 +115,67 @@ Note command-line will not allow you to use equal signs or commas in the templat
 		return tmpRecord;
 	}
 
+	addRecordToComprehension(pIncomingRecord, pMappingOutcome, pNewRecordPrototype, pGUIDUniquenessString)
+	{
+		let tmpNewRecordPrototype = (typeof(pNewRecordPrototype) == 'object') ? pNewRecordPrototype : {};
+		let tmpIncomingRecord = JSON.parse(JSON.stringify(pIncomingRecord));
+
+		if (pGUIDUniquenessString && (typeof (pGUIDUniquenessString) == 'string'))
+		{
+			tmpIncomingRecord['_GUIDUniqueness'] = pGUIDUniquenessString;
+		}
+		
+		let tmpNewRecord = this.createRecordFromMapping(tmpIncomingRecord, pMappingOutcome.Configuration, tmpNewRecordPrototype);
+
+		if (typeof (tmpNewRecord) != 'object')
+		{
+			this.fable.log.warn(`No valid record generated from incoming transformation operation.  Skipping.`);
+			pMappingOutcome.BadRecords.push(tmpIncomingRecord);
+		}
+		else if (!tmpNewRecord[pMappingOutcome.Configuration.GUIDName] || tmpNewRecord[pMappingOutcome.Configuration.GUIDName] == '')
+		{
+			this.fable.log.warn(`No valid GUID found for record.  Skipping.`);
+			pMappingOutcome.BadRecords.push(tmpIncomingRecord);
+		}
+		else
+		{
+			if (tmpNewRecord[pMappingOutcome.Configuration.GUIDName] in pMappingOutcome.Comprehension[pMappingOutcome.Configuration.Entity])
+			{
+				// Already been ingested once by this parse!
+				this.fable.log.warn(`Duplicate record found for ${pMappingOutcome.Configuration.GUIDName}->[${tmpNewRecord[pMappingOutcome.Configuration.GUIDName]}].  Merging with previous record.`);
+				pMappingOutcome.Comprehension[pMappingOutcome.Configuration.Entity][tmpNewRecord[pMappingOutcome.Configuration.GUIDName]] = Object.assign({}, pMappingOutcome.Comprehension[pMappingOutcome.Configuration.Entity][tmpNewRecord[pMappingOutcome.Configuration.GUIDName]], tmpNewRecord);
+			}
+			else if (pMappingOutcome.ExistingComprehension && (pMappingOutcome.Configuration.Entity in pMappingOutcome.ExistingComprehension) && (tmpNewRecord[pMappingOutcome.Configuration.GUIDName] in pMappingOutcome.ExistingComprehension[pMappingOutcome.Configuration.Entity]))
+			{
+				// Pull it in from the old comprehension
+				pMappingOutcome.Comprehension[pMappingOutcome.Configuration.Entity][tmpNewRecord[pMappingOutcome.Configuration.GUIDName]] = Object.assign({}, pMappingOutcome.ExistingComprehension[pMappingOutcome.Configuration.Entity][tmpNewRecord[pMappingOutcome.Configuration.GUIDName]], tmpNewRecord);
+			}
+			else
+			{
+				// Net new record
+				pMappingOutcome.Comprehension[pMappingOutcome.Configuration.Entity][tmpNewRecord[pMappingOutcome.Configuration.GUIDName]] = tmpNewRecord;
+			}
+		}
+	}
+
 
 	onRunAsync(fCallback)
 	{
 		let tmpFile = this.ArgumentString;
-		if ((!tmpFile) || (typeof(tmpFile) != 'string') || (tmpFile.length === 0))
+		if ((!tmpFile) || (typeof (tmpFile) != 'string') || (tmpFile.length === 0))
 		{
 			this.log.error('No valid filename provided.');
 			return fCallback();
 		}
 		let tmpOutputFileName = this.CommandOptions.output;
-		if ((!tmpOutputFileName) || (typeof(tmpOutputFileName) != 'string') || (tmpOutputFileName.length === 0))
+		if ((!tmpOutputFileName) || (typeof (tmpOutputFileName) != 'string') || (tmpOutputFileName.length === 0))
 		{
 			tmpOutputFileName = `${process.cwd()}/CSV-Comprehension-${libPath.basename(tmpFile)}.json`;
 			this.log.error(`No output filename provided.  Defaulting to ${tmpOutputFileName}`);
 		}
 
 		let tmpInputFileName = this.CommandOptions.incoming_comprehension;
-		if ((!tmpInputFileName) || (typeof(tmpInputFileName) != 'string') || (tmpInputFileName.length === 0))
+		if ((!tmpInputFileName) || (typeof (tmpInputFileName) != 'string') || (tmpInputFileName.length === 0))
 		{
 			tmpInputFileName = `${process.cwd()}/CSV-Comprehension-${libPath.basename(tmpFile)}.json`;
 			this.log.error(`No incoming comprehension filename provided.  Defaulting to ${tmpInputFileName}`);
@@ -142,12 +185,12 @@ Note command-line will not allow you to use equal signs or commas in the templat
 			{
 				Comprehension: {},
 				CommandConfiguration:
-					{
-//						Entity: false,
-//						GUIDName: false,
-//						GUIDTemplate: false,
-//						Mappings: false
-					},
+				{
+					//						Entity: false,
+					//						GUIDName: false,
+					//						GUIDTemplate: false,
+					//						Mappings: false
+				},
 				ExistingComprehension: false,
 				ExplicitConfiguration: false,
 				ImplicitConfiguration: false,
@@ -199,7 +242,7 @@ Note command-line will not allow you to use equal signs or commas in the templat
 				let tmpMappingConfigurationExplicit = this.fable.FilePersistence.readFileSync(tmpMappingConfigurationFileName);
 				tmpMappingOutcome.ExplicitConfiguration = JSON.parse(tmpMappingConfigurationExplicit);
 			}
-			catch(pError)
+			catch (pError)
 			{
 				this.fable.log.error(`Error reading mapping file [${this.CommandOptions.mappingfile}]: ${pError}`, pError);
 			}
@@ -229,6 +272,7 @@ Note command-line will not allow you to use equal signs or commas in the templat
 			try
 			{
 				tmpMappingOutcome.ExistingComprehension = require(tmpInputFileName);
+				tmpMappingOutcome.Comprehension = JSON.parse(JSON.stringify(tmpMappingOutcome.ExistingComprehension));
 			}
 			catch (pError)
 			{
@@ -256,7 +300,7 @@ Note command-line will not allow you to use equal signs or commas in the templat
 					{
 						tmpMappingOutcome.ImplicitConfiguration = this.generateMappingFromRecord(tmpFile, tmpIncomingRecord);
 
-						if ((!tmpMappingOutcome.ExplicitConfiguration) || (typeof(tmpMappingOutcome.ExplicitConfiguration) != 'object'))
+						if ((!tmpMappingOutcome.ExplicitConfiguration) || (typeof (tmpMappingOutcome.ExplicitConfiguration) != 'object'))
 						{
 							// Just use the implicit configuration
 							this.fable.log.info(`Using implicit configuration for comprehension; no valid explicit configuration available.`);
@@ -275,37 +319,52 @@ Note command-line will not allow you to use equal signs or commas in the templat
 						}
 					}
 
-					let tmpNewRecord = this.createRecordFromMapping(tmpIncomingRecord, tmpMappingOutcome.Configuration);
+					let tmpMappingRecordSolution = (
+						{
+							IncomingRecord: tmpIncomingRecord,
+							MappingConfiguration: tmpMappingOutcome.Configuration,
+							MappingOutcome: tmpMappingOutcome,
 
-					if (typeof(tmpNewRecord) != 'object')
+							RowIndex: tmpMappingOutcome.ParsedRowCount,
+
+							NewRecordsGUIDUniqueness: [],
+							NewRecordPrototype: {},
+
+							Fable: this.fable,
+							Pict: this.pict,
+							AppData: this.pict.AppData
+						});
+
+					// Run the solvers for this record
+					let tmpSolverResultsObject = {};
+					if (tmpMappingOutcome.Configuration.Solvers && Array.isArray(tmpMappingOutcome.Configuration.Solvers))
 					{
-						this.fable.log.warn(`No valid record generated from incoming transformation operation.  Skipping.`);
-						tmpMappingOutcome.BadRecords.push(tmpIncomingRecord);
+						// Solvers have IncomingRecord, RecordGenerationRules, NewRecordPrototype
+						for (let i = 0; i < tmpMappingOutcome.Configuration.Solvers.length; i++)
+						{
+							let tmpSolver = tmpMappingOutcome.Configuration.Solvers[i];
+							this.fable.ExpressionParser.solve(tmpSolver, tmpMappingRecordSolution, tmpSolverResultsObject, this.fable.manifest, tmpMappingRecordSolution);
+						}
 					}
-					else if (!tmpNewRecord[tmpMappingOutcome.Configuration.GUIDName] || tmpNewRecord[tmpMappingOutcome.Configuration.GUIDName] == '')
+
+					if (tmpMappingOutcome.Configuration.MultipleGUIDUniqueness && tmpMappingRecordSolution.NewRecordsGUIDUniqueness.length > 0)
 					{
-						this.fable.log.warn(`No valid GUID found for record.  Skipping.`);
-						tmpMappingOutcome.BadRecords.push(tmpIncomingRecord);
+						// Run create record for each of the uniqueness guid entries
+						for (let i = 0; i < tmpMappingRecordSolution.NewRecordsGUIDUniqueness.length; i++)
+						{
+							this.addRecordToComprehension(tmpIncomingRecord, tmpMappingOutcome, tmpMappingRecordSolution.NewRecordPrototype, tmpMappingRecordSolution.NewRecordsGUIDUniqueness[i]);
+						}
+					}
+					else if (!tmpMappingOutcome.Configuration.MultipleGUIDUniqueness)
+					{
+						this.addRecordToComprehension(tmpIncomingRecord, tmpMappingOutcome, tmpMappingRecordSolution.NewRecordPrototype);
 					}
 					else
 					{
-						if (tmpNewRecord[tmpMappingOutcome.Configuration.GUIDName] in tmpMappingOutcome.Comprehension[tmpMappingOutcome.Configuration.Entity])
-						{
-							// Already been ingested once by this parse!
-							this.fable.log.warn(`Duplicate record found for ${tmpMappingOutcome.Configuration.GUIDName}->[${tmpNewRecord[tmpMappingOutcome.Configuration.GUIDName]}].  Merging with previous record.`);
-							tmpMappingOutcome.Comprehension[tmpMappingOutcome.Configuration.Entity][tmpNewRecord[tmpMappingOutcome.Configuration.GUIDName]] = Object.assign({}, tmpMappingOutcome.Comprehension[tmpMappingOutcome.Configuration.Entity][tmpNewRecord[tmpMappingOutcome.Configuration.GUIDName]], tmpNewRecord);
-						}
-						else if (tmpMappingOutcome.ExistingComprehension && (tmpMappingOutcome.Configuration.Entity in tmpMappingOutcome.ExistingComprehension) && (tmpNewRecord[tmpMappingOutcome.Configuration.GUIDName] in tmpMappingOutcome.ExistingComprehension[tmpMappingOutcome.Configuration.Entity]))
-						{
-							// Pull it in from the old comprehension
-							tmpMappingOutcome.Comprehension[tmpMappingOutcome.Configuration.Entity][tmpNewRecord[tmpMappingOutcome.Configuration.GUIDName]] = Object.assign({}, tmpMappingOutcome.ExistingComprehension[tmpMappingOutcome.Configuration.Entity][tmpNewRecord[tmpMappingOutcome.Configuration.GUIDName]], tmpNewRecord);
-						}
-						else
-						{
-							// Net new record
-							tmpMappingOutcome.Comprehension[tmpMappingOutcome.Configuration.Entity][tmpNewRecord[tmpMappingOutcome.Configuration.GUIDName]] = tmpNewRecord
-						}
+						this.fable.log.error(`No valid GUID uniqueness entries generated for record; skipping record.`);
 					}
+
+
 				}
 			});
 

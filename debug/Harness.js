@@ -6,4 +6,18 @@ const libMeadowIntegrationCLI = require(`../source/cli/Meadow-Integration-CLI-Pr
 
 //libMeadowIntegrationCLI.run(['node', 'Harness.js', 'tsvtransform', './RIDOT.tsv', '-g', '{~D:Record.IDDocument~}']);
 
+libMeadowIntegrationCLI.run([
+	'node', 'Harness.js',
+	'csvtransform',
+	`${__dirname}/../docs/examples/data/books.csv`,
+	'-m', `${__dirname}/../docs/examples/bookstore/mapping_book_author_join.json`,
+	'-o', `${__dirname}/Books-Transformed-BookAuthorJoin.json`]);
+
+// libMeadowIntegrationCLI.run([
+// 	'node', 'Harness.js',
+// 	'csvtransform',
+// 	`${__dirname}/../docs/examples/data/books.csv`,
+// 	'-m', `${__dirname}/../docs/examples/bookstore/mapping_books_author.json`,
+// 	'-o', `${__dirname}/Books-Transformed-Author.json`]);
+
 
