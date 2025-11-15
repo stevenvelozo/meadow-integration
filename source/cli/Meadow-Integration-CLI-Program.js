@@ -26,6 +26,7 @@ let _PictCLIProgram = new libCLIProgram(
 		require('./commands/Meadow-Integration-Command-ComprehensionIntersect.js'),
 		require('./commands/Meadow-Integration-Command-ComprehensionArray.js'),
 
+		require('./commands/Meadow-Integration-Command-ComprehensionPush.js')
 	]);
 
 _PictCLIProgram.instantiateServiceProvider('FilePersistence');

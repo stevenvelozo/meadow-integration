@@ -77,7 +77,6 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 		// Generate the entity name from the filename
 		// For instance "my favorite cats.csv" would become "MyFavoriteCats"
 		tmpMapping.Entity = this.fable.DataFormat.cleanNonAlphaCharacters(this.fable.DataFormat.capitalizeEachWord(libPath.basename(pFileName, libPath.extname(pFileName))));
-		tmpMapping.GUIDName = `GUID${tmpMapping.Entity}`;
 
 		let tmpKeys = Object.keys(pRecord);
 		if (tmpKeys.length < 1)
@@ -174,7 +173,7 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 			this.log.error(`No output filename provided.  Defaulting to ${tmpOutputFileName}`);
 		}
 
-		let tmpInputFileName = this.CommandOptions.incoming_comprehension;
+		let tmpInputFileName = this.CommandOptions.incoming;
 		if ((!tmpInputFileName) || (typeof (tmpInputFileName) != 'string') || (tmpInputFileName.length === 0))
 		{
 			tmpInputFileName = `${process.cwd()}/CSV-Comprehension-${libPath.basename(tmpFile)}.json`;
@@ -311,6 +310,11 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 							this.fable.log.info(`Using explicit configuration for comprehension.`);
 
 							tmpMappingOutcome.Configuration = Object.assign({}, tmpMappingOutcome.ImplicitConfiguration, tmpMappingOutcome.ExplicitConfiguration, tmpMappingOutcome.CommandConfiguration);
+						}
+
+						if (!('GUIDName' in tmpMappingOutcome.Configuration))
+						{
+							tmpMappingOutcome.Configuration.GUIDName = `GUID${tmpMappingOutcome.Configuration.Entity}`;
 						}
 
 						if (!(tmpMappingOutcome.Configuration.Entity in tmpMappingOutcome.Comprehension))

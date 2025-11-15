@@ -45,6 +45,7 @@ class MeadowIntegrationAdapter extends libFableServiceProviderBase
 			}
 			this.fable.instantiateServiceProvider('RestClient', { ServerURL: this.options.ApiURLPrefix });
 		}
+		this.fable.EntityProvider.options.urlPrefix = this.getServerURL();
 
 		this.Entity = this.options.Entity;
 		this.EntityGUIDName = `GUID${this.Entity}`;
@@ -80,21 +81,30 @@ class MeadowIntegrationAdapter extends libFableServiceProviderBase
 		this._DeletedRecords = {};
 	}
 
+	getServerURL()
+	{
+		let tmpServerURL = 	((typeof(this.fable.RestClient.serverURL) == 'string') && (this.fable.RestClient.serverURL.length > 0)) ? this.fable.RestClient.serverURL
+			: ((typeof(this.options.ServerURL) == 'string') && (this.options.ServerURL.length > 0)) ? this.options.ServerURL
+			: `http://localhost:8086${this.options.ApiURLPrefix}`;
+
+		return tmpServerURL;
+	}
+
 	// TODO: A More Elegane Streaming Solution (tm)
 	integrateRecords(fCallback, fMarshalExtraData)
 	{
 		let tmpMarshalExtraData = fMarshalExtraData;
-		let tmpAnticipate = this.fable.instantiateServiceProviderWithoutRegistration('Anticipate');
+		let tmpAnticipate = this.fable.newAnticipate();
 		tmpAnticipate.anticipate(
 			(fStageComplete)=>
 			{
 				this.fable.log.info(`Getting schema for ${this.Entity}....`);
 				let tmpRequestOptions = (
 					{
-						url: `${this.fable.MeadowRestClient.serverURL}${this.Entity}/Schema`
+						url: `${this.getServerURL()}${this.Entity}/Schema`
 					});
-				tmpRequestOptions = this.fable.MeadowRestClient._prepareRequestOptions(tmpRequestOptions);
-				return this.fable.MeadowRestClient.restClient.getJSON(tmpRequestOptions,
+				//tmpRequestOptions = this.fable.RestClient._prepareRequestOptions(tmpRequestOptions);
+				return this.fable.RestClient.getJSON(tmpRequestOptions,
 					(pError, pResponse, pBody) =>
 					{
 						if (pBody && (typeof(pBody) == 'object'))
@@ -303,7 +313,7 @@ class MeadowIntegrationAdapter extends libFableServiceProviderBase
 			return fCallback();
 		}
 
-		this.fable.MeadowRestClient.upsertEntity(this.Entity, this._MarshaledRecords[pRecordGUID],
+		this.fable.EntityProvider.upsertEntity(this.Entity, this._MarshaledRecords[pRecordGUID],
 			(pError, pBody)=>
 			{
 				if (pError)
@@ -370,7 +380,7 @@ class MeadowIntegrationAdapter extends libFableServiceProviderBase
 			tmpRecordsToUpsert.push(this._MarshaledRecords[pRecordGUIDs[i]]);
 		}
 
-		this.fable.MeadowRestClient.upsertEntities(this.Entity, tmpRecordsToUpsert,
+		this.fable.EntityProvider.upsertEntities(this.Entity, tmpRecordsToUpsert,
 			(pError, pBody)=>
 			{
 				if (pError)
@@ -494,7 +504,7 @@ class MeadowIntegrationAdapter extends libFableServiceProviderBase
 					this.log.trace(`[${this.Entity}] Record [${this._MarshaledRecords[this.EntityGUIDName]}] deleting from server...`);
 					// Now lookup the entity ID for this GUID...
 					// TODO: Should this be overridable by entity?
-					this.fable.MeadowRestClient.getEntityByGUID(this.Entity, pRecordGUID,
+					this.fable.RestClient.getEntityByGUID(this.Entity, pRecordGUID,
 						(pReadError, pReadBody)=>
 						{
 							if (pReadError)
