@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "Meadow Data Integration",
     "bin": {
-        "meadow-integration": "source/cli/Meadow-Integration-CLI-Run.js"
+        "mdwint": "source/cli/Meadow-Integration-CLI-Run.js"
     },
     "main": "source/Meadow-Integration.js",
     "scripts": {
