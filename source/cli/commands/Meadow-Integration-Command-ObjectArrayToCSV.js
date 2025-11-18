@@ -11,15 +11,14 @@ class CommandConvertComprehensionToArray extends libCommandLineCommand
 		super(pFable, pManifest, pServiceHash);
 
 		this.options.CommandKeyword = 'objectarraytocsv';
-		this.options.Description = 'Turn an object-based comprehension into an array-based comprehension.';
+		this.options.Description = 'Turn an object-based comprehension or an array of objects into a CSV file.';
 		this.options.CommandKeyword = 'object_array_to_csv';
 		this.options.CommandKeyword = 'array_to_csv';
 
-		this.options.CommandArguments.push({ Name: '<file>', Description: 'The primary comprehension file to turn into an array.' });
+		this.options.CommandArguments.push({ Name: '<file>', Description: 'The primary comprehension file to turn into a CSV file.' });
 
-		this.options.CommandOptions.push({ Name: '-o, --output [filepath]', Description: 'The comprehension output file.  Defaults to ./Array-Comprehension-[filename].json'});
-
-		this.options.CommandOptions.push({ Name: '-e, --entity [entity]', Description: 'The Entity we are pulling into the comprehension.'});
+		this.options.CommandOptions.push({ Name: '-o, --output [filepath]', Description: 'The comprehension output file.  Defaults to ./Array-Comprehension-[filename]-[entity].csv'});
+		this.options.CommandOptions.push({ Name: '-e, --entity [entity]', Description: 'The (optional) Entity we are pulling into the comprehension.  No entity expects the file to be an array.', Default: false});
 
 		// Auto add the command on initialization
 		this.addCommand();
@@ -90,58 +89,92 @@ class CommandConvertComprehensionToArray extends libCommandLineCommand
 
 	onRunAsync(fCallback)
 	{
-		let tmpFile = this.ArgumentString;
-		if ((!tmpFile) || (typeof(tmpFile) != 'string') || (tmpFile.length === 0))
+		let tmpRawInputFilePath = this.ArgumentString;
+		if ((!tmpRawInputFilePath) || (typeof(tmpRawInputFilePath) != 'string') || (tmpRawInputFilePath.length === 0))
 		{
 			this.log.error('No valid filename provided.');
 			return fCallback();
 		}
-		let tmpOutputFileName = this.CommandOptions.output;
-		if ((!tmpOutputFileName) || (typeof(tmpOutputFileName) != 'string') || (tmpOutputFileName.length === 0))
+		let tmpEntity = this.CommandOptions.entity;
+
+		let tmpRawOutputFilePath = this.CommandOptions.output;
+		if ((!tmpRawOutputFilePath) || (typeof(tmpRawOutputFilePath) != 'string') || (tmpRawOutputFilePath.length === 0))
 		{
-			tmpOutputFileName = `${process.cwd()}/Flattened-Object-${libPath.basename(tmpFile)}.csv`;
-			this.log.error(`No output filename provided.  Defaulting to ${tmpOutputFileName}`);
+			if (tmpEntity)
+			{
+				tmpRawOutputFilePath = libPath.join(process.cwd(), `/Flattened-Object-${libPath.basename(tmpRawInputFilePath)}-Entity-${tmpEntity}.csv`);
+			}
+			else
+			{
+				tmpRawOutputFilePath = libPath.join(process.cwd(), `/Flattened-Object-${libPath.basename(tmpRawInputFilePath)}.csv`);
+			}
+			this.log.error(`No output filename provided.  Defaulting to ${tmpRawOutputFilePath}`);
 		}
 
 		this.fable.instantiateServiceProvider('FilePersistence');
 
 		// Do some input file housekeeping
-		if (!this.fable.FilePersistence.existsSync(tmpFile))
+		if (!this.fable.FilePersistence.existsSync(tmpRawInputFilePath))
 		{
-			this.fable.log.error(`File [${tmpFile}] does not exist.  Checking in the current working directory...`);
-			tmpFile = libPath.join(process.cwd(), tmpFile);
-			if (!this.fable.FilePersistence.existsSync(tmpFile))
-			{
-				this.fable.log.error(`File [${tmpFile}] does not exist in the current working directory.  Could not parse input comprehension file.  Aborting.`);
-				return fCallback();
-			}
+			this.fable.log.error(`File [${tmpRawInputFilePath}] does not exist.`);
 		}
 
 		const tmpMappingOutcome = {};
 
-		if (this.fable.FilePersistence.existsSync(tmpFile))
+		if (this.fable.FilePersistence.existsSync(tmpRawInputFilePath))
 		{
 			try
 			{
-				tmpMappingOutcome.RecordArray = JSON.parse(this.fable.FilePersistence.readFileSync(tmpFile));
+				// This may or may not be a "comprehension"
+				tmpMappingOutcome.RawRecordSet = JSON.parse(this.fable.FilePersistence.readFileSync(tmpRawInputFilePath));
+				if (tmpEntity)
+				{
+					// Check for the entity
+					if ((typeof(tmpMappingOutcome.RawRecordSet) == 'object') && (tmpEntity in tmpMappingOutcome.RawRecordSet))
+					{
+						this.fable.log.info(`Entity [${tmpEntity} found in the raw recordset comprehension.`);
+						if (!Array.isArray(tmpMappingOutcome.RawRecordSet[tmpEntity]))
+						{
+							let tmpErrorMessage = `Expected an Array at Entity location in comprehension; data type was: ${typeof(tmpMappingOutcome.RawRecordSet)}`;
+							this.fable.log.error(tmpErrorMessage);
+							return fCallback();
+						}
+						tmpMappingOutcome.RecordArray = tmpMappingOutcome.RawRecordSet[tmpEntity];
+					}
+					else if ((typeof(tmpMappingOutcome.RawRecordSet) == 'object') && (Array.isArray(tmpMappingOutcome.RawRecordSet)))
+					{
+						this.fable.log.info(`Raw recordset is an array.`);
+						tmpMappingOutcome.RecordArray = tmpMappingOutcome.RawRecordSet;
+					}
+
+					if (!tmpMappingOutcome.RecordArray || !Array.isArray(tmpMappingOutcome.RecordArray))
+					{
+						this.fable.log.error(`Could not locate a valid record array in JSON file.`);
+						return fCallback();
+					}
+					if (tmpMappingOutcome.RecordArray.length < 1)
+					{
+						this.fable.log.error(`No records in the record array.`);
+						return fCallback();
+					}
+				}
 			}
 			catch (pError)
 			{
-				this.fable.log.error(`Error reading Record Array file [${tmpFile}]: ${pError.message}`);
+				this.fable.log.error(`Error reading Record Array file [${tmpRawInputFilePath}]: ${pError.message}`);
 				return fCallback();
 			}
 		}
 
 		try
 		{
-			this.streamFlattenedJSONToCSV(
-				tmpMappingOutcome.RecordArray,
-				tmpOutputFileName
-			).then(
-				() =>
-				{
-					this.pict.log.info(`CSV file created successfully: ${tmpOutputFileName}`);
-				}).catch(
+			this.streamFlattenedJSONToCSV(tmpMappingOutcome.RecordArray, tmpRawOutputFilePath)
+				.then(
+					() =>
+					{
+						this.pict.log.info(`CSV file created successfully: ${tmpRawOutputFilePath}`);
+					})
+				.catch(
 					(pError) =>
 					{
 						this.pict.log.error(`Error generating or writing CSV:`, pError);
@@ -149,10 +182,10 @@ class CommandConvertComprehensionToArray extends libCommandLineCommand
 		}
 		catch (pError)
 		{
-			this.pict.log.error(`Error processing file ${tmpFile}:`, pError);
+			this.pict.log.error(`Error processing file ${tmpRawInputFilePath}:`, pError);
 		}
 
-		this.fable.log.info(`Array Comprehension written to [${tmpOutputFileName}].`);
+		this.fable.log.info(`CSV File written to [${tmpRawOutputFilePath}].`);
 		this.fable.log.info(`Have a nice day!`);
 		return fCallback();
 	};

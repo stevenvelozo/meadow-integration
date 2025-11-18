@@ -7,7 +7,7 @@
     },
     "main": "source/Meadow-Integration.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "npx mocha -u tdd --exit -R spec",
         "start": "node source/cli/Meadow-Integration-CLI-Run.js",
         "tests": "npx mocha -u tdd --exit -R spec --grep",
         "coverage": "npx nyc --reporter=lcov --reporter=text-lcov npx mocha -- -u tdd -R spec",
