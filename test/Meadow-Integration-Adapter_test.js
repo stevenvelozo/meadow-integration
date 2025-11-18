@@ -5,8 +5,8 @@
 const Chai = require('chai');
 const Expect = Chai.expect;
 
-const libFable = require('fable');
-const libIntegrationAdapter = require('../Meadow-Service-Integration-Adapter.js');
+const libPict = require('pict');
+const libIntegrationAdapter = require('../source/Meadow-Service-Integration-Adapter.js');
 
 suite
 	(
@@ -24,7 +24,7 @@ suite
 							'Object Instantiation',
 							(fDone) =>
 							{
-								let _Fable = new libFable();
+								let _Fable = new libPict();
 								_Fable.addServiceType('IntegrationAdapter', libIntegrationAdapter);
 								let tmpIntegrationAdapter = _Fable.instantiateServiceProvider('IntegrationAdapter', { Entity: 'TestEntity' }, 'TestEntity');
 								Expect(tmpIntegrationAdapter).to.be.an('object');

@@ -12,8 +12,9 @@ class PushComprehensionsViaIntegration extends libCLICommandLineCommand
 
 		this.options.CommandKeyword = 'load_comprehension';
 		this.options.Description = 'Load a comprehension into a set of Meadow REST APIs.';
-
+		this.options.Aliases.push('load');
 		this.options.Aliases.push('push');
+
 
 		this.options.CommandArguments.push({ Name: '<comprehension_file>', Description: 'The comprehension file path.' });
 

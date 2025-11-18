@@ -12,6 +12,8 @@ class CommandConvertComprehensionToArray extends libCommandLineCommand
 
 		this.options.CommandKeyword = 'comprehensionarray';
 		this.options.Description = 'Turn an object-based comprehension into an array-based comprehension.';
+		this.options.Aliases.push('comprehension_to_array');
+		this.options.Aliases.push('array');
 
 		this.options.CommandArguments.push({ Name: '<file>', Description: 'The primary comprehension file to turn into an array.' });
 
@@ -19,7 +21,6 @@ class CommandConvertComprehensionToArray extends libCommandLineCommand
 
 		this.options.CommandOptions.push({ Name: '-e, --entity [entity]', Description: 'The Entity we are pulling into the comprehension.'});
 
-		// Auto add the command on initialization
 		this.addCommand();
 	}
 

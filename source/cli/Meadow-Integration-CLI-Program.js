@@ -22,6 +22,8 @@ let _PictCLIProgram = new libCLIProgram(
 		require('./commands/Meadow-Integration-Command-CSVIntersect.js'),
 		require('./commands/Meadow-Integration-Command-ObjectArrayToCSV.js'),
 
+		require('./commands/Meadow-Integration-Command-EntityFromTabularFolder.js'),
+
 		// Comprehension file handling
 		require('./commands/Meadow-Integration-Command-ComprehensionIntersect.js'),
 		require('./commands/Meadow-Integration-Command-ComprehensionArray.js'),

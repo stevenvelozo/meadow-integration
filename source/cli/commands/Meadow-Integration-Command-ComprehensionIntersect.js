@@ -12,16 +12,15 @@ class CommandComprehensionIntersect extends libCommandLineCommand
 
 		this.options.CommandKeyword = 'comprehensionintersect';
 		this.options.Description = 'Intersect two comprehension JSON files.';
+		this.options.Aliases.push('intersect');
 
 		this.options.CommandArguments.push({ Name: '<file>', Description: 'The primary comprehension file to intersect.' });
 
-		// File Parameters
 		this.options.CommandOptions.push({ Name: '-i, --intersect [intersectiong_file]', Description: 'The secondary comprehension file to intersect with the first.'});
 		this.options.CommandOptions.push({ Name: '-o, --output [filepath]', Description: 'The comprehension output file.  Defaults to ./CSV-Comprehension-[filename].json'});
 
 		this.options.CommandOptions.push({ Name: '-e, --entity [entity]', Description: 'The Entity we are pulling into the comprehension.'});
 
-		// Auto add the command on initialization
 		this.addCommand();
 	}
 

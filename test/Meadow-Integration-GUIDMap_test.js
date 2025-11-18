@@ -6,7 +6,7 @@ const Chai = require('chai');
 const Expect = Chai.expect;
 
 const libFable = require('fable');
-const libGUIDMap = require('../Meadow-Service-Integration-GUIDMap.js');
+const libGUIDMap = require('../source/Meadow-Service-Integration-GUIDMap.js');
 
 suite
 	(

@@ -12,6 +12,8 @@ class QuackageCommandCSVCheck extends libCommandLineCommand
 
 		this.options.CommandKeyword = 'csvcheck';
 		this.options.Description = 'Check a CSV for Statistics.';
+		this.options.CommandKeyword = 'csv_check';
+		this.options.CommandKeyword = 'csv_c';
 
 		this.options.CommandArguments.push({ Name: '<file>', Description: 'The csv file to load.' });
 
@@ -19,7 +21,6 @@ class QuackageCommandCSVCheck extends libCommandLineCommand
 		this.options.CommandOptions.push({ Name: '-o, --output [filepath]', Description: 'The statistics output file.  Defaults to ./CSV-Stats-[filename].json'});
 		this.options.CommandOptions.push({ Name: '-c, --comprehension', Description: 'Output the full comprehension of the CSV file in the stats.'});
 
-		// Auto add the command on initialization
 		this.addCommand();
 	}
 

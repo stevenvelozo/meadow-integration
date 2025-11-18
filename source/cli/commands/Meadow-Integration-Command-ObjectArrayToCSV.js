@@ -12,6 +12,8 @@ class CommandConvertComprehensionToArray extends libCommandLineCommand
 
 		this.options.CommandKeyword = 'objectarraytocsv';
 		this.options.Description = 'Turn an object-based comprehension into an array-based comprehension.';
+		this.options.CommandKeyword = 'object_array_to_csv';
+		this.options.CommandKeyword = 'array_to_csv';
 
 		this.options.CommandArguments.push({ Name: '<file>', Description: 'The primary comprehension file to turn into an array.' });
 

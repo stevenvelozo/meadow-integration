@@ -12,15 +12,14 @@ class CommandComprehensionIntersect extends libCommandLineCommand
 
 		this.options.CommandKeyword = 'convertxlsmtoxlsx';
 		this.options.Description = 'Convert XLSM files to XLSX format using LibreOffice.';
+		this.options.Aliases.push('convert_xlsm_to_xlsx');
 
 		this.options.CommandArguments.push({ Name: '<file>', Description: 'The XLSM file to convert to xlsx' });
 
-		// File Parameters
 		this.options.CommandOptions.push({ Name: '-l, --libreofficepath [libre_office_path]', Description: 'The path for the libreoffice executable.', Default: 'soffice' });
 
 		this.options.CommandOptions.push({ Name: '-o, --output [filepath]', Description: 'The output file name.  Defaults to [existingfilename].xlsx'});
 
-		// Auto add the command on initialization
 		this.addCommand();
 	}
 

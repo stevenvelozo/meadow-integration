@@ -12,6 +12,8 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 
 		this.options.CommandKeyword = 'csvtransform';
 		this.options.Description = 'Transform a CSV into a comprehension, and either inject it in a file or create a new comprehension file.';
+		this.options.Aliases.push('csv_transform');
+		this.options.Aliases.push('csv_t');
 
 		this.options.CommandArguments.push({ Name: '<file>', Description: 'The CSV file to transform.' });
 

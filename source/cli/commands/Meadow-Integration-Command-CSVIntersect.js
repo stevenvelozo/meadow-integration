@@ -12,6 +12,8 @@ class QuackageCommandCSVIntersect extends libCommandLineCommand
 
 		this.options.CommandKeyword = 'csvintersect';
 		this.options.Description = 'Intersect a CSV into a comprehension, As a cheap join between two value sets.';
+		this.options.Aliases.push('csv_intersect');
+		this.options.Aliases.push('csv_i');
 
 		this.options.CommandArguments.push({ Name: '<file>', Description: 'The CSV file to intersect.' });
 
