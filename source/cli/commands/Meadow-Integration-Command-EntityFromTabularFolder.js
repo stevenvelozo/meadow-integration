@@ -11,8 +11,8 @@ class QuackageCommandEntityComprehensionsFromTabularFolder extends libCommandLin
 
 		this.options.CommandKeyword = 'entitycomprehensionsfromtabularfolders';
 		this.options.Description = 'Generate entity comprehensions from tabular folder(s).';
-		this.options.CommandKeyword = 'entity_comprehensions_from_tabular_folders';
-		this.options.CommandKeyword = 'entc_ftf';
+		this.options.Aliases.push('entity_comprehensions_from_tabular_folders');
+		this.options.Aliases.push('entc_ftf');
 
 		this.options.CommandArguments.push({ Name: '<folder>', Description: 'The folder to read tabular data from.' });
 

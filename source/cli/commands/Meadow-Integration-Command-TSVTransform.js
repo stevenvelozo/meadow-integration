@@ -12,6 +12,8 @@ class QuackageCommandTSVTransform extends libCommandLineCommand
 
 		this.options.CommandKeyword = 'tsvtransform';
 		this.options.Description = 'Transform a TSV into a comprehension, and either inject it in a file or create a new comprehension file.';
+		this.options.Aliases.push('tsv_t');
+		this.options.Aliases.push('tsv_transform');
 
 		this.options.CommandArguments.push({ Name: '<file>', Description: 'The TSV file to transform.' });
 
