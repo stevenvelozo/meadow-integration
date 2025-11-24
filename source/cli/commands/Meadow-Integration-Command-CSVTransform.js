@@ -20,228 +20,110 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 		// File Parameters
 		this.options.CommandOptions.push({ Name: '-i, --incoming [incoming_comprehension]', Description: 'Incoming comprehension file.' });
 		this.options.CommandOptions.push({ Name: '-o, --output [filepath]', Description: 'The comprehension output file.  Defaults to ./CSV-Comprehension-[filename].json' });
+		this.options.CommandOptions.push({ Name: '-x, --extended', Description: 'Enable extended JSON object output (output all application state and not just the outcome Comprehension).' });
 
-		// Comprehension Parameters
-		// This can be *either* a mapping file, in the following format, or a set of parameters listed below.  The mapping file lets you map columns way easier!
-		/* Comprehension Mapping File (for the file `/debug/testdata/airports.csv` in this repository):
-		{
-			"Entity": "Airport",
-			"GUIDTemplate": "Airport-{~D:iata~}",
-			"Mappings":
-			{
-				"Code": "{~D:iata~}",
-				"Name": "{~D:name~}",
-				"Description": "{~D:name~} airport in {~D:city~} auto-ingested from CSV file.",
-				"City": "{~D:city~}",
-				"State": "{~D:state~}",
-				"Country": "{~D:country~}",
-				"Latitude": "{~D:lat~}",
-				"Longitude": "{~D:long~}"
-			}
-		}
-		
-		Alternate command-line only:
-		
-		quack csvtransform testdata/airports.csv -e Airport -n "GUIDAirport" -g "Airport-{~D:iata~}"" -c "Code={~D:iata~},Name={~D:name~},Description={~D:name~} airport in {~D:city~} auto-ingested from CSV file.,City={~D:city~},State={~D:state~},Country={~D:country~},Latitude={~D:lat~},Longitude={~D:long~}"
-		
-		Note command-line will not allow you to use equal signs or commas in the templates at the moment.
-		*/
+		// Mapping Configuration File
 		this.options.CommandOptions.push({ Name: '-m, --mappingfile [filepath]', Description: 'The mapping file for the comprehension.' });
 
+		// Command-line configuration options
 		this.options.CommandOptions.push({ Name: '-e, --entity [entity]', Description: 'The Entity we are pulling into the comprehension.' });
 		this.options.CommandOptions.push({ Name: '-n, --guidname [guidname]', Description: 'The name of the GUID column in the generated comprehension.' });
 		this.options.CommandOptions.push({ Name: '-g, --guidtemplate [template]', Description: 'The Pict template for the entity GUID; for instance if the CSV has a column named "id", you could use {~D:id~} and that would be the GUID for the entity.' });
 		this.options.CommandOptions.push({ Name: '-c, --columns [columns]', Description: 'The columns to map to the comprehension.  Format is "Column1={~D:column1~},Column2={~D:column2~},Column3={~D:column3~}"' });
 		this.options.CommandOptions.push({ Name: '-q, --quotedelimiter [quotedelimiter]', Description: 'The quote delimiter character, defaulted to double quotes for CSV files.  Quote delimiters are required to be doubled ("") if it is a character rather than a delimiter.', Default: '"' });
 
-		this.options.CommandOptions.push({ Name: '-x, --extended', Description: 'Enable extended JSON object output (output all application state and not just the outcome Comprehension).' });
-
-		// Auto add the command on initialization
 		this.addCommand();
 	}
 
-	/* Generate a Comprehension
-	 *
-	 * This will generate a comprehension from a CSV file.
-	 * 
-	 * If a comprehension already exists, it will map the records to the existing comprehension.
-	 * 
-	 * Required Data Elements:
-	 * 
-	 * - Entity: The entity name for the comprehension.  Generated from the Filename if not provided.
-	 * - GUIDColumn: The column that contains the GUID for the record.
-	 * - Mappings: The mappings for the comprehension.  if not provided, will be generated from the first row of the CSV.
-	 */
-	generateMappingFromRecord(pFileName, pRecord)
-	{
-		let tmpMapping = {};
-
-		// Generate the entity name from the filename
-		// For instance "my favorite cats.csv" would become "MyFavoriteCats"
-		tmpMapping.Entity = this.fable.DataFormat.cleanNonAlphaCharacters(this.fable.DataFormat.capitalizeEachWord(libPath.basename(pFileName, libPath.extname(pFileName))));
-
-		let tmpKeys = Object.keys(pRecord);
-		if (tmpKeys.length < 1)
-		{
-			tmpMapping.GUIDTemplate = ``;
-		}
-		else
-		{
-			tmpMapping.GUIDTemplate = `GUID-${tmpMapping.Entity}-{~Data:Record.${tmpKeys[0]}~}`;
-		}
-
-		tmpMapping.Mappings = {};
-
-		for (let i = 0; i < tmpKeys.length; i++)
-		{
-			tmpMapping.Mappings[tmpKeys[i]] = `{~Data:Record.${tmpKeys[i]}~}`;
-		}
-
-		return tmpMapping;
-	}
-
-	createRecordFromMapping(pRecord, pMapping, pRecordPrototype)
-	{
-		let tmpRecord = ((typeof(pRecordPrototype) == 'object') && (pRecordPrototype != null)) ? JSON.parse(JSON.stringify(pRecordPrototype)) : {};
-
-		tmpRecord[pMapping.GUIDName] = this.pict.parseTemplate(pMapping.GUIDTemplate, pRecord);
-
-		let tmpKeys = Object.keys(pMapping.Mappings);
-		for (let i = 0; i < tmpKeys.length; i++)
-		{
-			let tmpMappingKey = tmpKeys[i];
-			tmpRecord[tmpMappingKey] = this.pict.parseTemplate(pMapping.Mappings[tmpMappingKey], pRecord);
-		}
-
-		return tmpRecord;
-	}
-
-	addRecordToComprehension(pIncomingRecord, pMappingOutcome, pNewRecordPrototype, pGUIDUniquenessString)
-	{
-		let tmpNewRecordPrototype = (typeof(pNewRecordPrototype) == 'object') ? pNewRecordPrototype : {};
-		let tmpIncomingRecord = JSON.parse(JSON.stringify(pIncomingRecord));
-
-		if (pGUIDUniquenessString && (typeof (pGUIDUniquenessString) == 'string'))
-		{
-			tmpIncomingRecord['_GUIDUniqueness'] = pGUIDUniquenessString;
-		}
-		
-		let tmpNewRecord = this.createRecordFromMapping(tmpIncomingRecord, pMappingOutcome.Configuration, tmpNewRecordPrototype);
-
-		if (typeof (tmpNewRecord) != 'object')
-		{
-			this.fable.log.warn(`No valid record generated from incoming transformation operation.  Skipping.`);
-			pMappingOutcome.BadRecords.push(tmpIncomingRecord);
-		}
-		else if (!tmpNewRecord[pMappingOutcome.Configuration.GUIDName] || tmpNewRecord[pMappingOutcome.Configuration.GUIDName] == '')
-		{
-			this.fable.log.warn(`No valid GUID found for record.  Skipping.`);
-			pMappingOutcome.BadRecords.push(tmpIncomingRecord);
-		}
-		else
-		{
-			if (tmpNewRecord[pMappingOutcome.Configuration.GUIDName] in pMappingOutcome.Comprehension[pMappingOutcome.Configuration.Entity])
-			{
-				// Already been ingested once by this parse!
-				this.fable.log.warn(`Duplicate record found for ${pMappingOutcome.Configuration.GUIDName}->[${tmpNewRecord[pMappingOutcome.Configuration.GUIDName]}].  Merging with previous record.`);
-				pMappingOutcome.Comprehension[pMappingOutcome.Configuration.Entity][tmpNewRecord[pMappingOutcome.Configuration.GUIDName]] = Object.assign({}, pMappingOutcome.Comprehension[pMappingOutcome.Configuration.Entity][tmpNewRecord[pMappingOutcome.Configuration.GUIDName]], tmpNewRecord);
-			}
-			else if (pMappingOutcome.ExistingComprehension && (pMappingOutcome.Configuration.Entity in pMappingOutcome.ExistingComprehension) && (tmpNewRecord[pMappingOutcome.Configuration.GUIDName] in pMappingOutcome.ExistingComprehension[pMappingOutcome.Configuration.Entity]))
-			{
-				// Pull it in from the old comprehension
-				pMappingOutcome.Comprehension[pMappingOutcome.Configuration.Entity][tmpNewRecord[pMappingOutcome.Configuration.GUIDName]] = Object.assign({}, pMappingOutcome.ExistingComprehension[pMappingOutcome.Configuration.Entity][tmpNewRecord[pMappingOutcome.Configuration.GUIDName]], tmpNewRecord);
-			}
-			else
-			{
-				// Net new record
-				pMappingOutcome.Comprehension[pMappingOutcome.Configuration.Entity][tmpNewRecord[pMappingOutcome.Configuration.GUIDName]] = tmpNewRecord;
-			}
-		}
-	}
-
-
 	onRunAsync(fCallback)
 	{
-		let tmpFile = this.ArgumentString;
-		if ((!tmpFile) || (typeof (tmpFile) != 'string') || (tmpFile.length === 0))
+
+		let tmpOperationState = (
+			{
+				RawInputFile: this.ArgumentString,
+				RawOutputFile: this.CommandOptions.output,
+
+				RawIncomingComprehensionFile: this.CommandOptions.incoming
+			});
+
+		if ((!tmpOperationState.RawInputFile) || (typeof(tmpOperationState.RawInputFile) != 'string') || (tmpOperationState.length === 0))
 		{
-			this.log.error('No valid filename provided.');
+			this.log.error(`No valid filename provided.`);
 			return fCallback();
 		}
-		let tmpOutputFileName = this.CommandOptions.output;
-		if ((!tmpOutputFileName) || (typeof (tmpOutputFileName) != 'string') || (tmpOutputFileName.length === 0))
+		if ((!tmpOperationState.RawOutputFile) || (typeof(tmpOperationState.RawOutputFile) != 'string') || (tmpOperationState.RawOutputFile.length === 0))
 		{
-			tmpOutputFileName = `${process.cwd()}/CSV-Comprehension-${libPath.basename(tmpFile)}.json`;
-			this.log.error(`No output filename provided.  Defaulting to ${tmpOutputFileName}`);
+			tmpOperationState.OutputFile = `CSV-Stats-${libPath.basename(tmpOperationState.RawInputFile)}.json`;
+			this.log.error(`No valid output filename provided.  Defaulting to ${tmpOperationState.RawOutputFile}`);
 		}
 
-		let tmpInputFileName = this.CommandOptions.incoming;
-		if ((!tmpInputFileName) || (typeof (tmpInputFileName) != 'string') || (tmpInputFileName.length === 0))
+		if ((!tmpOperationState.RawIncomingComprehensionFile) || (typeof (tmpOperationState.RawIncomingComprehensionFile) != 'string') || (tmpOperationState.RawIncomingComprehensionFile.length === 0))
 		{
-			tmpInputFileName = `${process.cwd()}/CSV-Comprehension-${libPath.basename(tmpFile)}.json`;
-			this.log.error(`No incoming comprehension filename provided.  Defaulting to ${tmpInputFileName}`);
+			tmpOperationState.RawIncomingComprehensionFile = `CSV-Comprehension-${libPath.basename(tmpOperationState.RawInputFile)}.json`;
+			this.log.error(`No incoming comprehension filename provided.  Defaulting to ${tmpOperationState.RawIncomingComprehensionFile}`);
 		}
 
-		const tmpMappingOutcome = (
-			{
-				Comprehension: {},
-				CommandConfiguration:
-				{
-					//						Entity: false,
-					//						GUIDName: false,
-					//						GUIDTemplate: false,
-					//						Mappings: false
-				},
-				ExistingComprehension: false,
-				ExplicitConfiguration: false,
-				ImplicitConfiguration: false,
-				Configuration: false,
-				ParsedRowCount: 0,
-				BadRecords: []
-			});
+		// Initialize the fable CSV parser and file management stuff
+		this.fable.instantiateServiceProvider('CSVParser');
+		this.fable.instantiateServiceProvider('FilePersistence');
+		// Initialize the meadow integration tabular data check service
+		this.fable.addAndInstantiateServiceTypeIfNotExists('MeadowIntegrationTabularTransform', require('../../services/tabular/Service-TabularTransform.js'));
+
+		tmpOperationState.InputFilePath = this.fable.FilePersistence.resolvePath(tmpOperationState.RawInputFile);
+		tmpOperationState.OutputFilePath = this.fable.FilePersistence.resolvePath(tmpOperationState.RawOutputFile);
+		tmpOperationState.IncomingComprehensionFilePath = this.fable.FilePersistence.resolvePath(tmpOperationState.RawIncomingComprehensionFile);
+
+		if (!this.fable.FilePersistence.existsSync(tmpOperationState.InputFilePath))
+		{
+			this.fable.log.error(`File [${tmpOperationState.InputFilePath}] does not exist.`);
+			return fCallback();
+		}
+
+		tmpOperationState.MappingOutcome = this.fable.MeadowIntegrationTabularTransform.newMappingOutcomeObject();
 
 		if (this.CommandOptions.entity)
 		{
-			tmpMappingOutcome.CommandConfiguration.Entity = this.CommandOptions.entity;
+			tmpOperationState.MappingOutcome.UserConfiguration.Entity = this.CommandOptions.entity;
 		}
 		if (this.CommandOptions.guidname)
 		{
-			tmpMappingOutcome.CommandConfiguration.GUIDName = this.CommandOptions.guidname;
+			tmpOperationState.MappingOutcome.UserConfiguration.GUIDName = this.CommandOptions.guidname;
 		}
 		if (this.CommandOptions.guidtemplate)
 		{
-			tmpMappingOutcome.CommandConfiguration.GUIDTemplate = this.CommandOptions.guidtemplate;
+			tmpOperationState.MappingOutcome.UserConfiguration.GUIDTemplate = this.CommandOptions.guidtemplate;
 		}
 		if (this.CommandOptions.columns)
 		{
 			let tmpColumnEntries = this.CommandOptions.columns.split(',');
 
-			tmpMappingOutcome.CommandConfiguration.Mappings = {};
+			tmpOperationState.MappingOutcome.UserConfiguration.Mappings = {};
 			for (let i = 0; i < tmpColumnEntries.length; i++)
 			{
 				let tmpColumnEntry = tmpColumnEntries[i].split('=');
 				if (tmpColumnEntry.length == 2)
 				{
-					tmpMappingOutcome.CommandConfiguration.Mappings[tmpColumnEntry[0]] = tmpColumnEntry[1];
+					tmpOperationState.MappingOutcome.UserConfiguration.Mappings[tmpColumnEntry[0]] = tmpColumnEntry[1];
 				}
 			}
 
-			tmpMappingOutcome.CommandConfiguration.Mappings = this.CommandOptions.columns;
+			tmpOperationState.MappingOutcome.UserConfiguration.Mappings = this.CommandOptions.columns;
 		}
 
 		if (this.CommandOptions.mappingfile)
 		{
-			let tmpMappingConfigurationFileName = this.CommandOptions.mappingfile;
+			tmpOperationState.RawMappingConfigurationFile = this.CommandOptions.mappingfile;
+			tmpOperationState
 
-			if (!this.fable.FilePersistence.existsSync(tmpMappingConfigurationFileName))
+			if (!this.fable.FilePersistence.existsSync(tmpOperationState.RawMappingConfigurationFile))
 			{
-				tmpMappingConfigurationFileName = libPath.join(process.cwd(), tmpMappingConfigurationFileName);
+				tmpOperationState.RawMappingConfigurationFile = libPath.join(process.cwd(), tmpOperationState.RawMappingConfigurationFile);
 			}
 
 			try
 			{
-				let tmpMappingConfigurationExplicit = this.fable.FilePersistence.readFileSync(tmpMappingConfigurationFileName);
-				tmpMappingOutcome.ExplicitConfiguration = JSON.parse(tmpMappingConfigurationExplicit);
+				let tmpMappingConfigurationExplicit = this.fable.FilePersistence.readFileSync(tmpOperationState.RawMappingConfigurationFile);
+				tmpOperationState.MappingOutcome.ExplicitConfiguration = JSON.parse(tmpMappingConfigurationExplicit);
 			}
 			catch (pError)
 			{
@@ -257,23 +139,23 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 		this.fable.CSVParser.QuoteCharacter = this.CommandOptions.quotedelimiter;
 
 		// Do some input file housekeeping
-		if (!this.fable.FilePersistence.existsSync(tmpFile))
+		if (!this.fable.FilePersistence.existsSync(tmpOperationState.RawInputFile))
 		{
-			this.fable.log.error(`File [${tmpFile}] does not exist.  Checking in the current working directory...`);
-			tmpFile = libPath.join(process.cwd(), tmpFile);
-			if (!this.fable.FilePersistence.existsSync(tmpFile))
+			this.fable.log.error(`File [${tmpOperationState.RawInputFile}] does not exist.  Checking in the current working directory...`);
+			tmpFile = libPath.join(process.cwd(), tmpOperationState.RawInputFile);
+			if (!this.fable.FilePersistence.existsSync(tmpOperationState.RawInputFile))
 			{
-				this.fable.log.error(`File [${tmpFile}] does not exist in the current working directory.  Could not parse input CSV file.  Aborting.`);
+				this.fable.log.error(`File [${tmpOperationState.RawInputFile}] does not exist in the current working directory.  Could not parse input CSV file.  Aborting.`);
 				return fCallback();
 			}
 		}
 
-		if (this.fable.FilePersistence.existsSync(tmpInputFileName))
+		if (this.fable.FilePersistence.existsSync(tmpOperationState.RawIncomingComprehensionFile))
 		{
 			try
 			{
-				tmpMappingOutcome.ExistingComprehension = require(tmpInputFileName);
-				tmpMappingOutcome.Comprehension = JSON.parse(JSON.stringify(tmpMappingOutcome.ExistingComprehension));
+				tmpOperationState.MappingOutcome.ExistingComprehension = require(tmpOperationState.RawIncomingComprehensionFile);
+				tmpOperationState.MappingOutcome.Comprehension = JSON.parse(JSON.stringify(tmpOperationState.MappingOutcome.ExistingComprehension));
 			}
 			catch (pError)
 			{
@@ -281,10 +163,10 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 			}
 		}
 
-		this.fable.log.info(`Parsing CSV file [${tmpFile}]...`);
+		this.fable.log.info(`Parsing CSV file [${tmpOperationState.RawInputFile}]...`);
 		const tmpReadline = libReadline.createInterface(
 			{
-				input: libFS.createReadStream(tmpFile),
+				input: libFS.createReadStream(tmpOperationState.RawInputFile),
 				crlfDelay: Infinity,
 			});
 
@@ -293,45 +175,45 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 			{
 				const tmpIncomingRecord = this.fable.CSVParser.parseCSVLine(pLine);
 
-				tmpMappingOutcome.ParsedRowCount++;
+				tmpOperationState.MappingOutcome.ParsedRowCount++;
 
 				if (tmpIncomingRecord)
 				{
-					if (!tmpMappingOutcome.ImplicitConfiguration)
+					if (!tmpOperationState.MappingOutcome.ImplicitConfiguration)
 					{
-						tmpMappingOutcome.ImplicitConfiguration = this.generateMappingFromRecord(tmpFile, tmpIncomingRecord);
+						tmpOperationState.MappingOutcome.ImplicitConfiguration = this.fable.MeadowIntegrationTabularTransform.generateMappingConfigurationPrototype(libPath.basename(tmpOperationState.RawInputFile), tmpOperationState.RawIncomingComprehensionFile, tmpIncomingRecord);
 
-						if ((!tmpMappingOutcome.ExplicitConfiguration) || (typeof (tmpMappingOutcome.ExplicitConfiguration) != 'object'))
+						if ((!tmpOperationState.MappingOutcome.ExplicitConfiguration) || (typeof (tmpOperationState.MappingOutcome.ExplicitConfiguration) != 'object'))
 						{
 							// Just use the implicit configuration
 							this.fable.log.info(`Using implicit configuration for comprehension; no valid explicit configuration available.`);
-							tmpMappingOutcome.Configuration = Object.assign({}, tmpMappingOutcome.ImplicitConfiguration, tmpMappingOutcome.CommandConfiguration);
+							tmpOperationState.MappingOutcome.Configuration = Object.assign({}, tmpOperationState.MappingOutcome.ImplicitConfiguration, tmpOperationState.MappingOutcome.UserConfiguration);
 						}
 						else
 						{
 							this.fable.log.info(`Using explicit configuration for comprehension.`);
 
-							tmpMappingOutcome.Configuration = Object.assign({}, tmpMappingOutcome.ImplicitConfiguration, tmpMappingOutcome.ExplicitConfiguration, tmpMappingOutcome.CommandConfiguration);
+							tmpOperationState.MappingOutcome.Configuration = Object.assign({}, tmpOperationState.MappingOutcome.ImplicitConfiguration, tmpOperationState.MappingOutcome.ExplicitConfiguration, tmpOperationState.MappingOutcome.UserConfiguration);
 						}
 
-						if (!('GUIDName' in tmpMappingOutcome.Configuration))
+						if (!('GUIDName' in tmpOperationState.MappingOutcome.Configuration))
 						{
-							tmpMappingOutcome.Configuration.GUIDName = `GUID${tmpMappingOutcome.Configuration.Entity}`;
+							tmpOperationState.MappingOutcome.Configuration.GUIDName = `GUID${tmpOperationState.MappingOutcome.Configuration.Entity}`;
 						}
 
-						if (!(tmpMappingOutcome.Configuration.Entity in tmpMappingOutcome.Comprehension))
+						if (!(tmpOperationState.MappingOutcome.Configuration.Entity in tmpOperationState.MappingOutcome.Comprehension))
 						{
-							tmpMappingOutcome.Comprehension[tmpMappingOutcome.Configuration.Entity] = {};
+							tmpOperationState.MappingOutcome.Comprehension[tmpOperationState.MappingOutcome.Configuration.Entity] = {};
 						}
 					}
 
 					let tmpMappingRecordSolution = (
 						{
 							IncomingRecord: tmpIncomingRecord,
-							MappingConfiguration: tmpMappingOutcome.Configuration,
-							MappingOutcome: tmpMappingOutcome,
+							MappingConfiguration: tmpOperationState.MappingOutcome.Configuration,
+							MappingOutcome: tmpOperationState.MappingOutcome,
 
-							RowIndex: tmpMappingOutcome.ParsedRowCount,
+							RowIndex: tmpOperationState.MappingOutcome.ParsedRowCount,
 
 							NewRecordsGUIDUniqueness: [],
 							NewRecordPrototype: {},
@@ -343,27 +225,27 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 
 					// Run the solvers for this record
 					let tmpSolverResultsObject = {};
-					if (tmpMappingOutcome.Configuration.Solvers && Array.isArray(tmpMappingOutcome.Configuration.Solvers))
+					if (tmpOperationState.MappingOutcome.Configuration.Solvers && Array.isArray(tmpOperationState.MappingOutcome.Configuration.Solvers))
 					{
 						// Solvers have IncomingRecord, RecordGenerationRules, NewRecordPrototype
-						for (let i = 0; i < tmpMappingOutcome.Configuration.Solvers.length; i++)
+						for (let i = 0; i < tmpOperationState.MappingOutcome.Configuration.Solvers.length; i++)
 						{
-							let tmpSolver = tmpMappingOutcome.Configuration.Solvers[i];
+							let tmpSolver = tmpOperationState.MappingOutcome.Configuration.Solvers[i];
 							this.fable.ExpressionParser.solve(tmpSolver, tmpMappingRecordSolution, tmpSolverResultsObject, this.fable.manifest, tmpMappingRecordSolution);
 						}
 					}
 
-					if (tmpMappingOutcome.Configuration.MultipleGUIDUniqueness && tmpMappingRecordSolution.NewRecordsGUIDUniqueness.length > 0)
+					if (tmpOperationState.MappingOutcome.Configuration.MultipleGUIDUniqueness && tmpMappingRecordSolution.NewRecordsGUIDUniqueness.length > 0)
 					{
 						// Run create record for each of the uniqueness guid entries
 						for (let i = 0; i < tmpMappingRecordSolution.NewRecordsGUIDUniqueness.length; i++)
 						{
-							this.addRecordToComprehension(tmpIncomingRecord, tmpMappingOutcome, tmpMappingRecordSolution.NewRecordPrototype, tmpMappingRecordSolution.NewRecordsGUIDUniqueness[i]);
+							this.fable.MeadowIntegrationTabularTransform.addRecordToComprehension(tmpIncomingRecord, tmpOperationState.MappingOutcome, tmpMappingRecordSolution.NewRecordPrototype, tmpMappingRecordSolution.NewRecordsGUIDUniqueness[i]);
 						}
 					}
-					else if (!tmpMappingOutcome.Configuration.MultipleGUIDUniqueness)
+					else if (!tmpOperationState.MappingOutcome.Configuration.MultipleGUIDUniqueness)
 					{
-						this.addRecordToComprehension(tmpIncomingRecord, tmpMappingOutcome, tmpMappingRecordSolution.NewRecordPrototype);
+						this.fable.MeadowIntegrationTabularTransform.addRecordToComprehension(tmpIncomingRecord, tmpOperationState.MappingOutcome, tmpMappingRecordSolution.NewRecordPrototype);
 					}
 					else
 					{
@@ -379,13 +261,13 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 			{
 				if (this.CommandOptions.extended)
 				{
-					this.fable.FilePersistence.writeFileSyncFromObject(tmpOutputFileName, tmpMappingOutcome);
-					this.fable.log.info(`Verbose Comprehension written to [${tmpOutputFileName}].`);
+					this.fable.FilePersistence.writeFileSyncFromObject(tmpOperationState.OutputFilePath, tmpOperationState);
+					this.fable.log.info(`Verbose Comprehension written to [${tmpOperationState.OutputFilePath}].`);
 				}
 				else
 				{
-					this.fable.FilePersistence.writeFileSyncFromObject(tmpOutputFileName, tmpMappingOutcome.Comprehension);
-					this.fable.log.info(`Comprehension written to [${tmpOutputFileName}].`);
+					this.fable.FilePersistence.writeFileSyncFromObject(tmpOperationState.OutputFilePath, tmpOperationState.MappingOutcome.Comprehension);
+					this.fable.log.info(`Comprehension written to [${tmpOperationState.OutputFilePath}].`);
 				}
 				this.fable.log.info(`Have a nice day!`);
 				return fCallback();

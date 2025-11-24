@@ -56,7 +56,6 @@ class QuackageCommandCSVCheck extends libCommandLineCommand
 		tmpOperationState.InputFilePath = this.fable.FilePersistence.resolvePath(tmpOperationState.RawInputFile);
 		tmpOperationState.OutputFilePath = this.fable.FilePersistence.resolvePath(tmpOperationState.RawOutputFile);
 
-
 		if (!this.fable.FilePersistence.existsSync(tmpOperationState.InputFilePath))
 		{
 			this.fable.log.error(`File [${tmpOperationState.InputFilePath}] does not exist.`);
