@@ -19,7 +19,6 @@ let _PictCLIProgram = new libCLIProgram(
 		require('./commands/Meadow-Integration-Command-CSVCheck.js'),
 		require('./commands/Meadow-Integration-Command-CSVTransform.js'),
 		require('./commands/Meadow-Integration-Command-TSVTransform.js'),
-		require('./commands/Meadow-Integration-Command-CSVIntersect.js'),
 		require('./commands/Meadow-Integration-Command-ObjectArrayToCSV.js'),
 
 		require('./commands/Meadow-Integration-Command-EntityFromTabularFolder.js'),
