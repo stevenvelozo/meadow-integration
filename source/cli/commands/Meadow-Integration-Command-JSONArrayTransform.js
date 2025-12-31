@@ -1,6 +1,5 @@
 const libCommandLineCommand = require('pict-service-commandlineutility').ServiceCommandLineCommand;
 
-const libFS = require('fs');
 const libPath = require('path');
 const libReadline = require('readline');
 
@@ -10,12 +9,12 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 	{
 		super(pFable, pManifest, pServiceHash);
 
-		this.options.CommandKeyword = 'csvtransform';
-		this.options.Description = 'Transform a CSV into a comprehension, and either inject it in a file or create a new comprehension file.';
-		this.options.Aliases.push('csv_t');
-		this.options.Aliases.push('csv_transform');
+		this.options.CommandKeyword = 'jsonarraytransform';
+		this.options.Description = 'Transform a JSON Array into a comprehension, and either inject it in a file or create a new comprehension file.';
+		this.options.Aliases.push('jsonarray_t');
+		this.options.Aliases.push('jsonarray_transform');
 
-		this.options.CommandArguments.push({ Name: '<file>', Description: 'The CSV file to transform.' });
+		this.options.CommandArguments.push({ Name: '<file>', Description: 'The JSON Array file to transform.' });
 
 		// File Parameters
 		this.options.CommandOptions.push({ Name: '-i, --incoming [incoming_comprehension]', Description: 'Incoming comprehension file.' });
@@ -30,7 +29,6 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 		this.options.CommandOptions.push({ Name: '-n, --guidname [guidname]', Description: 'The name of the GUID column in the generated comprehension.' });
 		this.options.CommandOptions.push({ Name: '-g, --guidtemplate [template]', Description: 'The Pict template for the entity GUID; for instance if the CSV has a column named "id", you could use {~D:id~} and that would be the GUID for the entity.' });
 		this.options.CommandOptions.push({ Name: '-c, --columns [columns]', Description: 'The columns to map to the comprehension.  Format is "Column1={~D:column1~},Column2={~D:column2~},Column3={~D:column3~}"' });
-		this.options.CommandOptions.push({ Name: '-q, --quotedelimiter [quotedelimiter]', Description: 'The quote delimiter character, defaulted to double quotes for CSV files.  Quote delimiters are required to be doubled ("") if it is a character rather than a delimiter.', Default: '"' });
 
 		this.addCommand();
 	}
@@ -53,18 +51,16 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 		}
 		if ((!tmpOperationState.RawOutputFile) || (typeof(tmpOperationState.RawOutputFile) != 'string') || (tmpOperationState.RawOutputFile.length === 0))
 		{
-			tmpOperationState.OutputFile = `CSV-Comprehension-${libPath.basename(tmpOperationState.RawInputFile)}.json`;
+			tmpOperationState.RawOutputFile = `JSON-Comprehension-${libPath.basename(tmpOperationState.RawInputFile)}.json`;
 			this.log.error(`No valid output filename provided.  Defaulting to ${tmpOperationState.RawOutputFile}`);
 		}
 
 		if ((!tmpOperationState.RawIncomingComprehensionFile) || (typeof (tmpOperationState.RawIncomingComprehensionFile) != 'string') || (tmpOperationState.RawIncomingComprehensionFile.length === 0))
 		{
-			tmpOperationState.RawIncomingComprehensionFile = `CSV-Comprehension-${libPath.basename(tmpOperationState.RawInputFile)}.json`;
+			tmpOperationState.RawIncomingComprehensionFile = `JSON-Comprehension-${libPath.basename(tmpOperationState.RawInputFile)}.json`;
 			this.log.error(`No incoming comprehension filename provided.  Defaulting to ${tmpOperationState.RawIncomingComprehensionFile}`);
 		}
 
-		// Initialize the fable CSV parser and file management stuff
-		this.fable.instantiateServiceProvider('CSVParser');
 		this.fable.instantiateServiceProvider('FilePersistence');
 		// Initialize the meadow integration tabular data check service
 		this.fable.addAndInstantiateServiceTypeIfNotExists('MeadowIntegrationTabularTransform', require('../../services/tabular/Service-TabularTransform.js'));
@@ -131,12 +127,7 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 			}
 		}
 
-		// Initialize the fable CSV parser
-		// TODO: We only use the CSVParser once -- if we ever want to process multiple files, we need to instantiate it for each file.
-		this.fable.instantiateServiceProvider('CSVParser');
 		this.fable.instantiateServiceProvider('FilePersistence');
-
-		this.fable.CSVParser.QuoteCharacter = this.CommandOptions.quotedelimiter;
 
 		// Do some input file housekeeping
 		if (!this.fable.FilePersistence.existsSync(tmpOperationState.RawInputFile))
@@ -145,7 +136,7 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 			tmpFile = libPath.join(process.cwd(), tmpOperationState.RawInputFile);
 			if (!this.fable.FilePersistence.existsSync(tmpOperationState.RawInputFile))
 			{
-				this.fable.log.error(`File [${tmpOperationState.RawInputFile}] does not exist in the current working directory.  Could not parse input CSV file.  Aborting.`);
+				this.fable.log.error(`File [${tmpOperationState.RawInputFile}] does not exist in the current working directory.  Could not parse input file.  Aborting.`);
 				return fCallback();
 			}
 		}
@@ -159,119 +150,130 @@ class QuackageCommandCSVTransform extends libCommandLineCommand
 			}
 			catch (pError)
 			{
-				this.fable.log.error(`Error reading existing comprehension file [${tmpOutputFileName}].`);
+				this.fable.log.error(`Error reading existing comprehension file [${tmpOperationState.RawIncomingComprehensionFile}].`);
 			}
 		}
 
-		this.fable.log.info(`Parsing CSV file [${tmpOperationState.RawInputFile}]...`);
-		const tmpReadline = libReadline.createInterface(
+		// TODO: Stream the JSON array file instead of loading it all into memory at once
+		this.fable.log.info(`Parsing JSON array file [${tmpOperationState.RawInputFile}]...`);
+		tmpOperationState.JSONArrayFileRawContents = this.fable.FilePersistence.readFileSync(tmpOperationState.RawInputFile, { encoding: 'utf8' });
+		try
+		{
+			tmpOperationState.JSONArrayRecords = JSON.parse(tmpOperationState.JSONArrayFileRawContents);
+		}
+		catch (pError)
+		{
+			this.fable.log.error(`Error parsing JSON array file [${tmpOperationState.RawInputFile}]: ${pError}`, pError);
+			return fCallback();
+		}
+		if (!Array.isArray(tmpOperationState.JSONArrayRecords))
+		{
+			this.fable.log.error(`The input file [${tmpOperationState.RawInputFile}] does not appear to contain a valid JSON array.`);
+			return fCallback();
+		}
+		if (tmpOperationState.JSONArrayRecords.length < 1)
+		{
+			this.fable.log.error(`The input file [${tmpOperationState.RawInputFile}] does not contain any records in the JSON array.`);
+			return fCallback();
+		}
+		this.fable.log.info(`...parsed ${tmpOperationState.JSONArrayRecords.length} records from JSON array file.`);
+		delete tmpOperationState.JSONArrayFileRawContents;
+
+		for (let i = 0; i < tmpOperationState.JSONArrayRecords.length; i++)
+		{
+			const tmpIncomingRecord = tmpOperationState.JSONArrayRecords[i];
+
+			tmpOperationState.MappingOutcome.ParsedRowCount++;
+
+			if (tmpIncomingRecord)
 			{
-				input: libFS.createReadStream(tmpOperationState.RawInputFile),
-				crlfDelay: Infinity,
-			});
-
-		tmpReadline.on('line',
-			(pLine) =>
-			{
-				const tmpIncomingRecord = this.fable.CSVParser.parseCSVLine(pLine);
-
-				tmpOperationState.MappingOutcome.ParsedRowCount++;
-
-				if (tmpIncomingRecord)
+				if (!tmpOperationState.MappingOutcome.ImplicitConfiguration)
 				{
-					if (!tmpOperationState.MappingOutcome.ImplicitConfiguration)
+					tmpOperationState.MappingOutcome.ImplicitConfiguration = this.fable.MeadowIntegrationTabularTransform.generateMappingConfigurationPrototype(libPath.basename(tmpOperationState.RawInputFile), tmpIncomingRecord);
+
+					if ((!tmpOperationState.MappingOutcome.ExplicitConfiguration) || (typeof (tmpOperationState.MappingOutcome.ExplicitConfiguration) != 'object'))
 					{
-						tmpOperationState.MappingOutcome.ImplicitConfiguration = this.fable.MeadowIntegrationTabularTransform.generateMappingConfigurationPrototype(libPath.basename(tmpOperationState.RawInputFile), tmpIncomingRecord);
-
-						if ((!tmpOperationState.MappingOutcome.ExplicitConfiguration) || (typeof (tmpOperationState.MappingOutcome.ExplicitConfiguration) != 'object'))
-						{
-							// Just use the implicit configuration
-							this.fable.log.info(`Using implicit configuration for comprehension; no valid explicit configuration available.`);
-							tmpOperationState.MappingOutcome.Configuration = Object.assign({}, tmpOperationState.MappingOutcome.ImplicitConfiguration, tmpOperationState.MappingOutcome.UserConfiguration);
-						}
-						else
-						{
-							this.fable.log.info(`Using explicit configuration for comprehension.`);
-
-							tmpOperationState.MappingOutcome.Configuration = Object.assign({}, tmpOperationState.MappingOutcome.ImplicitConfiguration, tmpOperationState.MappingOutcome.ExplicitConfiguration, tmpOperationState.MappingOutcome.UserConfiguration);
-						}
-
-						if (!('GUIDName' in tmpOperationState.MappingOutcome.Configuration))
-						{
-							tmpOperationState.MappingOutcome.Configuration.GUIDName = `GUID${tmpOperationState.MappingOutcome.Configuration.Entity}`;
-						}
-
-						if (!(tmpOperationState.MappingOutcome.Configuration.Entity in tmpOperationState.MappingOutcome.Comprehension))
-						{
-							tmpOperationState.MappingOutcome.Comprehension[tmpOperationState.MappingOutcome.Configuration.Entity] = {};
-						}
-					}
-
-					let tmpMappingRecordSolution = (
-						{
-							IncomingRecord: tmpIncomingRecord,
-							MappingConfiguration: tmpOperationState.MappingOutcome.Configuration,
-							MappingOutcome: tmpOperationState.MappingOutcome,
-
-							RowIndex: tmpOperationState.MappingOutcome.ParsedRowCount,
-
-							NewRecordsGUIDUniqueness: [],
-							NewRecordPrototype: {},
-
-							Fable: this.fable,
-							Pict: this.pict,
-							AppData: this.pict.AppData
-						});
-
-					// Run the solvers for this record
-					let tmpSolverResultsObject = {};
-					if (tmpOperationState.MappingOutcome.Configuration.Solvers && Array.isArray(tmpOperationState.MappingOutcome.Configuration.Solvers))
-					{
-						// Solvers have IncomingRecord, RecordGenerationRules, NewRecordPrototype
-						for (let i = 0; i < tmpOperationState.MappingOutcome.Configuration.Solvers.length; i++)
-						{
-							let tmpSolver = tmpOperationState.MappingOutcome.Configuration.Solvers[i];
-							this.fable.ExpressionParser.solve(tmpSolver, tmpMappingRecordSolution, tmpSolverResultsObject, this.fable.manifest, tmpMappingRecordSolution);
-						}
-					}
-
-					if (tmpOperationState.MappingOutcome.Configuration.MultipleGUIDUniqueness && tmpMappingRecordSolution.NewRecordsGUIDUniqueness.length > 0)
-					{
-						// Run create record for each of the uniqueness guid entries
-						for (let i = 0; i < tmpMappingRecordSolution.NewRecordsGUIDUniqueness.length; i++)
-						{
-							this.fable.MeadowIntegrationTabularTransform.addRecordToComprehension(tmpIncomingRecord, tmpOperationState.MappingOutcome, tmpMappingRecordSolution.NewRecordPrototype, tmpMappingRecordSolution.NewRecordsGUIDUniqueness[i]);
-						}
-					}
-					else if (!tmpOperationState.MappingOutcome.Configuration.MultipleGUIDUniqueness)
-					{
-						this.fable.MeadowIntegrationTabularTransform.addRecordToComprehension(tmpIncomingRecord, tmpOperationState.MappingOutcome, tmpMappingRecordSolution.NewRecordPrototype);
+						// Just use the implicit configuration
+						this.fable.log.info(`Using implicit configuration for comprehension; no valid explicit configuration available.`);
+						tmpOperationState.MappingOutcome.Configuration = Object.assign({}, tmpOperationState.MappingOutcome.ImplicitConfiguration, tmpOperationState.MappingOutcome.UserConfiguration);
 					}
 					else
 					{
-						this.fable.log.error(`No valid GUID uniqueness entries generated for record; skipping record.`);
+						this.fable.log.info(`Using explicit configuration for comprehension.`);
+
+						tmpOperationState.MappingOutcome.Configuration = Object.assign({}, tmpOperationState.MappingOutcome.ImplicitConfiguration, tmpOperationState.MappingOutcome.ExplicitConfiguration, tmpOperationState.MappingOutcome.UserConfiguration);
 					}
 
+					if (!('GUIDName' in tmpOperationState.MappingOutcome.Configuration))
+					{
+						tmpOperationState.MappingOutcome.Configuration.GUIDName = `GUID${tmpOperationState.MappingOutcome.Configuration.Entity}`;
+					}
 
+					if (!(tmpOperationState.MappingOutcome.Configuration.Entity in tmpOperationState.MappingOutcome.Comprehension))
+					{
+						tmpOperationState.MappingOutcome.Comprehension[tmpOperationState.MappingOutcome.Configuration.Entity] = {};
+					}
 				}
-			});
 
-		tmpReadline.on('close',
-			() =>
-			{
-				if (this.CommandOptions.extended)
+				let tmpMappingRecordSolution = (
+					{
+						IncomingRecord: tmpIncomingRecord,
+						MappingConfiguration: tmpOperationState.MappingOutcome.Configuration,
+						MappingOutcome: tmpOperationState.MappingOutcome,
+
+						RowIndex: tmpOperationState.MappingOutcome.ParsedRowCount,
+
+						NewRecordsGUIDUniqueness: [],
+						NewRecordPrototype: {},
+
+						Fable: this.fable,
+						Pict: this.pict,
+						AppData: this.pict.AppData
+					});
+
+				// Run the solvers for this record
+				let tmpSolverResultsObject = {};
+				if (tmpOperationState.MappingOutcome.Configuration.Solvers && Array.isArray(tmpOperationState.MappingOutcome.Configuration.Solvers))
 				{
-					this.fable.FilePersistence.writeFileSyncFromObject(tmpOperationState.OutputFilePath, tmpOperationState);
-					this.fable.log.info(`Verbose Comprehension written to [${tmpOperationState.OutputFilePath}].`);
+					// Solvers have IncomingRecord, RecordGenerationRules, NewRecordPrototype
+					for (let i = 0; i < tmpOperationState.MappingOutcome.Configuration.Solvers.length; i++)
+					{
+						let tmpSolver = tmpOperationState.MappingOutcome.Configuration.Solvers[i];
+						this.fable.ExpressionParser.solve(tmpSolver, tmpMappingRecordSolution, tmpSolverResultsObject, this.fable.manifest, tmpMappingRecordSolution);
+					}
+				}
+
+				if (tmpOperationState.MappingOutcome.Configuration.MultipleGUIDUniqueness && tmpMappingRecordSolution.NewRecordsGUIDUniqueness.length > 0)
+				{
+					// Run create record for each of the uniqueness guid entries
+					for (let i = 0; i < tmpMappingRecordSolution.NewRecordsGUIDUniqueness.length; i++)
+					{
+						this.fable.MeadowIntegrationTabularTransform.addRecordToComprehension(tmpIncomingRecord, tmpOperationState.MappingOutcome, tmpMappingRecordSolution.NewRecordPrototype, tmpMappingRecordSolution.NewRecordsGUIDUniqueness[i]);
+					}
+				}
+				else if (!tmpOperationState.MappingOutcome.Configuration.MultipleGUIDUniqueness)
+				{
+					this.fable.MeadowIntegrationTabularTransform.addRecordToComprehension(tmpIncomingRecord, tmpOperationState.MappingOutcome, tmpMappingRecordSolution.NewRecordPrototype);
 				}
 				else
 				{
-					this.fable.FilePersistence.writeFileSyncFromObject(tmpOperationState.OutputFilePath, tmpOperationState.MappingOutcome.Comprehension);
-					this.fable.log.info(`Comprehension written to [${tmpOperationState.OutputFilePath}].`);
+					this.fable.log.error(`No valid GUID uniqueness entries generated for record; skipping record.`);
 				}
-				this.fable.log.info(`Have a nice day!`);
-				return fCallback();
-			});
+			}
+		}
+
+		if (this.CommandOptions.extended)
+		{
+			this.fable.FilePersistence.writeFileSyncFromObject(tmpOperationState.OutputFilePath, tmpOperationState);
+			this.fable.log.info(`Verbose Comprehension written to [${tmpOperationState.OutputFilePath}].`);
+		}
+		else
+		{
+			this.fable.FilePersistence.writeFileSyncFromObject(tmpOperationState.OutputFilePath, tmpOperationState.MappingOutcome.Comprehension);
+			this.fable.log.info(`Comprehension written to [${tmpOperationState.OutputFilePath}].`);
+		}
+		this.fable.log.info(`Have a nice day!`);
+		return fCallback();
 	};
 }
 

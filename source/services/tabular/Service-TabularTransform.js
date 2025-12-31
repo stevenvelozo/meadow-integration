@@ -140,7 +140,14 @@ class MeadowIntegrationTabularTransform extends libFableService
 		for (let i = 0; i < tmpKeys.length; i++)
 		{
 			let tmpMappingKey = tmpKeys[i];
-			tmpRecord[tmpMappingKey] = this.fable.parseTemplate(pMapping.Mappings[tmpMappingKey], pRecord);
+			if (pMapping.ManyfestAddresses)
+			{
+				this.fable.manifest.setValueAtAddress(tmpRecord, tmpMappingKey, this.fable.parseTemplate(pMapping.Mappings[tmpMappingKey], pRecord));
+			}
+			else
+			{
+				tmpRecord[tmpMappingKey] = this.fable.parseTemplate(pMapping.Mappings[tmpMappingKey], pRecord);
+			}
 		}
 
 		return tmpRecord;

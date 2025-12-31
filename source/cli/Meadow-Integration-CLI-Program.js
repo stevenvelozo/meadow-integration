@@ -23,6 +23,9 @@ let _PictCLIProgram = new libCLIProgram(
 
 		require('./commands/Meadow-Integration-Command-EntityFromTabularFolder.js'),
 
+		// JSON file handling
+		require('./commands/Meadow-Integration-Command-JSONArrayTransform.js'),
+
 		// Comprehension file handling
 		require('./commands/Meadow-Integration-Command-ComprehensionIntersect.js'),
 		require('./commands/Meadow-Integration-Command-ComprehensionArray.js'),

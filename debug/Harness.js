@@ -40,3 +40,9 @@ const libMeadowIntegrationCLI = require(`../source/cli/Meadow-Integration-CLI-Pr
 // 	`${__dirname}/Books-Comprehension.json`]);
 
 
+libMeadowIntegrationCLI.run([
+	'node', 'Harness.js',
+	'jsonarraytransform',
+	`${__dirname}/JSA.json`,
+	'-m', `${__dirname}/TransformationConfiguration-Lastrada-Sample.json`,
+]);

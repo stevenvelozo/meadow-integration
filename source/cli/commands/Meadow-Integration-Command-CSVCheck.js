@@ -66,7 +66,6 @@ class QuackageCommandCSVCheck extends libCommandLineCommand
 		// Parse the CSV file
 		tmpOperationState.Statistics = this.fable.MeadowIntegrationTabularCheck.newStatisticsObject(tmpOperationState.InputFilePath);
 
-		const tmpRecords = [];
 		this.fable.log.info(`Parsing CSV file [${tmpOperationState.InputFilePath}]...`);
 
 		const tmpReadline = libReadline.createInterface(
