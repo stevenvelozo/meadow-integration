@@ -1,0 +1,7 @@
+[
+	{ "id": "1", "name": "Alice", "city": "Seattle", "country": "USA", "score": "95" },
+	{ "id": "2", "name": "Bob", "city": "Portland", "country": "USA", "score": "87" },
+	{ "id": "3", "name": "Carol", "city": "Vancouver", "country": "CAN", "score": "92" },
+	{ "id": "4", "name": "Dave", "city": "Seattle", "country": "USA", "score": "78" },
+	{ "id": "5", "name": "Eve", "city": "Portland", "country": "USA", "score": "88" }
+]

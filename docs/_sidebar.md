@@ -11,6 +11,7 @@
 - Reference
 
   - [CLI Reference](cli-reference.md)
+  - [REST API Reference](rest-api-reference.md)
   - [Programmatic API](programmatic-api.md)
   - [Integration Adapter](integration-adapter.md)
 

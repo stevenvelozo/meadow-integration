@@ -63,6 +63,48 @@ npm start -- comprehensionintersect Set1.json -i Set2.json -e "MyEntity" -o merg
 | `comprehensionarray` | Convert object comprehension to array |
 | `objectarraytocsv` | Export a JSON array to CSV |
 | `load_comprehension` | Push a comprehension to Meadow REST APIs |
+| `serve` | Start the REST API server |
+
+## REST API Server
+
+Start the integration server to access all commands as HTTP endpoints:
+
+```shell
+npm start -- serve
+npm start -- serve -p 3000
+```
+
+Then call any endpoint with `curl` or your HTTP client of choice:
+
+```shell
+# Analyze a CSV
+curl -X POST http://localhost:8086/1.0/CSV/Check \
+  -H "Content-Type: application/json" \
+  -d '{ "File": "/absolute/path/to/books.csv" }'
+
+# Transform records in-memory (no file needed)
+curl -X POST http://localhost:8086/1.0/JSONArray/TransformRecords \
+  -H "Content-Type: application/json" \
+  -d '{
+    "Records": [
+      { "id": "1", "title": "The Hunger Games", "isbn": "439023483" },
+      { "id": "2", "title": "Harry Potter", "isbn": "439554934" }
+    ],
+    "Entity": "Book",
+    "GUIDTemplate": "Book_{~D:Record.id~}",
+    "Mappings": { "Title": "{~D:Record.title~}", "ISBN": "{~D:Record.isbn~}" }
+  }'
+
+# Merge two comprehensions
+curl -X POST http://localhost:8086/1.0/Comprehension/Intersect \
+  -H "Content-Type: application/json" \
+  -d '{
+    "PrimaryComprehension": { "Book": { "Book_1": { "GUIDBook": "Book_1", "Title": "The Hunger Games" } } },
+    "SecondaryComprehension": { "Book": { "Book_1": { "GUIDBook": "Book_1", "Rating": "4.3" } } }
+  }'
+```
+
+See [REST API Reference](docs/rest-api-reference.md) for full endpoint documentation with sample request bodies for every operation.
 
 ## Examples
 
@@ -159,6 +201,7 @@ External Data (CSV / TSV / JSON)
 Full documentation is available at `docs/index.html` (powered by pict-docuserve):
 
 - [CLI Reference](docs/cli-reference.md)
+- [REST API Reference](docs/rest-api-reference.md)
 - [Mapping Files](docs/mapping-files.md)
 - [Comprehensions](docs/comprehensions.md)
 - [Programmatic API](docs/programmatic-api.md)

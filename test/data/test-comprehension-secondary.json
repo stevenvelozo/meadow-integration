@@ -1,0 +1,8 @@
+{
+	"Person":
+	{
+		"Person_1": { "GUIDPerson": "Person_1", "Score": "95" },
+		"Person_2": { "GUIDPerson": "Person_2", "Score": "87" },
+		"Person_4": { "GUIDPerson": "Person_4", "Name": "Dave", "City": "Seattle", "Score": "78" }
+	}
+}

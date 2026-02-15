@@ -1,0 +1,8 @@
+{
+	"Person":
+	{
+		"Person_1": { "GUIDPerson": "Person_1", "Name": "Alice", "City": "Seattle", "Country": "USA" },
+		"Person_2": { "GUIDPerson": "Person_2", "Name": "Bob", "City": "Portland", "Country": "USA" },
+		"Person_3": { "GUIDPerson": "Person_3", "Name": "Carol", "City": "Vancouver", "Country": "CAN" }
+	}
+}

@@ -107,6 +107,7 @@ External Data (CSV / TSV / JSON)
 ## Next Steps
 
 - [CLI Reference](cli-reference.md) -- All commands and their options
+- [REST API Reference](rest-api-reference.md) -- All REST endpoints with curl examples
 - [Mapping Files](mapping-files.md) -- How to write column mapping configurations
 - [Comprehensions](comprehensions.md) -- The comprehension data format in detail
 - [Programmatic API](programmatic-api.md) -- Using services directly in your code

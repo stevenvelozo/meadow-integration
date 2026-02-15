@@ -216,3 +216,27 @@ npx meadow-integration entitycomprehensionsfromtabularfolders <folder> [options]
 | `-e, --entity <name>` | Force all files to a specific entity |
 | `-m, --mapping <path>` | Mapping hints file |
 | `-o, --output <path>` | Output file path |
+
+---
+
+## serve
+
+Start the Meadow Integration REST API server.  See [REST API Reference](rest-api-reference.md) for full endpoint documentation.
+
+```shell
+npx meadow-integration serve [options]
+```
+
+**Aliases:** `server`, `rest`
+
+**Options:**
+| Option | Description |
+|--------|-------------|
+| `-p, --port <port>` | Port to listen on (default: `8086`) |
+
+The `MEADOW_INTEGRATION_PORT` environment variable is also respected.
+
+**Example:**
+```shell
+npx meadow-integration serve -p 3000
+```
