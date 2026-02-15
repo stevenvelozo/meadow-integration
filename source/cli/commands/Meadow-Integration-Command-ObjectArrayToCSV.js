@@ -32,7 +32,7 @@ class CommandConvertComprehensionToArray extends libCommandLineCommand
 			const pPropertyPath = pAddressPrefix ? `${pAddressPrefix}.${pKey}` : pKey;
 			if (pValue && typeof pValue === 'object' && !Array.isArray(pValue))
 			{
-				Object.assign(tmpFlattenedObject, flatten(pValue, pPropertyPath));
+				Object.assign(tmpFlattenedObject, this.flattenObject(pValue, pPropertyPath));
 			}
 			else
 			{
@@ -117,6 +117,7 @@ class CommandConvertComprehensionToArray extends libCommandLineCommand
 		if (!this.fable.FilePersistence.existsSync(tmpRawInputFilePath))
 		{
 			this.fable.log.error(`File [${tmpRawInputFilePath}] does not exist.`);
+			return fCallback();
 		}
 
 		const tmpMappingOutcome = {};
@@ -132,10 +133,10 @@ class CommandConvertComprehensionToArray extends libCommandLineCommand
 					// Check for the entity
 					if ((typeof(tmpMappingOutcome.RawRecordSet) == 'object') && (tmpEntity in tmpMappingOutcome.RawRecordSet))
 					{
-						this.fable.log.info(`Entity [${tmpEntity} found in the raw recordset comprehension.`);
+						this.fable.log.info(`Entity [${tmpEntity}] found in the raw recordset comprehension.`);
 						if (!Array.isArray(tmpMappingOutcome.RawRecordSet[tmpEntity]))
 						{
-							let tmpErrorMessage = `Expected an Array at Entity location in comprehension; data type was: ${typeof(tmpMappingOutcome.RawRecordSet)}`;
+							let tmpErrorMessage = `Expected an Array at Entity location in comprehension; data type was: ${typeof(tmpMappingOutcome.RawRecordSet[tmpEntity])}`;
 							this.fable.log.error(tmpErrorMessage);
 							return fCallback();
 						}
@@ -146,17 +147,41 @@ class CommandConvertComprehensionToArray extends libCommandLineCommand
 						this.fable.log.info(`Raw recordset is an array.`);
 						tmpMappingOutcome.RecordArray = tmpMappingOutcome.RawRecordSet;
 					}
+				}
+				else
+				{
+					// No entity specified -- expect the file to be a plain JSON array
+					if (Array.isArray(tmpMappingOutcome.RawRecordSet))
+					{
+						this.fable.log.info(`Raw recordset is an array.`);
+						tmpMappingOutcome.RecordArray = tmpMappingOutcome.RawRecordSet;
+					}
+					else if (typeof(tmpMappingOutcome.RawRecordSet) == 'object')
+					{
+						// Auto-detect: if the object has a single key whose value is an object, treat it as a comprehension
+						let tmpKeys = Object.keys(tmpMappingOutcome.RawRecordSet);
+						if (tmpKeys.length === 1 && typeof(tmpMappingOutcome.RawRecordSet[tmpKeys[0]]) === 'object' && !Array.isArray(tmpMappingOutcome.RawRecordSet[tmpKeys[0]]))
+						{
+							this.fable.log.info(`Auto-detected entity [${tmpKeys[0]}] from comprehension; converting object values to array.`);
+							tmpMappingOutcome.RecordArray = Object.values(tmpMappingOutcome.RawRecordSet[tmpKeys[0]]);
+						}
+						else if (tmpKeys.length > 0)
+						{
+							this.fable.log.error(`Input file is an object with keys [${tmpKeys.join(', ')}] but no -e entity flag was provided.  Please specify which entity to export with -e.`);
+							return fCallback();
+						}
+					}
+				}
 
-					if (!tmpMappingOutcome.RecordArray || !Array.isArray(tmpMappingOutcome.RecordArray))
-					{
-						this.fable.log.error(`Could not locate a valid record array in JSON file.`);
-						return fCallback();
-					}
-					if (tmpMappingOutcome.RecordArray.length < 1)
-					{
-						this.fable.log.error(`No records in the record array.`);
-						return fCallback();
-					}
+				if (!tmpMappingOutcome.RecordArray || !Array.isArray(tmpMappingOutcome.RecordArray))
+				{
+					this.fable.log.error(`Could not locate a valid record array in JSON file.`);
+					return fCallback();
+				}
+				if (tmpMappingOutcome.RecordArray.length < 1)
+				{
+					this.fable.log.error(`No records in the record array.`);
+					return fCallback();
 				}
 			}
 			catch (pError)
@@ -166,28 +191,20 @@ class CommandConvertComprehensionToArray extends libCommandLineCommand
 			}
 		}
 
-		try
-		{
-			this.streamFlattenedJSONToCSV(tmpMappingOutcome.RecordArray, tmpRawOutputFilePath)
-				.then(
-					() =>
-					{
-						this.pict.log.info(`CSV file created successfully: ${tmpRawOutputFilePath}`);
-					})
-				.catch(
-					(pError) =>
-					{
-						this.pict.log.error(`Error generating or writing CSV:`, pError);
-					});
-		}
-		catch (pError)
-		{
-			this.pict.log.error(`Error processing file ${tmpRawInputFilePath}:`, pError);
-		}
-
-		this.fable.log.info(`CSV File written to [${tmpRawOutputFilePath}].`);
-		this.fable.log.info(`Have a nice day!`);
-		return fCallback();
+		this.streamFlattenedJSONToCSV(tmpMappingOutcome.RecordArray, tmpRawOutputFilePath)
+			.then(
+				() =>
+				{
+					this.fable.log.info(`CSV file created successfully: ${tmpRawOutputFilePath}`);
+					this.fable.log.info(`Have a nice day!`);
+					return fCallback();
+				})
+			.catch(
+				(pError) =>
+				{
+					this.fable.log.error(`Error generating or writing CSV:`, pError);
+					return fCallback();
+				});
 	};
 }
 
