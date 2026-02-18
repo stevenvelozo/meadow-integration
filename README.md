@@ -215,6 +215,17 @@ Full documentation is available at `docs/index.html` (powered by pict-docuserve)
 npm test
 ```
 
+## Related Packages
+
+- [meadow](https://github.com/stevenvelozo/meadow) - Data access and ORM
+- [meadow-endpoints](https://github.com/stevenvelozo/meadow-endpoints) - Auto-generated REST endpoints
+- [orator](https://github.com/stevenvelozo/orator) - API server abstraction
+- [fable](https://github.com/stevenvelozo/fable) - Application services framework
+
 ## License
 
 MIT
+
+## Contributing
+
+Pull requests are welcome. For details on our code of conduct, contribution process, and testing requirements, see the [Retold Contributing Guide](https://github.com/stevenvelozo/retold/blob/main/docs/contributing.md).

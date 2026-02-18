@@ -1,0 +1,153 @@
+{
+	"Generated": "2026-02-18T03:35:30.874Z",
+	"GitHubOrg": "stevenvelozo",
+	"DefaultBranch": "master",
+	"Groups": [
+		{
+			"Name": "Dist",
+			"Key": "dist",
+			"Description": "",
+			"Modules": [
+				{
+					"Name": "indoctrinate_content_staging",
+					"Repo": "indoctrinate_content_staging",
+					"Group": "dist",
+					"Branch": "master",
+					"HasDocs": false,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": []
+				}
+			]
+		},
+		{
+			"Name": "Docs",
+			"Key": "docs",
+			"Description": "",
+			"Modules": [
+				{
+					"Name": "examples",
+					"Repo": "examples",
+					"Group": "docs",
+					"Branch": "master",
+					"HasDocs": true,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": [
+						"examples/bookstore/.gitignore",
+						"examples/bookstore/BookData.md",
+						"examples/bookstore/Generate_Bookstore_Comprehension.sh",
+						"examples/bookstore/mapping_books_Author.json",
+						"examples/bookstore/mapping_books_Book.json",
+						"examples/bookstore/mapping_books_BookAuthorJoin.json",
+						"examples/data/books.csv",
+						"examples/data/seattle_neighborhoods/Seattle_Data_Information.md",
+						"examples/data/seattle_neighborhoods/housing_characteristics_Neighborhoods.csv",
+						"examples/data/seattle_neighborhoods/housing_costs_Neighborhoods.csv",
+						"examples/data/seattle_neighborhoods/race_ethnicity_Neighborhoods.csv",
+						"examples/multi_set_integration/multi_set_step_by_step.md",
+						"examples/multi_set_integration/multi_set_step_by_step_overview_diagram.excalidraw.svg",
+						"examples/multi_set_integration/part_1_getting_data.md"
+					]
+				},
+				{
+					"Name": "vocabulary",
+					"Repo": "vocabulary",
+					"Group": "docs",
+					"Branch": "master",
+					"HasDocs": true,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": [
+						"vocabulary/Column.md",
+						"vocabulary/Comprehension.md",
+						"vocabulary/Confidence.md",
+						"vocabulary/Data Capture Date.md",
+						"vocabulary/Data Entry Date.md",
+						"vocabulary/Entity.md",
+						"vocabulary/Format.md",
+						"vocabulary/GUID.md",
+						"vocabulary/Join.md",
+						"vocabulary/Record.md",
+						"vocabulary/Schema.md",
+						"vocabulary/Set.md",
+						"vocabulary/Snapshot.md",
+						"vocabulary/Source.md",
+						"vocabulary/Version.md"
+					]
+				}
+			]
+		},
+		{
+			"Name": "Examples",
+			"Key": "examples",
+			"Description": "",
+			"Modules": [
+				{
+					"Name": "output",
+					"Repo": "output",
+					"Group": "examples",
+					"Branch": "master",
+					"HasDocs": false,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": []
+				}
+			]
+		},
+		{
+			"Name": "Source",
+			"Key": "source",
+			"Description": "",
+			"Modules": [
+				{
+					"Name": "cli",
+					"Repo": "cli",
+					"Group": "source",
+					"Branch": "master",
+					"HasDocs": false,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": []
+				},
+				{
+					"Name": "restserver",
+					"Repo": "restserver",
+					"Group": "source",
+					"Branch": "master",
+					"HasDocs": false,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": []
+				},
+				{
+					"Name": "services",
+					"Repo": "services",
+					"Group": "source",
+					"Branch": "master",
+					"HasDocs": false,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": []
+				}
+			]
+		},
+		{
+			"Name": "Test",
+			"Key": "test",
+			"Description": "",
+			"Modules": [
+				{
+					"Name": "data",
+					"Repo": "data",
+					"Group": "test",
+					"Branch": "master",
+					"HasDocs": false,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": []
+				}
+			]
+		}
+	]
+}

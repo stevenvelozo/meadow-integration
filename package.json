@@ -1,6 +1,6 @@
 {
     "name": "meadow-integration",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Meadow Data Integration",
     "bin": {
         "mdwint": "source/cli/Meadow-Integration-CLI-Run.js"
@@ -16,7 +16,7 @@
     "author": "steven velozo <steven@velozo.com>",
     "license": "MIT",
     "devDependencies": {
-        "quackage": "^1.0.45"
+        "quackage": "^1.0.51"
     },
     "mocha": {
         "diff": true,
@@ -37,10 +37,10 @@
         ]
     },
     "dependencies": {
-        "fable": "^3.1.0",
-        "fable-serviceproviderbase": "^3.0.15",
-        "orator": "^5.0.0",
-        "orator-serviceserver-restify": "^2.0.0",
-        "pict-service-commandlineutility": "^1.0.16"
+        "fable": "^3.1.55",
+        "fable-serviceproviderbase": "^3.0.18",
+        "orator": "^6.0.0",
+        "orator-serviceserver-restify": "^2.0.5",
+        "pict-service-commandlineutility": "^1.0.18"
     }
 }

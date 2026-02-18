@@ -1,0 +1,4828 @@
+{
+	"Generated": "2026-02-18T03:35:30.974Z",
+	"DocumentCount": 12,
+	"LunrIndex": {
+		"version": "2.3.9",
+		"fields": [
+			"title",
+			"module",
+			"group",
+			"body"
+		],
+		"fieldVectors": [
+			[
+				"title/docs/examples/examples/bookstore/BookData.md",
+				[
+					0,
+					15.005,
+					1,
+					15.005,
+					2,
+					15.005
+				]
+			],
+			[
+				"module/docs/examples/examples/bookstore/BookData.md",
+				[
+					3,
+					1.068
+				]
+			],
+			[
+				"group/docs/examples/examples/bookstore/BookData.md",
+				[
+					4,
+					0.118
+				]
+			],
+			[
+				"body/docs/examples/examples/bookstore/BookData.md",
+				[
+					0,
+					2.614,
+					1,
+					2.614,
+					2,
+					3.038,
+					5,
+					2.614,
+					6,
+					3.424,
+					7,
+					0.872
+				]
+			],
+			[
+				"title/docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md",
+				[
+					3,
+					1.486,
+					8,
+					11.47,
+					9,
+					0.273,
+					10,
+					9.129,
+					11,
+					11.47
+				]
+			],
+			[
+				"module/docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md",
+				[
+					3,
+					1.068
+				]
+			],
+			[
+				"group/docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md",
+				[
+					4,
+					0.118
+				]
+			],
+			[
+				"body/docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md",
+				[
+					3,
+					0.099,
+					7,
+					0.537,
+					8,
+					0.762,
+					9,
+					0.059,
+					10,
+					1.488,
+					11,
+					0.762,
+					12,
+					0.657,
+					13,
+					0.998,
+					14,
+					0.998,
+					15,
+					0.998,
+					16,
+					0.998,
+					17,
+					2.36,
+					18,
+					0.998,
+					19,
+					0.998,
+					20,
+					0.998,
+					21,
+					0.998,
+					22,
+					0.998,
+					23,
+					0.998,
+					24,
+					2.23,
+					25,
+					1.61,
+					26,
+					1.26,
+					27,
+					2.559,
+					28,
+					2.636,
+					29,
+					1.61,
+					30,
+					2.23,
+					31,
+					1.61,
+					32,
+					2.23,
+					33,
+					1.282,
+					34,
+					1.61,
+					35,
+					1.61,
+					36,
+					1.61,
+					37,
+					1.61,
+					38,
+					1.61,
+					39,
+					1.61,
+					40,
+					1.61,
+					41,
+					1.61,
+					42,
+					1.61,
+					43,
+					2.23,
+					44,
+					1.61,
+					45,
+					1.61,
+					46,
+					0.762,
+					47,
+					1.26,
+					48,
+					1.61,
+					49,
+					0.762,
+					50,
+					2.468,
+					51,
+					0.762,
+					52,
+					0.762,
+					53,
+					0.762,
+					54,
+					1.26,
+					55,
+					0.607,
+					56,
+					0.762,
+					57,
+					0.762,
+					58,
+					0.762,
+					59,
+					0.762,
+					60,
+					0.762,
+					61,
+					0.762,
+					62,
+					0.762,
+					63,
+					0.762,
+					64,
+					1.26,
+					65,
+					0.762,
+					66,
+					0.762,
+					67,
+					0.762,
+					68,
+					0.762,
+					69,
+					0.762,
+					70,
+					0.762,
+					71,
+					0.762,
+					72,
+					1.87,
+					73,
+					0.762,
+					74,
+					0.762,
+					75,
+					0.762,
+					76,
+					0.607,
+					77,
+					0.762,
+					78,
+					1.61,
+					79,
+					2.23,
+					80,
+					2.23,
+					81,
+					1.61,
+					82,
+					1.61,
+					83,
+					1.61,
+					84,
+					1.282,
+					85,
+					0.762,
+					86,
+					1.036,
+					87,
+					1.282,
+					88,
+					1.61,
+					89,
+					2.23,
+					90,
+					0.762,
+					91,
+					0.762,
+					92,
+					0.762,
+					93,
+					1.61,
+					94,
+					1.61,
+					95,
+					1.26,
+					96,
+					1.26,
+					97,
+					1.26,
+					98,
+					1.26,
+					99,
+					1.26,
+					100,
+					0.762,
+					101,
+					0.762,
+					102,
+					1.61,
+					103,
+					1.61,
+					104,
+					1.61,
+					105,
+					1.61,
+					106,
+					0.762,
+					107,
+					0.762,
+					108,
+					0.762,
+					109,
+					1.26,
+					110,
+					0.762,
+					111,
+					1.26,
+					112,
+					1.87,
+					113,
+					1.61,
+					114,
+					0.762,
+					115,
+					0.762,
+					116,
+					0.762,
+					117,
+					0.762,
+					118,
+					0.762,
+					119,
+					0.762,
+					120,
+					0.762,
+					121,
+					0.762,
+					122,
+					0.762,
+					123,
+					0.398,
+					124,
+					0.762
+				]
+			],
+			[
+				"title/docs/examples/examples/multi_set_integration/multi_set_step_by_step.md",
+				[
+					3,
+					1.684,
+					12,
+					6.784,
+					125,
+					13.002,
+					126,
+					13.002
+				]
+			],
+			[
+				"module/docs/examples/examples/multi_set_integration/multi_set_step_by_step.md",
+				[
+					3,
+					1.068
+				]
+			],
+			[
+				"group/docs/examples/examples/multi_set_integration/multi_set_step_by_step.md",
+				[
+					4,
+					0.118
+				]
+			],
+			[
+				"body/docs/examples/examples/multi_set_integration/multi_set_step_by_step.md",
+				[
+					3,
+					0.123,
+					5,
+					2.32,
+					7,
+					0.994,
+					9,
+					0.036,
+					12,
+					0.976,
+					33,
+					0.756,
+					76,
+					0.756,
+					84,
+					1.488,
+					86,
+					0.969,
+					87,
+					1.198,
+					123,
+					0.496,
+					125,
+					0.95,
+					126,
+					0.95,
+					127,
+					1.506,
+					128,
+					2.45,
+					129,
+					3.618,
+					130,
+					1.846,
+					131,
+					1.244,
+					132,
+					1.244,
+					133,
+					1.588,
+					134,
+					2.787,
+					135,
+					0.756,
+					136,
+					3.038,
+					137,
+					1.244,
+					138,
+					1.972,
+					139,
+					1.972,
+					140,
+					1.244,
+					141,
+					1.972,
+					142,
+					1.972,
+					143,
+					1.244,
+					144,
+					1.972,
+					145,
+					3.038,
+					146,
+					1.244,
+					147,
+					1.244,
+					148,
+					1.244,
+					149,
+					1.244,
+					150,
+					1.964,
+					151,
+					1.244,
+					152,
+					1.244,
+					153,
+					1.972,
+					154,
+					1.244,
+					155,
+					3.038,
+					156,
+					1.244,
+					157,
+					1.244,
+					158,
+					1.244,
+					159,
+					3.038,
+					160,
+					1.244,
+					161,
+					1.244,
+					162,
+					1.244,
+					163,
+					2.32,
+					164,
+					2.787,
+					165,
+					3.038,
+					166,
+					1.244,
+					167,
+					1.244,
+					168,
+					1.972,
+					169,
+					0.756,
+					170,
+					1.244,
+					171,
+					1.972,
+					172,
+					1.244,
+					173,
+					1.244,
+					174,
+					1.972,
+					175,
+					1.244,
+					176,
+					0.95,
+					177,
+					1.244,
+					178,
+					1.244,
+					179,
+					1.244,
+					180,
+					1.244,
+					181,
+					1.244,
+					182,
+					1.244,
+					183,
+					1.972,
+					184,
+					1.244,
+					185,
+					1.244,
+					186,
+					0.95,
+					187,
+					1.244,
+					188,
+					1.972,
+					189,
+					2.787,
+					190,
+					1.244,
+					191,
+					1.203,
+					192,
+					1.244,
+					193,
+					1.244,
+					194,
+					1.244,
+					195,
+					1.244,
+					196,
+					1.244,
+					197,
+					1.244,
+					198,
+					1.244,
+					199,
+					1.244,
+					200,
+					1.244,
+					201,
+					1.244,
+					202,
+					1.244,
+					203,
+					1.244,
+					204,
+					1.244,
+					205,
+					1.972,
+					206,
+					1.244,
+					207,
+					1.244,
+					208,
+					1.972,
+					209,
+					1.972,
+					210,
+					1.972,
+					211,
+					1.244,
+					212,
+					1.244,
+					213,
+					1.244,
+					214,
+					1.244,
+					215,
+					1.244,
+					216,
+					1.244
+				]
+			],
+			[
+				"title/docs/examples/examples/multi_set_integration/part_1_getting_data.md",
+				[
+					3,
+					1.486,
+					9,
+					0.273,
+					135,
+					9.129,
+					150,
+					9.129,
+					217,
+					11.47
+				]
+			],
+			[
+				"module/docs/examples/examples/multi_set_integration/part_1_getting_data.md",
+				[
+					3,
+					1.068
+				]
+			],
+			[
+				"group/docs/examples/examples/multi_set_integration/part_1_getting_data.md",
+				[
+					4,
+					0.118
+				]
+			],
+			[
+				"body/docs/examples/examples/multi_set_integration/part_1_getting_data.md",
+				[
+					3,
+					0.103,
+					7,
+					0.555,
+					9,
+					0.046,
+					10,
+					1.323,
+					17,
+					2.28,
+					24,
+					2.28,
+					25,
+					1.663,
+					26,
+					1.308,
+					27,
+					2.602,
+					28,
+					2.678,
+					29,
+					1.663,
+					30,
+					2.28,
+					31,
+					1.663,
+					32,
+					2.28,
+					33,
+					1.323,
+					34,
+					1.663,
+					35,
+					1.663,
+					36,
+					1.663,
+					37,
+					1.663,
+					38,
+					1.663,
+					39,
+					1.663,
+					40,
+					1.663,
+					41,
+					1.663,
+					42,
+					1.663,
+					43,
+					2.28,
+					44,
+					1.663,
+					45,
+					1.663,
+					46,
+					0.798,
+					47,
+					1.308,
+					48,
+					1.663,
+					49,
+					0.798,
+					50,
+					2.513,
+					51,
+					0.798,
+					52,
+					0.798,
+					53,
+					0.798,
+					54,
+					1.308,
+					55,
+					0.635,
+					56,
+					0.798,
+					57,
+					0.798,
+					58,
+					0.798,
+					59,
+					0.798,
+					60,
+					0.798,
+					61,
+					0.798,
+					62,
+					0.798,
+					63,
+					0.798,
+					64,
+					1.308,
+					65,
+					0.798,
+					66,
+					0.798,
+					67,
+					0.798,
+					68,
+					0.798,
+					69,
+					0.798,
+					70,
+					0.798,
+					71,
+					0.798,
+					72,
+					1.923,
+					73,
+					0.798,
+					74,
+					0.798,
+					75,
+					0.798,
+					76,
+					0.635,
+					77,
+					0.798,
+					78,
+					1.663,
+					79,
+					2.28,
+					80,
+					2.28,
+					81,
+					1.663,
+					82,
+					1.663,
+					83,
+					1.663,
+					84,
+					1.323,
+					85,
+					0.798,
+					86,
+					1.07,
+					87,
+					1.323,
+					88,
+					1.663,
+					89,
+					2.28,
+					90,
+					0.798,
+					91,
+					0.798,
+					92,
+					0.798,
+					93,
+					1.663,
+					94,
+					1.663,
+					95,
+					1.308,
+					96,
+					1.308,
+					97,
+					1.308,
+					98,
+					1.308,
+					99,
+					1.308,
+					100,
+					0.798,
+					101,
+					0.798,
+					102,
+					1.663,
+					103,
+					1.663,
+					104,
+					1.663,
+					105,
+					1.663,
+					106,
+					0.798,
+					107,
+					0.798,
+					108,
+					0.798,
+					109,
+					1.308,
+					110,
+					0.798,
+					111,
+					1.308,
+					112,
+					1.923,
+					113,
+					1.663,
+					114,
+					0.798,
+					115,
+					0.798,
+					116,
+					0.798,
+					117,
+					0.798,
+					118,
+					0.798,
+					119,
+					0.798,
+					120,
+					0.798,
+					121,
+					0.798,
+					122,
+					0.798,
+					123,
+					0.416,
+					124,
+					0.798,
+					135,
+					0.635,
+					150,
+					0.635,
+					217,
+					0.798
+				]
+			],
+			[
+				"title/docs/vocabulary/vocabulary/Column.md",
+				[
+					133,
+					13.955
+				]
+			],
+			[
+				"module/docs/vocabulary/vocabulary/Column.md",
+				[
+					218,
+					2.124
+				]
+			],
+			[
+				"group/docs/vocabulary/vocabulary/Column.md",
+				[
+					4,
+					0.118
+				]
+			],
+			[
+				"body/docs/vocabulary/vocabulary/Column.md",
+				[
+					133,
+					1.713,
+					219,
+					2.662,
+					220,
+					3.487,
+					221,
+					3.487,
+					222,
+					2.662
+				]
+			],
+			[
+				"title/docs/vocabulary/vocabulary/Comprehension.md",
+				[
+					7,
+					7.236
+				]
+			],
+			[
+				"module/docs/vocabulary/vocabulary/Comprehension.md",
+				[
+					218,
+					2.124
+				]
+			],
+			[
+				"group/docs/vocabulary/vocabulary/Comprehension.md",
+				[
+					4,
+					0.118
+				]
+			],
+			[
+				"body/docs/vocabulary/vocabulary/Comprehension.md",
+				[
+					7,
+					0.857,
+					12,
+					1.34,
+					130,
+					2.043,
+					169,
+					2.043,
+					191,
+					1.652,
+					223,
+					2.567,
+					224,
+					3.363,
+					225,
+					3.363,
+					226,
+					3.363
+				]
+			],
+			[
+				"title/docs/vocabulary/vocabulary/Confidence.md",
+				[
+					227,
+					17.261
+				]
+			],
+			[
+				"module/docs/vocabulary/vocabulary/Confidence.md",
+				[
+					218,
+					2.124
+				]
+			],
+			[
+				"group/docs/vocabulary/vocabulary/Confidence.md",
+				[
+					4,
+					0.118
+				]
+			],
+			[
+				"body/docs/vocabulary/vocabulary/Confidence.md",
+				[
+					9,
+					0.073,
+					186,
+					2.339,
+					219,
+					2.339,
+					223,
+					2.339,
+					227,
+					2.439,
+					228,
+					3.064,
+					229,
+					3.064,
+					230,
+					3.064,
+					231,
+					3.725,
+					232,
+					3.064,
+					233,
+					3.064,
+					234,
+					3.064,
+					235,
+					3.064,
+					236,
+					1.862,
+					237,
+					3.064
+				]
+			],
+			[
+				"title/docs/vocabulary/vocabulary/Data Capture Date.md",
+				[
+					9,
+					0.357,
+					236,
+					11.943,
+					238,
+					9.655
+				]
+			],
+			[
+				"module/docs/vocabulary/vocabulary/Data Capture Date.md",
+				[
+					218,
+					2.124
+				]
+			],
+			[
+				"group/docs/vocabulary/vocabulary/Data Capture Date.md",
+				[
+					4,
+					0.118
+				]
+			],
+			[
+				"body/docs/vocabulary/vocabulary/Data Capture Date.md",
+				[
+					9,
+					0.071,
+					236,
+					2.381,
+					238,
+					1.638,
+					239,
+					3.333,
+					240,
+					3.333,
+					241,
+					3.333,
+					242,
+					3.333,
+					243,
+					3.333
+				]
+			],
+			[
+				"title/docs/vocabulary/vocabulary/Data Entry Date.md",
+				[
+					9,
+					0.357,
+					238,
+					9.655,
+					244,
+					15.005
+				]
+			],
+			[
+				"module/docs/vocabulary/vocabulary/Data Entry Date.md",
+				[
+					218,
+					2.124
+				]
+			],
+			[
+				"group/docs/vocabulary/vocabulary/Data Entry Date.md",
+				[
+					4,
+					0.118
+				]
+			],
+			[
+				"body/docs/vocabulary/vocabulary/Data Entry Date.md",
+				[
+					9,
+					0.072,
+					238,
+					1.955,
+					244,
+					2.614,
+					245,
+					3.424,
+					246,
+					3.424
+				]
+			],
+			[
+				"title/docs/vocabulary/vocabulary/Entity.md",
+				[
+					191,
+					13.955
+				]
+			],
+			[
+				"module/docs/vocabulary/vocabulary/Entity.md",
+				[
+					218,
+					2.124
+				]
+			],
+			[
+				"group/docs/vocabulary/vocabulary/Entity.md",
+				[
+					4,
+					0.118
+				]
+			],
+			[
+				"body/docs/vocabulary/vocabulary/Entity.md",
+				[
+					191,
+					1.745,
+					247,
+					3.552,
+					248,
+					3.552
+				]
+			],
+			[
+				"title/docs/vocabulary/vocabulary/Format.md",
+				[
+					249,
+					21.688
+				]
+			],
+			[
+				"module/docs/vocabulary/vocabulary/Format.md",
+				[
+					218,
+					2.124
+				]
+			],
+			[
+				"group/docs/vocabulary/vocabulary/Format.md",
+				[
+					4,
+					0.118
+				]
+			],
+			[
+				"body/docs/vocabulary/vocabulary/Format.md",
+				[
+					9,
+					0.074,
+					55,
+					1.762,
+					123,
+					1.155,
+					163,
+					2.75,
+					169,
+					1.762,
+					222,
+					2.214,
+					249,
+					3.128,
+					250,
+					2.9,
+					251,
+					2.9,
+					252,
+					2.9,
+					253,
+					2.9,
+					254,
+					2.9,
+					255,
+					3.601,
+					256,
+					2.9,
+					257,
+					2.9,
+					258,
+					2.9,
+					259,
+					2.9,
+					260,
+					2.9,
+					261,
+					2.9
+				]
+			],
+			[
+				"title/docs/vocabulary/vocabulary/Version.md",
+				[
+					262,
+					21.688
+				]
+			],
+			[
+				"module/docs/vocabulary/vocabulary/Version.md",
+				[
+					218,
+					2.124
+				]
+			],
+			[
+				"group/docs/vocabulary/vocabulary/Version.md",
+				[
+					4,
+					0.118
+				]
+			],
+			[
+				"body/docs/vocabulary/vocabulary/Version.md",
+				[
+					7,
+					0.681,
+					9,
+					0.062,
+					12,
+					1.066,
+					86,
+					1.314,
+					123,
+					1.066,
+					127,
+					2.042,
+					130,
+					2.08,
+					133,
+					1.854,
+					176,
+					2.042,
+					227,
+					1.625,
+					262,
+					2.882,
+					263,
+					3.979,
+					264,
+					3.423,
+					265,
+					3.774,
+					266,
+					3.774,
+					267,
+					2.675,
+					268,
+					2.675,
+					269,
+					2.675,
+					270,
+					2.675,
+					271,
+					2.675,
+					272,
+					2.675,
+					273,
+					2.675,
+					274,
+					2.675,
+					275,
+					2.675
+				]
+			]
+		],
+		"invertedIndex": [
+			[
+				"",
+				{
+					"_index": 159,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"1",
+				{
+					"_index": 135,
+					"title": {
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"12",
+				{
+					"_index": 98,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"2",
+				{
+					"_index": 151,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"2023",
+				{
+					"_index": 22,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {}
+					}
+				}
+			],
+			[
+				"3",
+				{
+					"_index": 157,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"4",
+				{
+					"_index": 162,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"5",
+				{
+					"_index": 33,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"6",
+				{
+					"_index": 190,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"7",
+				{
+					"_index": 196,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"8",
+				{
+					"_index": 204,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"9",
+				{
+					"_index": 208,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"abov",
+				{
+					"_index": 212,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"ac",
+				{
+					"_index": 32,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"access",
+				{
+					"_index": 180,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"accuraci",
+				{
+					"_index": 230,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Confidence.md": {}
+					}
+				}
+			],
+			[
+				"aesthet",
+				{
+					"_index": 260,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"ag",
+				{
+					"_index": 71,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"aid",
+				{
+					"_index": 200,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"allow",
+				{
+					"_index": 176,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"alon",
+				{
+					"_index": 121,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"american",
+				{
+					"_index": 29,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"and/or",
+				{
+					"_index": 169,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/vocabulary/vocabulary/Comprehension.md": {},
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"applic",
+				{
+					"_index": 10,
+					"title": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"arcgi",
+				{
+					"_index": 18,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {}
+					}
+				}
+			],
+			[
+				"area",
+				{
+					"_index": 43,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"array",
+				{
+					"_index": 216,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"assign",
+				{
+					"_index": 85,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"assignment.t",
+				{
+					"_index": 111,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"avail",
+				{
+					"_index": 70,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b02008",
+				{
+					"_index": 119,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b02013",
+				{
+					"_index": 120,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b03002",
+				{
+					"_index": 115,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b24042",
+				{
+					"_index": 49,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b25002",
+				{
+					"_index": 46,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b25003",
+				{
+					"_index": 90,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b25014",
+				{
+					"_index": 56,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b25024",
+				{
+					"_index": 53,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b25040",
+				{
+					"_index": 59,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b25043",
+				{
+					"_index": 67,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b25049",
+				{
+					"_index": 62,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b25053",
+				{
+					"_index": 65,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b25063",
+				{
+					"_index": 100,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b25064",
+				{
+					"_index": 108,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b25070",
+				{
+					"_index": 92,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b25087",
+				{
+					"_index": 106,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b25088",
+				{
+					"_index": 110,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b25091",
+				{
+					"_index": 101,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"b28003",
+				{
+					"_index": 73,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"base",
+				{
+					"_index": 84,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"basic",
+				{
+					"_index": 6,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/bookstore/BookData.md": {}
+					}
+				}
+			],
+			[
+				"bedroom",
+				{
+					"_index": 52,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"between",
+				{
+					"_index": 143,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"block",
+				{
+					"_index": 79,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"book",
+				{
+					"_index": 2,
+					"title": {
+						"docs/examples/examples/bookstore/BookData.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/bookstore/BookData.md": {}
+					}
+				}
+			],
+			[
+				"both",
+				{
+					"_index": 259,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"captur",
+				{
+					"_index": 236,
+					"title": {
+						"docs/vocabulary/vocabulary/Data Capture Date.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Confidence.md": {},
+						"docs/vocabulary/vocabulary/Data Capture Date.md": {}
+					}
+				}
+			],
+			[
+				"case",
+				{
+					"_index": 185,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"catalog",
+				{
+					"_index": 16,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {}
+					}
+				}
+			],
+			[
+				"censu",
+				{
+					"_index": 23,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {}
+					}
+				}
+			],
+			[
+				"chang",
+				{
+					"_index": 268,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"characterist",
+				{
+					"_index": 25,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"citi",
+				{
+					"_index": 38,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"cluster",
+				{
+					"_index": 225,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Comprehension.md": {}
+					}
+				}
+			],
+			[
+				"collect",
+				{
+					"_index": 223,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Comprehension.md": {},
+						"docs/vocabulary/vocabulary/Confidence.md": {}
+					}
+				}
+			],
+			[
+				"column",
+				{
+					"_index": 133,
+					"title": {
+						"docs/vocabulary/vocabulary/Column.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/vocabulary/vocabulary/Column.md": {},
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"combin",
+				{
+					"_index": 122,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"combinatori",
+				{
+					"_index": 177,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"command",
+				{
+					"_index": 145,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"common",
+				{
+					"_index": 141,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"commun",
+				{
+					"_index": 30,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"comprehens",
+				{
+					"_index": 7,
+					"title": {
+						"docs/vocabulary/vocabulary/Comprehension.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/bookstore/BookData.md": {},
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {},
+						"docs/vocabulary/vocabulary/Comprehension.md": {},
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"comput",
+				{
+					"_index": 75,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"confid",
+				{
+					"_index": 227,
+					"title": {
+						"docs/vocabulary/vocabulary/Confidence.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Confidence.md": {},
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"connect",
+				{
+					"_index": 131,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"content",
+				{
+					"_index": 175,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"convert",
+				{
+					"_index": 215,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"cost",
+				{
+					"_index": 89,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"council",
+				{
+					"_index": 39,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"creat",
+				{
+					"_index": 86,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {},
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"csv",
+				{
+					"_index": 128,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"csvtransform",
+				{
+					"_index": 160,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"data",
+				{
+					"_index": 9,
+					"title": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {},
+						"docs/vocabulary/vocabulary/Data Capture Date.md": {},
+						"docs/vocabulary/vocabulary/Data Entry Date.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {},
+						"docs/vocabulary/vocabulary/Confidence.md": {},
+						"docs/vocabulary/vocabulary/Data Capture Date.md": {},
+						"docs/vocabulary/vocabulary/Data Entry Date.md": {},
+						"docs/vocabulary/vocabulary/Format.md": {},
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"date",
+				{
+					"_index": 238,
+					"title": {
+						"docs/vocabulary/vocabulary/Data Capture Date.md": {},
+						"docs/vocabulary/vocabulary/Data Entry Date.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Data Capture Date.md": {},
+						"docs/vocabulary/vocabulary/Data Entry Date.md": {}
+					}
+				}
+			],
+			[
+				"datum",
+				{
+					"_index": 220,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Column.md": {}
+					}
+				}
+			],
+			[
+				"defin",
+				{
+					"_index": 163,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"definit",
+				{
+					"_index": 221,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Column.md": {}
+					}
+				}
+			],
+			[
+				"district",
+				{
+					"_index": 40,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"doc",
+				{
+					"_index": 4,
+					"title": {},
+					"module": {},
+					"group": {
+						"docs/examples/examples/bookstore/BookData.md": {},
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {},
+						"docs/vocabulary/vocabulary/Column.md": {},
+						"docs/vocabulary/vocabulary/Comprehension.md": {},
+						"docs/vocabulary/vocabulary/Confidence.md": {},
+						"docs/vocabulary/vocabulary/Data Capture Date.md": {},
+						"docs/vocabulary/vocabulary/Data Entry Date.md": {},
+						"docs/vocabulary/vocabulary/Entity.md": {},
+						"docs/vocabulary/vocabulary/Format.md": {},
+						"docs/vocabulary/vocabulary/Version.md": {}
+					},
+					"body": {}
+				}
+			],
+			[
+				"document",
+				{
+					"_index": 214,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"down",
+				{
+					"_index": 246,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Data Entry Date.md": {}
+					}
+				}
+			],
+			[
+				"download",
+				{
+					"_index": 20,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {}
+					}
+				}
+			],
+			[
+				"each",
+				{
+					"_index": 203,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"easili",
+				{
+					"_index": 144,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"encompass",
+				{
+					"_index": 229,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Confidence.md": {}
+					}
+				}
+			],
+			[
+				"entir",
+				{
+					"_index": 181,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"entiti",
+				{
+					"_index": 191,
+					"title": {
+						"docs/vocabulary/vocabulary/Entity.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/vocabulary/vocabulary/Comprehension.md": {},
+						"docs/vocabulary/vocabulary/Entity.md": {}
+					}
+				}
+			],
+			[
+				"entri",
+				{
+					"_index": 244,
+					"title": {
+						"docs/vocabulary/vocabulary/Data Entry Date.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Data Entry Date.md": {}
+					}
+				}
+			],
+			[
+				"ethnic",
+				{
+					"_index": 113,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"exampl",
+				{
+					"_index": 3,
+					"title": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					},
+					"module": {
+						"docs/examples/examples/bookstore/BookData.md": {},
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"execut",
+				{
+					"_index": 153,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"expect",
+				{
+					"_index": 166,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"extract",
+				{
+					"_index": 156,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"facil",
+				{
+					"_index": 64,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"fact",
+				{
+					"_index": 267,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"feder",
+				{
+					"_index": 15,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {}
+					}
+				}
+			],
+			[
+				"file",
+				{
+					"_index": 129,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"filter",
+				{
+					"_index": 14,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {}
+					}
+				}
+			],
+			[
+				"first",
+				{
+					"_index": 137,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"follow",
+				{
+					"_index": 21,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {}
+					}
+				}
+			],
+			[
+				"form",
+				{
+					"_index": 258,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"format",
+				{
+					"_index": 249,
+					"title": {
+						"docs/vocabulary/vocabulary/Format.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"fuel",
+				{
+					"_index": 61,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"gener",
+				{
+					"_index": 5,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/bookstore/BookData.md": {},
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"get",
+				{
+					"_index": 217,
+					"title": {
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"given",
+				{
+					"_index": 266,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"glean",
+				{
+					"_index": 233,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Confidence.md": {}
+					}
+				}
+			],
+			[
+				"graph",
+				{
+					"_index": 224,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Comprehension.md": {}
+					}
+				}
+			],
+			[
+				"gross",
+				{
+					"_index": 93,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"group",
+				{
+					"_index": 80,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"growth",
+				{
+					"_index": 42,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"guid",
+				{
+					"_index": 164,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"have",
+				{
+					"_index": 182,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"header",
+				{
+					"_index": 184,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"heat",
+				{
+					"_index": 60,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"high",
+				{
+					"_index": 234,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Confidence.md": {}
+					}
+				}
+			],
+			[
+				"hispan",
+				{
+					"_index": 116,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"hous",
+				{
+					"_index": 24,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"household",
+				{
+					"_index": 72,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"https://catalog.data.gov/dataset/?publisherlimit=0&publisher=city+of+seattle+arcgis+onlin",
+				{
+					"_index": 19,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {}
+					}
+				}
+			],
+			[
+				"https://catalog.data.gov/dataset/h",
+				{
+					"_index": 26,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"https://catalog.data.gov/dataset/rac",
+				{
+					"_index": 114,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"implicit",
+				{
+					"_index": 275,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"import",
+				{
+					"_index": 1,
+					"title": {
+						"docs/examples/examples/bookstore/BookData.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/bookstore/BookData.md": {}
+					}
+				}
+			],
+			[
+				"includ",
+				{
+					"_index": 45,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"incom",
+				{
+					"_index": 96,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"inform",
+				{
+					"_index": 256,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"input",
+				{
+					"_index": 158,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"integr",
+				{
+					"_index": 126,
+					"title": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"interconnect",
+				{
+					"_index": 170,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"internet",
+				{
+					"_index": 77,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"it'",
+				{
+					"_index": 178,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"join",
+				{
+					"_index": 226,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Comprehension.md": {}
+					}
+				}
+			],
+			[
+				"json",
+				{
+					"_index": 199,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"key",
+				{
+					"_index": 142,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"kitchen",
+				{
+					"_index": 66,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"languag",
+				{
+					"_index": 257,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"larger",
+				{
+					"_index": 272,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"latino",
+				{
+					"_index": 117,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"let'",
+				{
+					"_index": 146,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"level",
+				{
+					"_index": 271,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"load",
+				{
+					"_index": 161,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"loos",
+				{
+					"_index": 255,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"lower",
+				{
+					"_index": 274,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"made",
+				{
+					"_index": 270,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"make",
+				{
+					"_index": 193,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"map",
+				{
+					"_index": 188,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"match",
+				{
+					"_index": 132,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"mechan",
+				{
+					"_index": 253,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"median",
+				{
+					"_index": 109,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"merg",
+				{
+					"_index": 209,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"method",
+				{
+					"_index": 235,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Confidence.md": {}
+					}
+				}
+			],
+			[
+				"model",
+				{
+					"_index": 248,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Entity.md": {}
+					}
+				}
+			],
+			[
+				"moment",
+				{
+					"_index": 232,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Confidence.md": {}
+					}
+				}
+			],
+			[
+				"month",
+				{
+					"_index": 99,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"monthli",
+				{
+					"_index": 104,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"more",
+				{
+					"_index": 124,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"mortgag",
+				{
+					"_index": 102,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"multi",
+				{
+					"_index": 125,
+					"title": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"multipl",
+				{
+					"_index": 127,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"name",
+				{
+					"_index": 165,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"neighborhood",
+				{
+					"_index": 27,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"new",
+				{
+					"_index": 269,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"noun",
+				{
+					"_index": 247,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Entity.md": {}
+					}
+				}
+			],
+			[
+				"number",
+				{
+					"_index": 51,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"object",
+				{
+					"_index": 136,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"occup",
+				{
+					"_index": 47,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"occupi",
+				{
+					"_index": 91,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"on",
+				{
+					"_index": 123,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {},
+						"docs/vocabulary/vocabulary/Format.md": {},
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"oper",
+				{
+					"_index": 168,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"origin",
+				{
+					"_index": 118,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"otherwis",
+				{
+					"_index": 241,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Data Capture Date.md": {}
+					}
+				}
+			],
+			[
+				"output",
+				{
+					"_index": 197,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"over",
+				{
+					"_index": 264,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"owner",
+				{
+					"_index": 105,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"paramet",
+				{
+					"_index": 149,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"parsabl",
+				{
+					"_index": 254,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"part",
+				{
+					"_index": 150,
+					"title": {
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"past",
+				{
+					"_index": 97,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"per",
+				{
+					"_index": 57,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"percentag",
+				{
+					"_index": 95,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"perform",
+				{
+					"_index": 206,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"photograph",
+				{
+					"_index": 231,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Confidence.md": {}
+					}
+				}
+			],
+			[
+				"pict",
+				{
+					"_index": 179,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"plan",
+				{
+					"_index": 41,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"plumb",
+				{
+					"_index": 63,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"poetri",
+				{
+					"_index": 261,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"presenc",
+				{
+					"_index": 74,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"process",
+				{
+					"_index": 0,
+					"title": {
+						"docs/examples/examples/bookstore/BookData.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/bookstore/BookData.md": {}
+					}
+				}
+			],
+			[
+				"profil",
+				{
+					"_index": 88,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"properti",
+				{
+					"_index": 183,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"pull",
+				{
+					"_index": 78,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"race",
+				{
+					"_index": 112,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"realiti",
+				{
+					"_index": 243,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Data Capture Date.md": {}
+					}
+				}
+			],
+			[
+				"recent",
+				{
+					"_index": 81,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"record",
+				{
+					"_index": 130,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/vocabulary/vocabulary/Comprehension.md": {},
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"record'",
+				{
+					"_index": 173,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"relat",
+				{
+					"_index": 36,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"rent",
+				{
+					"_index": 94,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"report",
+				{
+					"_index": 44,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"repres",
+				{
+					"_index": 13,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {}
+					}
+				}
+			],
+			[
+				"rest",
+				{
+					"_index": 250,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"rigidli",
+				{
+					"_index": 251,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"room",
+				{
+					"_index": 58,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"row",
+				{
+					"_index": 139,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"run",
+				{
+					"_index": 152,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"same",
+				{
+					"_index": 207,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"schema",
+				{
+					"_index": 222,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Column.md": {},
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"scope",
+				{
+					"_index": 273,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"seattl",
+				{
+					"_index": 17,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"second",
+				{
+					"_index": 205,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"select",
+				{
+					"_index": 103,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"sensor",
+				{
+					"_index": 240,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Data Capture Date.md": {}
+					}
+				}
+			],
+			[
+				"seri",
+				{
+					"_index": 35,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"servic",
+				{
+					"_index": 69,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"set",
+				{
+					"_index": 12,
+					"title": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/vocabulary/vocabulary/Comprehension.md": {},
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"share",
+				{
+					"_index": 195,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"simpl",
+				{
+					"_index": 213,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"simultan",
+				{
+					"_index": 237,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Confidence.md": {}
+					}
+				}
+			],
+			[
+				"singl",
+				{
+					"_index": 186,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/vocabulary/vocabulary/Confidence.md": {}
+					}
+				}
+			],
+			[
+				"snapshot",
+				{
+					"_index": 263,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"snatch",
+				{
+					"_index": 242,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Data Capture Date.md": {}
+					}
+				}
+			],
+			[
+				"sourc",
+				{
+					"_index": 8,
+					"title": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {}
+					}
+				}
+			],
+			[
+				"specif",
+				{
+					"_index": 219,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Column.md": {},
+						"docs/vocabulary/vocabulary/Confidence.md": {}
+					}
+				}
+			],
+			[
+				"speed",
+				{
+					"_index": 201,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"statu",
+				{
+					"_index": 48,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"staut",
+				{
+					"_index": 107,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"step",
+				{
+					"_index": 134,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"store",
+				{
+					"_index": 192,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"structur",
+				{
+					"_index": 55,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {},
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"subobject",
+				{
+					"_index": 202,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"suit",
+				{
+					"_index": 11,
+					"title": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {}
+					}
+				}
+			],
+			[
+				"summar",
+				{
+					"_index": 83,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"sure",
+				{
+					"_index": 194,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"survey",
+				{
+					"_index": 31,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"tabl",
+				{
+					"_index": 28,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"take",
+				{
+					"_index": 211,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"telephon",
+				{
+					"_index": 68,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"tell",
+				{
+					"_index": 155,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"templat",
+				{
+					"_index": 174,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"tenur",
+				{
+					"_index": 50,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"through",
+				{
+					"_index": 148,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"time",
+				{
+					"_index": 265,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"timestamp",
+				{
+					"_index": 239,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Data Capture Date.md": {}
+					}
+				}
+			],
+			[
+				"togeth",
+				{
+					"_index": 210,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"top",
+				{
+					"_index": 172,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"topic",
+				{
+					"_index": 37,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"tri",
+				{
+					"_index": 228,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Confidence.md": {}
+					}
+				}
+			],
+			[
+				"two",
+				{
+					"_index": 189,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"type",
+				{
+					"_index": 76,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"uniqu",
+				{
+					"_index": 140,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"unit",
+				{
+					"_index": 54,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"upsert",
+				{
+					"_index": 167,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"us",
+				{
+					"_index": 87,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"util",
+				{
+					"_index": 154,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"valu",
+				{
+					"_index": 187,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"verifi",
+				{
+					"_index": 252,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Format.md": {}
+					}
+				}
+			],
+			[
+				"version",
+				{
+					"_index": 262,
+					"title": {
+						"docs/vocabulary/vocabulary/Version.md": {}
+					},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Version.md": {}
+					}
+				}
+			],
+			[
+				"vintag",
+				{
+					"_index": 82,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			],
+			[
+				"vocabulari",
+				{
+					"_index": 218,
+					"title": {},
+					"module": {
+						"docs/vocabulary/vocabulary/Column.md": {},
+						"docs/vocabulary/vocabulary/Comprehension.md": {},
+						"docs/vocabulary/vocabulary/Confidence.md": {},
+						"docs/vocabulary/vocabulary/Data Capture Date.md": {},
+						"docs/vocabulary/vocabulary/Data Entry Date.md": {},
+						"docs/vocabulary/vocabulary/Entity.md": {},
+						"docs/vocabulary/vocabulary/Format.md": {},
+						"docs/vocabulary/vocabulary/Version.md": {}
+					},
+					"group": {},
+					"body": {}
+				}
+			],
+			[
+				"walk",
+				{
+					"_index": 147,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"want",
+				{
+					"_index": 138,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"within",
+				{
+					"_index": 171,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"write",
+				{
+					"_index": 198,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {}
+					}
+				}
+			],
+			[
+				"written",
+				{
+					"_index": 245,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/vocabulary/vocabulary/Data Entry Date.md": {}
+					}
+				}
+			],
+			[
+				"year",
+				{
+					"_index": 34,
+					"title": {},
+					"module": {},
+					"group": {},
+					"body": {
+						"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {},
+						"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {}
+					}
+				}
+			]
+		],
+		"pipeline": [
+			"stemmer"
+		]
+	},
+	"Documents": {
+		"docs/examples/examples/bookstore/BookData.md": {
+			"Title": "Processing and Importing Books",
+			"Module": "examples",
+			"Group": "docs",
+			"DocPath": "examples/bookstore/BookData.md"
+		},
+		"docs/examples/examples/data/seattle_neighborhoods/Seattle_Data_Information.md": {
+			"Title": "Source Data for Example Application Suite",
+			"Module": "examples",
+			"Group": "docs",
+			"DocPath": "examples/data/seattle_neighborhoods/Seattle_Data_Information.md"
+		},
+		"docs/examples/examples/multi_set_integration/multi_set_step_by_step.md": {
+			"Title": "Multi Set Integration Example",
+			"Module": "examples",
+			"Group": "docs",
+			"DocPath": "examples/multi_set_integration/multi_set_step_by_step.md"
+		},
+		"docs/examples/examples/multi_set_integration/part_1_getting_data.md": {
+			"Title": "Part 1: Getting Data for our Example",
+			"Module": "examples",
+			"Group": "docs",
+			"DocPath": "examples/multi_set_integration/part_1_getting_data.md"
+		},
+		"docs/vocabulary/vocabulary/Column.md": {
+			"Title": "Column",
+			"Module": "vocabulary",
+			"Group": "docs",
+			"DocPath": "vocabulary/Column.md"
+		},
+		"docs/vocabulary/vocabulary/Comprehension.md": {
+			"Title": "Comprehension",
+			"Module": "vocabulary",
+			"Group": "docs",
+			"DocPath": "vocabulary/Comprehension.md"
+		},
+		"docs/vocabulary/vocabulary/Confidence.md": {
+			"Title": "Confidence",
+			"Module": "vocabulary",
+			"Group": "docs",
+			"DocPath": "vocabulary/Confidence.md"
+		},
+		"docs/vocabulary/vocabulary/Data Capture Date.md": {
+			"Title": "Data Capture Date",
+			"Module": "vocabulary",
+			"Group": "docs",
+			"DocPath": "vocabulary/Data Capture Date.md"
+		},
+		"docs/vocabulary/vocabulary/Data Entry Date.md": {
+			"Title": "Data Entry Date",
+			"Module": "vocabulary",
+			"Group": "docs",
+			"DocPath": "vocabulary/Data Entry Date.md"
+		},
+		"docs/vocabulary/vocabulary/Entity.md": {
+			"Title": "Entity",
+			"Module": "vocabulary",
+			"Group": "docs",
+			"DocPath": "vocabulary/Entity.md"
+		},
+		"docs/vocabulary/vocabulary/Format.md": {
+			"Title": "Format",
+			"Module": "vocabulary",
+			"Group": "docs",
+			"DocPath": "vocabulary/Format.md"
+		},
+		"docs/vocabulary/vocabulary/Version.md": {
+			"Title": "Version",
+			"Module": "vocabulary",
+			"Group": "docs",
+			"DocPath": "vocabulary/Version.md"
+		}
+	}
+}
