@@ -16,7 +16,7 @@
     "author": "steven velozo <steven@velozo.com>",
     "license": "MIT",
     "devDependencies": {
-        "quackage": "^1.0.51"
+        "quackage": "^1.0.58"
     },
     "mocha": {
         "diff": true,
