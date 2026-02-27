@@ -7,9 +7,9 @@
     },
     "main": "source/Meadow-Integration.js",
     "scripts": {
-        "test": "npx mocha -u tdd --exit -R spec",
+        "test": "npx quack test",
         "start": "node source/cli/Meadow-Integration-CLI-Run.js",
-        "tests": "npx mocha -u tdd --exit -R spec --grep",
+        "tests": "npx quack test -g",
         "coverage": "npx quack coverage",
         "build": "npx quack build"
     },
