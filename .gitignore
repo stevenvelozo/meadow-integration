@@ -132,3 +132,17 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Added by quackage update-node-gitignore
+
+package-lock.json
+
+# Test Environment
+debug/testenv
+
+# Quackage takes care of these for me!
+.babelrc
+.browserslistrc
+.browserslistrc-BACKUP
+.gulpfile-quackage.js
+.gulpfile-quackage-config.json
