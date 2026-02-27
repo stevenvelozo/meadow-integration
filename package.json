@@ -1,6 +1,6 @@
 {
     "name": "meadow-integration",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "description": "Meadow Data Integration",
     "bin": {
         "mdwint": "source/cli/Meadow-Integration-CLI-Run.js"
@@ -37,10 +37,10 @@
         ]
     },
     "dependencies": {
-        "fable": "^3.1.55",
-        "fable-serviceproviderbase": "^3.0.18",
-        "orator": "^6.0.0",
-        "orator-serviceserver-restify": "^2.0.5",
-        "pict-service-commandlineutility": "^1.0.18"
+        "fable": "^3.1.63",
+        "fable-serviceproviderbase": "^3.0.19",
+        "orator": "^6.0.3",
+        "orator-serviceserver-restify": "^2.0.9",
+        "pict-service-commandlineutility": "^1.0.19"
     }
 }
