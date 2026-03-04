@@ -1,5 +1,5 @@
 {
-	"Generated": "2026-02-18T03:35:30.874Z",
+	"Generated": "2026-03-04T15:46:38.412Z",
 	"GitHubOrg": "stevenvelozo",
 	"DefaultBranch": "master",
 	"Groups": [
@@ -26,6 +26,77 @@
 			"Description": "",
 			"Modules": [
 				{
+					"Name": "api",
+					"Repo": "api",
+					"Group": "docs",
+					"Branch": "master",
+					"HasDocs": true,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": [
+						"api/clone-rest-client.md",
+						"api/connection-manager.md",
+						"api/guid-map.md",
+						"api/integration-adapter.md",
+						"api/operation.md",
+						"api/sync-entity-initial.md",
+						"api/sync-entity-ongoing.md",
+						"api/sync.md",
+						"api/tabular-check.md",
+						"api/tabular-transform.md"
+					]
+				},
+				{
+					"Name": "cli",
+					"Repo": "cli",
+					"Group": "docs",
+					"Branch": "master",
+					"HasDocs": true,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": [
+						"cli/comprehensionarray.md",
+						"cli/comprehensionintersect.md",
+						"cli/csvcheck.md",
+						"cli/csvtransform.md",
+						"cli/data-clone.md",
+						"cli/jsonarraytransform.md",
+						"cli/load-comprehension.md",
+						"cli/objectarraytocsv.md",
+						"cli/overview.md",
+						"cli/serve.md",
+						"cli/tsvtransform.md"
+					]
+				},
+				{
+					"Name": "css",
+					"Repo": "css",
+					"Group": "docs",
+					"Branch": "master",
+					"HasDocs": true,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": [
+						"css/docuserve.css"
+					]
+				},
+				{
+					"Name": "data-clone",
+					"Repo": "data-clone",
+					"Group": "docs",
+					"Branch": "master",
+					"HasDocs": true,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": [
+						"data-clone/configuration.md",
+						"data-clone/connection-manager.md",
+						"data-clone/docker.md",
+						"data-clone/overview.md",
+						"data-clone/sync-modes.md"
+					]
+				},
+				{
 					"Name": "examples",
 					"Repo": "examples",
 					"Group": "docs",
@@ -37,9 +108,9 @@
 						"examples/bookstore/.gitignore",
 						"examples/bookstore/BookData.md",
 						"examples/bookstore/Generate_Bookstore_Comprehension.sh",
-						"examples/bookstore/mapping_books_Author.json",
-						"examples/bookstore/mapping_books_Book.json",
 						"examples/bookstore/mapping_books_BookAuthorJoin.json",
+						"examples/bookstore/mapping_books_author.json",
+						"examples/bookstore/mapping_books_book.json",
 						"examples/data/books.csv",
 						"examples/data/seattle_neighborhoods/Seattle_Data_Information.md",
 						"examples/data/seattle_neighborhoods/housing_characteristics_Neighborhoods.csv",
@@ -48,6 +119,25 @@
 						"examples/multi_set_integration/multi_set_step_by_step.md",
 						"examples/multi_set_integration/multi_set_step_by_step_overview_diagram.excalidraw.svg",
 						"examples/multi_set_integration/part_1_getting_data.md"
+					]
+				},
+				{
+					"Name": "rest",
+					"Repo": "rest",
+					"Group": "docs",
+					"Branch": "master",
+					"HasDocs": true,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": [
+						"rest/comprehension-push.md",
+						"rest/comprehension.md",
+						"rest/csv.md",
+						"rest/entity-generation.md",
+						"rest/json-array.md",
+						"rest/overview.md",
+						"rest/status.md",
+						"rest/tsv.md"
 					]
 				},
 				{

@@ -1,3 +1,38 @@
 {
-	
+	"Source":
+	{
+		"ServerURL": "https://localhost:8080/1.0/",
+		"UserID": false,
+		"Password": false
+	},
+	"Destination":
+	{
+		"Provider": "MySQL",
+		"MySQL":
+		{
+			"server": "127.0.0.1",
+			"port": 3306,
+			"user": "root",
+			"password": "",
+			"database": "meadow",
+			"connectionLimit": 20
+		},
+		"MSSQL":
+		{
+			"server": "127.0.0.1",
+			"port": 1433,
+			"user": "sa",
+			"password": "",
+			"database": "meadow",
+			"ConnectionPoolLimit": 20
+		}
+	},
+	"SchemaPath": "./schema/Model-Extended.json",
+	"Sync":
+	{
+		"DefaultSyncMode": "Initial",
+		"PageSize": 100,
+		"SyncEntityList": [],
+		"SyncEntityOptions": {}
+	}
 }

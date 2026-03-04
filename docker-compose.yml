@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  meadow-integration-clone:
+    image: retold/meadow-integration:latest
+    volumes:
+      - "${RETOLD_DIR:-./}:/service_root"
+    environment:
+      - RUN_LOCAL_DEV=true
+    networks:
+      - back
+
+networks:
+  back:
+    external:
+      name: meadow_backend

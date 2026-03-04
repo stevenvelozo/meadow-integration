@@ -1,0 +1,11 @@
+.*
+coverage
+test
+node_modules
+package-lock.json
+Docker-*.sh
+*.yml
+.vscode
+logs
+*.patch
+debug

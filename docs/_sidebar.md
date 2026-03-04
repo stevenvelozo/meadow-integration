@@ -1,19 +1,64 @@
 - Getting Started
 
   - [Introduction](/)
-  - [Quick Start](README.md)
+  - [Quick Start](quickstart.md)
+  - [Overview](overview.md)
 
-- Concepts
+- Architecture
+
+  - [Design](architecture.md)
+  - [Implementation Reference](implementation-reference.md)
+
+- Data Transformation
 
   - [Comprehensions](comprehensions.md)
   - [Mapping Files](mapping-files.md)
 
-- Reference
+- Data Synchronization
 
-  - [CLI Reference](cli-reference.md)
-  - [REST API Reference](rest-api-reference.md)
-  - [Programmatic API](programmatic-api.md)
-  - [Integration Adapter](integration-adapter.md)
+  - [Data Clone Overview](data-clone/overview.md)
+  - [Connection Manager](data-clone/connection-manager.md)
+  - [Sync Modes](data-clone/sync-modes.md)
+  - [Configuration](data-clone/configuration.md)
+  - [Docker Deployment](data-clone/docker.md)
+
+- CLI Reference
+
+  - [CLI Overview](cli/overview.md)
+  - [csvcheck](cli/csvcheck.md)
+  - [csvtransform](cli/csvtransform.md)
+  - [tsvtransform](cli/tsvtransform.md)
+  - [jsonarraytransform](cli/jsonarraytransform.md)
+  - [comprehensionintersect](cli/comprehensionintersect.md)
+  - [comprehensionarray](cli/comprehensionarray.md)
+  - [objectarraytocsv](cli/objectarraytocsv.md)
+  - [load_comprehension](cli/load-comprehension.md)
+  - [data-clone](cli/data-clone.md)
+  - [serve](cli/serve.md)
+
+- REST API Reference
+
+  - [REST Overview](rest/overview.md)
+  - [Status](rest/status.md)
+  - [CSV Operations](rest/csv.md)
+  - [TSV Operations](rest/tsv.md)
+  - [JSON Array Operations](rest/json-array.md)
+  - [Comprehension Operations](rest/comprehension.md)
+  - [Entity Generation](rest/entity-generation.md)
+  - [Comprehension Push](rest/comprehension-push.md)
+
+- API Reference
+
+  - [ConnectionManager](api/connection-manager.md)
+  - [CloneRestClient](api/clone-rest-client.md)
+  - [Sync](api/sync.md)
+  - [SyncEntityInitial](api/sync-entity-initial.md)
+  - [SyncEntityOngoing](api/sync-entity-ongoing.md)
+  - [Operation](api/operation.md)
+  - [IntegrationAdapter](api/integration-adapter.md)
+  - [GUIDMap](api/guid-map.md)
+  - [TabularCheck](api/tabular-check.md)
+  - [TabularTransform](api/tabular-transform.md)
 
 - Examples
 

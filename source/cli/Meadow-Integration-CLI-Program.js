@@ -10,7 +10,7 @@ let _PictCLIProgram = new libCLIProgram(
 
 		DefaultProgramConfiguration: require('./Default-Meadow-Integration-Configuration.json'),
 
-		ProgramConfigurationFileName: '.meadow-integration.json',
+		ProgramConfigurationFileName: '.meadow.config.json',
 		AutoGatherProgramConfiguration: true,
 		AutoAddConfigurationExplanationCommand: true
 	},
@@ -31,6 +31,9 @@ let _PictCLIProgram = new libCLIProgram(
 		require('./commands/Meadow-Integration-Command-ComprehensionArray.js'),
 
 		require('./commands/Meadow-Integration-Command-ComprehensionPush.js'),
+
+		// Data clone
+		require('./commands/Meadow-Integration-Command-DataClone.js'),
 
 		// REST server
 		require('./commands/Meadow-Integration-Command-Serve.js')

@@ -1,0 +1,23 @@
+FROM codercom/code-server:latest
+
+USER root
+
+RUN apt-get update && apt-get install -y vim curl tmux
+
+# Install NVM / Node
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+RUN bash -c "source /root/.nvm/nvm.sh && nvm install 20 && nvm alias default 20"
+
+# Install VSCode extensions
+RUN code-server --install-extension hbenl.vscode-mocha-test-adapter
+RUN code-server --install-extension hbenl.vscode-test-adapter-converter
+RUN code-server --install-extension hbenl.vscode-test-explorer
+RUN code-server --install-extension oderwat.indent-rainbow
+RUN code-server --install-extension dbaeumer.vscode-eslint
+RUN code-server --install-extension eamodio.gitlens
+
+VOLUME ["/home/coder/.config"]
+VOLUME ["/home/coder/.vscode"]
+VOLUME ["/home/coder/meadow-integration"]
+
+WORKDIR /home/coder/meadow-integration

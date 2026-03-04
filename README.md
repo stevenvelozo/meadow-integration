@@ -51,19 +51,30 @@ npm start -- csvtransform ./docs/examples/data/books.csv \
 npm start -- comprehensionintersect Set1.json -i Set2.json -e "MyEntity" -o merged.json
 ```
 
+### Clone Data from a Remote API
+
+```shell
+npm start -- data-clone \
+  --api_server "https://my-meadow-api.example.com/1.0/" \
+  --api_username admin --api_password secret \
+  --db_host 127.0.0.1 --db_name my_local_db \
+  --schema_path ./schema/Model-Extended.json
+```
+
 ## CLI Commands
 
-| Command | Description |
-|---------|-------------|
-| `csvcheck` | Analyze a CSV file for statistics |
-| `csvtransform` | Transform a CSV into a comprehension |
-| `tsvtransform` | Transform a TSV into a comprehension |
-| `jsonarraytransform` | Transform a JSON array into a comprehension |
-| `comprehensionintersect` | Merge two comprehension files |
-| `comprehensionarray` | Convert object comprehension to array |
-| `objectarraytocsv` | Export a JSON array to CSV |
-| `load_comprehension` | Push a comprehension to Meadow REST APIs |
-| `serve` | Start the REST API server |
+| Command | Aliases | Description |
+|---------|---------|-------------|
+| `csvcheck` | | Analyze a CSV file for statistics |
+| `csvtransform` | | Transform a CSV into a comprehension |
+| `tsvtransform` | | Transform a TSV into a comprehension |
+| `jsonarraytransform` | | Transform a JSON array into a comprehension |
+| `comprehensionintersect` | | Merge two comprehension files |
+| `comprehensionarray` | | Convert object comprehension to array |
+| `objectarraytocsv` | | Export a JSON array to CSV |
+| `load_comprehension` | | Push a comprehension to Meadow REST APIs |
+| `data-clone` | `clone`, `sync` | Clone data from a Meadow API to a local database |
+| `serve` | | Start the REST API server |
 
 ## REST API Server
 
@@ -178,23 +189,123 @@ For multi-record generation (e.g. splitting comma-separated authors), use Solver
 ## Architecture
 
 ```
-External Data (CSV / TSV / JSON)
+External Data (CSV / TSV / JSON)          Meadow REST API (Source)
+        |                                         |
+        v                                         v
+   TabularTransform Service               CloneRestClient Service
+   -- column mapping via Pict templates    -- authenticate & read entities
+        |                                         |
+        v                                         v
+   Comprehension Object                    Sync Service (Initial / Ongoing)
+   -- entity records keyed by GUID         -- compare server vs local state
+        |                                         |
+        v                                         v
+   Integration Adapter                     ConnectionManager Service
+   -- marshal to Meadow schema             -- MySQL or MSSQL connection pool
+        |                                         |
+        v                                         v
+   GUID Map                                Local Database
+   -- track external <-> Meadow IDs        -- tables created from schema
         |
         v
-   TabularTransform Service  -- column mapping via Pict templates
-        |
-        v
-   Comprehension Object      -- entity records keyed by GUID
-        |
-        v
-   Integration Adapter       -- marshal to Meadow schema
-        |
-        v
-   GUID Map                  -- track external <-> Meadow IDs
-        |
-        v
-   Meadow REST API           -- batch upsert / single upsert
+   Meadow REST API (Destination)
+   -- batch upsert / single upsert
 ```
+
+## Data Synchronization
+
+The `data-clone` command synchronizes entity data from a remote Meadow REST API into a local MySQL or MSSQL database. It authenticates with the source API, connects to a local database, loads a Meadow schema, and syncs each entity defined in the schema.
+
+### Services
+
+| Service | Description |
+|---------|-------------|
+| **ConnectionManager** | Manages database connection pools for MySQL and MSSQL. Handles table creation and index management on the local database. |
+| **CloneRestClient** | Authenticates with a remote Meadow API and provides methods for reading, creating, updating, upserting, and deleting entities. Includes built-in entity caching and paginated batch downloads. |
+| **Sync** | Orchestrates entity synchronization. Loads a Meadow schema, creates local tables if they do not exist, and iterates through each entity to sync records. |
+
+### Sync Modes
+
+| Mode | Description |
+|------|-------------|
+| **Initial** | Compares the max entity ID on the server against the local database and downloads all records with IDs greater than the local maximum. Designed for first-time bulk population. |
+| **Ongoing** | Walks through all server records page by page, comparing `UpdateDate` timestamps. Creates missing records locally and updates records whose server timestamp is newer than the local copy. |
+
+### CLI Options
+
+```
+data-clone [options]
+
+Options:
+  -a, --api_server <url>        Source Meadow API server URL
+  -u, --api_username <user>     API username for authentication
+  -p, --api_password <pass>     API password for authentication
+  -d, --db_provider <provider>  Database provider: MySQL or MSSQL (default: MySQL)
+  -dh, --db_host <host>         Database host address
+  -dp, --db_port <port>         Database port
+  -du, --db_username <user>     Database username
+  -dw, --db_password <pass>     Database password
+  -dn, --db_name <name>         Database name
+  -sp, --schema_path <path>     Path to Meadow extended schema JSON file
+  -s, --sync_mode <mode>        Sync mode: Initial or Ongoing (default: Initial)
+  -w, --post_run_delay <min>    Minutes to wait after sync before exiting (default: 0)
+```
+
+### Configuration
+
+The `data-clone` command reads configuration from a `.meadow.config.json` file. The CLI searches for this file starting from the current working directory and cascading up to the home directory (powered by `pict-service-commandlineutility` auto-gather). Command-line options override values from the config file.
+
+```json
+{
+  "Source": {
+    "ServerURL": "https://my-meadow-api.example.com/1.0/",
+    "UserID": "admin",
+    "Password": "secret"
+  },
+  "Destination": {
+    "Provider": "MySQL",
+    "MySQL": {
+      "server": "127.0.0.1",
+      "port": 3306,
+      "user": "root",
+      "password": "",
+      "database": "meadow",
+      "connectionLimit": 20
+    },
+    "MSSQL": {
+      "server": "127.0.0.1",
+      "port": 1433,
+      "user": "sa",
+      "password": "",
+      "database": "meadow",
+      "ConnectionPoolLimit": 20
+    }
+  },
+  "SchemaPath": "./schema/Model-Extended.json",
+  "Sync": {
+    "DefaultSyncMode": "Initial",
+    "PageSize": 100,
+    "SyncEntityList": [],
+    "SyncEntityOptions": {}
+  }
+}
+```
+
+Set `SyncEntityList` to an array of entity names to sync only a subset of the schema. When empty, all entities in the schema are synced.
+
+### Docker
+
+A `Dockerfile` and `docker-compose.yml` are provided for running `data-clone` in a container. The Docker image is based on `node:20-bookworm` and runs the sync via the `scripts/run.sh` entrypoint.
+
+```shell
+# Build the image
+docker build -t retold/meadow-integration .
+
+# Run with docker-compose (connects to a meadow_backend network)
+docker-compose up
+```
+
+Place a `.meadow.config.json` in the mounted volume or use `Meadow-Config-Docker.json` at the project root (it is automatically copied into the container as the default configuration during the Docker build).
 
 ## Documentation
 
@@ -219,8 +330,11 @@ npm test
 
 - [meadow](https://github.com/stevenvelozo/meadow) - Data access and ORM
 - [meadow-endpoints](https://github.com/stevenvelozo/meadow-endpoints) - Auto-generated REST endpoints
+- [meadow-connection-mysql](https://github.com/stevenvelozo/meadow-connection-mysql) - MySQL database provider for Meadow
+- [meadow-connection-mssql](https://github.com/stevenvelozo/meadow-connection-mssql) - MSSQL database provider for Meadow
 - [orator](https://github.com/stevenvelozo/orator) - API server abstraction
 - [fable](https://github.com/stevenvelozo/fable) - Application services framework
+- [pict-service-commandlineutility](https://github.com/stevenvelozo/pict-service-commandlineutility) - CLI framework with cascading configuration
 
 ## License
 
