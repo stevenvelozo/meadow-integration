@@ -53,7 +53,7 @@ class MeadowOperation
 				AverageOperationTime: -1,
 				EstimatedCompletionTime: -1,
 				TotalCount: tmpTotalOperations,
-				CurrentCount: -1,
+				CurrentCount: 0,
 			});
 
 		this.progressTrackers[tmpProgressTrackerHash] = tmpProgressTracker;
