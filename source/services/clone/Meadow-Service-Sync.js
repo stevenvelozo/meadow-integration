@@ -43,6 +43,17 @@ class MeadowSync extends libFableServiceProviderBase
 			this.SyncEntityOptions = JSON.parse(JSON.stringify(this.options.SyncEntityOptions));
 		}
 
+		// When true, after syncing active records, also sync records marked Deleted=1 on the source.
+		this.SyncDeletedRecords = false;
+		if (this.fable.ProgramConfiguration.hasOwnProperty('SyncDeletedRecords'))
+		{
+			this.SyncDeletedRecords = !!this.fable.ProgramConfiguration.SyncDeletedRecords;
+		}
+		else if (this.options.hasOwnProperty('SyncDeletedRecords'))
+		{
+			this.SyncDeletedRecords = !!this.options.SyncDeletedRecords;
+		}
+
 		this.MeadowSchema = false;
 		this.MeadowSchemaTableList = false;
 
@@ -70,6 +81,7 @@ class MeadowSync extends libFableServiceProviderBase
 						MeadowEntitySchema: tmpEntitySchema,
 						ConnectionPool: this.options.ConnectionPool,
 						PageSize: this.options.PageSize || 100,
+						SyncDeletedRecords: this.SyncDeletedRecords,
 					};
 
 					let tmpSyncEntity;

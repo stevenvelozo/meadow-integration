@@ -39,6 +39,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 
 		this.DefaultIdentifier = this.EntitySchema.MeadowSchema.DefaultIdentifier;
 		this.PageSize = this.options.PageSize || 100;
+		this.SyncDeletedRecords = this.options.SyncDeletedRecords || false;
 
 		this.Meadow = false;
 
@@ -130,6 +131,136 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 		}
 
 		return tmpRecordToCommit;
+	}
+
+	syncDeletedRecords(fCallback)
+	{
+		const tmpDeletedColumn = this.EntitySchema.Columns.find((c) => c.Column == 'Deleted');
+		if (!tmpDeletedColumn)
+		{
+			this.fable.log.info(`No Deleted column for ${this.EntitySchema.TableName}; skipping delete sync.`);
+			return fCallback();
+		}
+
+		this.fable.log.info(`Checking for deleted records on server for ${this.EntitySchema.TableName}...`);
+
+		// Get the count of deleted records from the server.
+		// The explicit FBV~Deleted~EQ~1 filter overrides foxhound's automatic Deleted=0 filter.
+		this.fable.MeadowCloneRestClient.getJSON(`${this.EntitySchema.TableName}s/Count/FilteredTo/FBV~Deleted~EQ~1`,
+			(pError, pResponse, pBody) =>
+			{
+				if (pError || !pBody || !pBody.hasOwnProperty('Count'))
+				{
+					this.fable.log.warn(`Could not get deleted record count for ${this.EntitySchema.TableName}; skipping delete sync.`);
+					return fCallback();
+				}
+
+				const tmpDeletedCount = pBody.Count;
+				if (tmpDeletedCount < 1)
+				{
+					this.fable.log.info(`No deleted records on server for ${this.EntitySchema.TableName}.`);
+					return fCallback();
+				}
+
+				this.fable.log.info(`Found ${tmpDeletedCount} deleted records on server for ${this.EntitySchema.TableName}; syncing deletions...`);
+
+				// Generate paginated URLs for deleted records
+				const tmpDeleteURLPartials = [];
+				for (let i = 0; i < tmpDeletedCount; i += this.PageSize)
+				{
+					tmpDeleteURLPartials.push(`${this.EntitySchema.TableName}s/FilteredTo/FBV~Deleted~EQ~1~FSF~${this.DefaultIdentifier}~ASC~ASC/${i}/${this.PageSize}`);
+				}
+
+				this.fable.Utility.eachLimit(tmpDeleteURLPartials, 1,
+					(pURLPartial, fPageComplete) =>
+					{
+						this.fable.MeadowCloneRestClient.getJSON(pURLPartial,
+							(pDownloadError, pResponse, pBody) =>
+							{
+								if (pDownloadError || !pBody || !Array.isArray(pBody) || pBody.length < 1)
+								{
+									return fPageComplete();
+								}
+
+								this.fable.Utility.eachLimit(pBody, 5,
+									(pEntityRecord, fRecordComplete) =>
+									{
+										const tmpRecordID = pEntityRecord[this.DefaultIdentifier];
+										if (!tmpRecordID || tmpRecordID < 1)
+										{
+											return fRecordComplete();
+										}
+
+										// Read local record with delete tracking disabled so we can see all records
+										const tmpQuery = this.Meadow.query;
+										tmpQuery.addFilter(this.DefaultIdentifier, tmpRecordID);
+										tmpQuery.setDisableDeleteTracking(true);
+
+										this.Meadow.doRead(tmpQuery,
+											(pReadError, pQuery, pRecord) =>
+											{
+												if (pReadError || !pRecord)
+												{
+													// Record doesn't exist locally -- create it as deleted
+													const tmpRecordToCommit = this.marshalRecord(pEntityRecord);
+
+													const tmpCreateQuery = this.Meadow.query.addRecord(tmpRecordToCommit);
+													tmpCreateQuery.setDisableAutoIdentity(true);
+													tmpCreateQuery.setDisableAutoDateStamp(true);
+													tmpCreateQuery.setDisableAutoUserStamp(true);
+													tmpCreateQuery.setDisableDeleteTracking(true);
+													tmpCreateQuery.AllowIdentityInsert = true;
+
+													this.Meadow.doCreate(tmpCreateQuery,
+														(pCreateError) =>
+														{
+															if (pCreateError)
+															{
+																this.log.error(`Error creating deleted record ${this.EntitySchema.TableName} ID ${tmpRecordID}: ${pCreateError}`);
+															}
+															return fRecordComplete();
+														});
+													return;
+												}
+
+												if (pRecord.Deleted == 1)
+												{
+													// Already marked deleted locally
+													return fRecordComplete();
+												}
+
+												// Record exists locally but is not deleted -- update it
+												const tmpRecordToCommit = this.marshalRecord(pEntityRecord);
+
+												const tmpUpdateQuery = this.Meadow.query.addRecord(tmpRecordToCommit);
+												tmpUpdateQuery.setDisableAutoIdentity(true);
+												tmpUpdateQuery.setDisableAutoDateStamp(true);
+												tmpUpdateQuery.setDisableAutoUserStamp(true);
+												tmpUpdateQuery.setDisableDeleteTracking(true);
+
+												this.Meadow.doUpdate(tmpUpdateQuery,
+													(pUpdateError) =>
+													{
+														if (pUpdateError)
+														{
+															this.log.error(`Error marking record as deleted ${this.EntitySchema.TableName} ID ${tmpRecordID}: ${pUpdateError}`);
+														}
+														return fRecordComplete();
+													});
+											});
+									},
+									(pRecordSyncError) =>
+									{
+										return fPageComplete();
+									});
+							});
+					},
+					(pDeleteSyncError) =>
+					{
+						this.fable.log.info(`Delete sync complete for ${this.EntitySchema.TableName} (${tmpDeletedCount} deleted records processed).`);
+						return fCallback();
+					});
+			});
 	}
 
 	addSyncAnticipateEntry(tmpSyncState, tmpAnticipate)
@@ -446,7 +577,11 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 				if (pError)
 				{
 					this.fable.log.error(`Error performing Update sync ${this.EntitySchema.TableName}: ${pError}`, { Error: pError });
-					return fCallback();
+				}
+
+				if (this.SyncDeletedRecords)
+				{
+					return this.syncDeletedRecords(() => { return fCallback(); });
 				}
 
 				return fCallback();
