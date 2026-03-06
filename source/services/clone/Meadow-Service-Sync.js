@@ -70,9 +70,16 @@ class MeadowSync extends libFableServiceProviderBase
 		this.meadowSchema = pSchema;
 		this.MeadowSchemaTableList = Object.keys(this.meadowSchema.Tables);
 
+		this.log.info(`Loading schema for ${this.MeadowSchemaTableList.length} tables (mode: ${this.SyncMode})`);
+
+		let tmpEntityIndex = 0;
+		let tmpErrorCount = 0;
+		let tmpSuccessCount = 0;
+
 		this.fable.Utility.eachLimit(this.MeadowSchemaTableList, 1,
 			(pEntitySchemaName, fSyncInitializationComplete) =>
 			{
+				tmpEntityIndex++;
 				const tmpEntitySchema = this.meadowSchema.Tables[pEntitySchemaName];
 				// If this is in the entity list or none is specified, create the sync entity object.
 				if (this.SyncEntityList.length < 1 || this.SyncEntityList.indexOf(tmpEntitySchema.TableName) > -1)
@@ -97,7 +104,20 @@ class MeadowSync extends libFableServiceProviderBase
 
 					this.MeadowSyncEntities[tmpEntitySchema.TableName] = tmpSyncEntity;
 
-					return tmpSyncEntity.initialize(fSyncInitializationComplete);
+					return tmpSyncEntity.initialize((pInitError) =>
+					{
+						if (pInitError)
+						{
+							tmpErrorCount++;
+							this.log.warn(`Failed to initialize ${tmpEntitySchema.TableName}: ${pInitError}`);
+						}
+						else
+						{
+							tmpSuccessCount++;
+						}
+						// Always continue to next entity regardless of individual errors
+						return fSyncInitializationComplete();
+					});
 				}
 				else
 				{
@@ -111,7 +131,7 @@ class MeadowSync extends libFableServiceProviderBase
 					this.log.error(`MeadowSync Error creating sync objects: ${pSyncInitializationError}`, pSyncInitializationError);
 				}
 
-				this.log.info('Entity sync objects created!');
+				this.log.info(`Entity sync objects created: ${tmpSuccessCount} succeeded, ${tmpErrorCount} failed.`);
 
 				if (this.SyncEntityList.length < 1)
 				{
@@ -129,7 +149,15 @@ class MeadowSync extends libFableServiceProviderBase
 			this.log.warn(`MeadowSync.syncEntity called for an entity that does not exist: ${pEntityHash}`);
 			return fCallback();
 		}
-		this.MeadowSyncEntities[pEntityHash].sync(fCallback);
+
+		this.MeadowSyncEntities[pEntityHash].sync((pError) =>
+		{
+			if (pError)
+			{
+				this.log.error(`Sync failed for ${pEntityHash}: ${pError}`);
+			}
+			return fCallback(pError);
+		});
 	}
 
 	syncAll(fCallback)

@@ -53,12 +53,29 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 			this.Meadow = this.fable.Meadow.loadFromPackageObject(this.EntitySchema.MeadowSchema);
 		}
 
-		this.log.info(`Sync for ${this.EntitySchema.TableName} creating table if it doesn't exist...`);
-
 		if (this.Meadow && this.Meadow.provider)
 		{
-			return this.Meadow.provider.getProvider().createTable(this.EntitySchema, (pCreateError) =>
+			let tmpProvider = this.Meadow.provider.getProvider();
+
+			if (!tmpProvider)
 			{
+				this.log.error(`No provider returned by getProvider() for ${this.EntitySchema.TableName}`);
+				return fCallback(new Error(`No provider returned by getProvider() for ${this.EntitySchema.TableName}`));
+			}
+
+			if (!tmpProvider.createTable)
+			{
+				this.log.error(`Provider for ${this.EntitySchema.TableName} has no createTable method.`);
+				return fCallback(new Error(`Provider for ${this.EntitySchema.TableName} has no createTable method`));
+			}
+
+			return tmpProvider.createTable(this.EntitySchema, (pCreateError) =>
+			{
+				if (pCreateError)
+				{
+					this.log.warn(`${this.EntitySchema.TableName}: createTable returned error: ${pCreateError}`);
+				}
+
 				const tmpGUIDColumn = this.EntitySchema.Columns.find((c) => c.DataType == 'GUID');
 				const tmpDeletedColumn = this.EntitySchema.Columns.find((c) => c.Column == 'Deleted');
 
@@ -91,9 +108,17 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 							return this.fable.MeadowConnectionManager.createIndex(this.EntitySchema, tmpDeletedColumn, false, fNext);
 						});
 				}
-				tmpAnticipate.wait(fCallback);
+				tmpAnticipate.wait((pIndexError) =>
+				{
+					if (pIndexError)
+					{
+						this.log.warn(`${this.EntitySchema.TableName}: Index creation error: ${pIndexError}`);
+					}
+					return fCallback(pIndexError || pCreateError);
+				});
 			});
 		}
+
 		return fCallback();
 	}
 
@@ -274,6 +299,8 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 	{
 		this.operation.createTimeStamp('EntityInitialSync');
 
+		this.log.info(`Syncing ${this.EntitySchema.TableName} (PageSize: ${this.PageSize}, SyncDeletedRecords: ${this.SyncDeletedRecords})`);
+
 		const tmpSyncState = (
 			{
 				Local: { MaxIDEntity: -1, RecordCount: 0 },
@@ -293,16 +320,12 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 						{
 							if (pReadError)
 							{
-								this.fable.log.error(`Error reading local max entity ID ${this.EntitySchema.TableName}: ${pReadError}`, { Error: pReadError });
 								return fStageComplete(`Error reading local max entity ID ${this.EntitySchema.TableName}: ${pReadError}`);
 							}
-							if (!pRecord)
+							if (pRecord)
 							{
-								this.fable.log.warn(`No records found in local ${this.EntitySchema.TableName}.`);
-								return fStageComplete();
+								tmpSyncState.Local.MaxIDEntity = pRecord[this.DefaultIdentifier];
 							}
-							this.fable.log.info(`Found local max entity ID ${this.EntitySchema.TableName}: ${pRecord[this.DefaultIdentifier]}`);
-							tmpSyncState.Local.MaxIDEntity = pRecord[this.DefaultIdentifier];
 							return fStageComplete();
 						});
 				},
@@ -315,7 +338,6 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 						{
 							if (pCountError)
 							{
-								this.fable.log.error(`Error getting local count of ${this.EntitySchema.TableName}: ${pCountError}`, { Error: pCountError });
 								return fStageComplete(`Error getting local count of ${this.EntitySchema.TableName}: ${pCountError}`);
 							}
 							tmpSyncState.Local.RecordCount = pCount;
@@ -330,17 +352,11 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 						{
 							if (pError)
 							{
-								this.fable.log.error(`Error getting server max entity ID ${this.EntitySchema.TableName}: ${pError}`, { Error: pError });
 								return fStageComplete(`Error getting server max entity ID ${this.EntitySchema.TableName}: ${pError}`);
 							}
 							if (pBody && pBody.hasOwnProperty(this.DefaultIdentifier))
 							{
-								this.fable.log.info(`Found server max entity ID ${this.EntitySchema.TableName}: ${pBody[this.DefaultIdentifier]}`);
 								tmpSyncState.Server.MaxIDEntity = pBody[this.DefaultIdentifier];
-							}
-							else
-							{
-								this.fable.log.warn(`No records found in server for max entity ID of ${this.EntitySchema.TableName}.`);
 							}
 							return fStageComplete();
 						});
@@ -353,17 +369,11 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 						{
 							if (pError)
 							{
-								this.fable.log.error(`Error getting server count for ${this.EntitySchema.TableName}: ${pError}`, { Error: pError });
 								return fStageComplete(`Error getting server count for ${this.EntitySchema.TableName}: ${pError}`);
 							}
 							if (pBody && pBody.hasOwnProperty('Count'))
 							{
-								this.fable.log.info(`Found server count for ${this.EntitySchema.TableName}: ${pBody.Count}`);
 								tmpSyncState.Server.RecordCount = pBody.Count;
-							}
-							else
-							{
-								this.fable.log.warn(`No records found in server based on count for ${this.EntitySchema.TableName}.`);
 							}
 							return fStageComplete();
 						});
@@ -382,21 +392,28 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 						tmpSyncState.URLPartials.push(`${this.EntitySchema.TableName}s/FilteredTo/FBV~${this.DefaultIdentifier}~GT~${tmpSyncState.Local.MaxIDEntity}~FSF~${this.DefaultIdentifier}~ASC~ASC/${i}/${this.PageSize}`);
 					}
 
-					this.fable.log.info(`Syncing with ${tmpSyncState.URLPartials.length} requests for ${this.EntitySchema.TableName} with local max ID ${tmpSyncState.Local.MaxIDEntity} and server max ID ${tmpSyncState.Server.MaxIDEntity}; estimated ${tmpSyncState.EstimatedRecordCount} records to sync.`);
+					this.fable.log.info(`${this.EntitySchema.TableName}: downloading ${tmpSyncState.URLPartials.length} pages (local: ${tmpSyncState.Local.RecordCount}/${tmpSyncState.Local.MaxIDEntity}, server: ${tmpSyncState.Server.RecordCount}/${tmpSyncState.Server.MaxIDEntity}, estimated new: ${tmpSyncState.EstimatedRecordCount})`);
 
 					return fStageComplete();
 				},
 				(fStageComplete) =>
 				{
+					let tmpPageIndex = 0;
+					let tmpRecordsCreated = 0;
+					let tmpRecordsSkipped = 0;
+					let tmpRecordsErrored = 0;
+
 					this.fable.Utility.eachLimit(tmpSyncState.URLPartials, 1,
 						(pURLPartial, fDownloadComplete) =>
 						{
+							tmpPageIndex++;
+
 							this.fable.MeadowCloneRestClient.getJSON(pURLPartial,
 								(pDownloadError, pResponse, pBody) =>
 								{
 									if (pDownloadError)
 									{
-										this.fable.log.error(`Error getting URL Partial [${pURLPartial}]: ${pDownloadError}`, { Error: pDownloadError });
+										this.fable.log.error(`${this.EntitySchema.TableName}: page ${tmpPageIndex} download error: ${pDownloadError}`);
 										return fDownloadComplete();
 									}
 									if (pBody && pBody.length > 0)
@@ -417,7 +434,7 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 													{
 														if (pReadError)
 														{
-															this.fable.log.error(`Error reading record ${this.EntitySchema.TableName}: ${pReadError}`, { Error: pReadError, PassedRecord: tmpRecord });
+															tmpRecordsErrored++;
 															return fEntitySyncComplete();
 														}
 														if (!pRecord)
@@ -439,15 +456,18 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 																{
 																	if (pCreateError)
 																	{
-																		this.log.error(`Error creating record ${this.EntitySchema.TableName}: ${pCreateError}`, pCreateError);
+																		tmpRecordsErrored++;
+																		this.log.error(`${this.EntitySchema.TableName}: doCreate error for ID ${tmpRecord[this.DefaultIdentifier]}: ${pCreateError}`);
 																		return fEntitySyncComplete();
 																	}
+																	tmpRecordsCreated++;
 																	this.operation.incrementProgressTrackerStatus(`FullSync-${this.EntitySchema.TableName}`, 1);
 																	return fEntitySyncComplete();
 																});
 														}
 														else
 														{
+															tmpRecordsSkipped++;
 															return fEntitySyncComplete();
 														}
 													});
@@ -474,6 +494,7 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 						},
 						(pDownloadError) =>
 						{
+							this.fable.log.info(`${this.EntitySchema.TableName}: sync complete — created: ${tmpRecordsCreated}, skipped: ${tmpRecordsSkipped}, errors: ${tmpRecordsErrored}`);
 							if (pDownloadError)
 							{
 								this.fable.log.error(`Error returned URL Partial .. this may not be an error: ${pDownloadError}`);
@@ -486,7 +507,7 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 			{
 				if (pError)
 				{
-					this.fable.log.error(`Error performing sync ${this.EntitySchema.TableName}: ${pError}`, { Error: pError });
+					this.fable.log.error(`${this.EntitySchema.TableName}: sync error: ${pError}`);
 				}
 
 				if (this.SyncDeletedRecords)
