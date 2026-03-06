@@ -42,6 +42,10 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 		this.SyncDeletedRecords = this.options.SyncDeletedRecords || false;
 		this.MaxRecordsPerEntity = this.options.MaxRecordsPerEntity || 0;
 
+		// Minimum range size for bisection -- when a range is this small or smaller,
+		// pull all records in the range from the server instead of subdividing further.
+		this.BisectMinRangeSize = this.options.BisectMinRangeSize || 1000;
+
 		this.Meadow = false;
 
 		this.operation = new libMeadowOperation(this.fable);
@@ -144,6 +148,426 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 		return tmpRecordToCommit;
 	}
 
+	// ---- REST / Local query helpers ----
+
+	// Format a date value for use in Meadow REST filter expressions (FBV).
+	_formatDateForFilter(pDate)
+	{
+		return this.fable.Dates.dayJS.utc(pDate).format('YYYY-MM-DDTHH:mm:ss.SSS');
+	}
+
+	// Get a count from the remote server, optionally filtered.
+	_getServerCount(pFilter, fCallback)
+	{
+		const tmpURL = pFilter
+			? `${this.EntitySchema.TableName}s/Count/FilteredTo/${pFilter}`
+			: `${this.EntitySchema.TableName}s/Count`;
+		this.fable.MeadowCloneRestClient.getJSON(tmpURL,
+			(pError, pResponse, pBody) =>
+			{
+				if (pError)
+				{
+					return fCallback(pError);
+				}
+				if (pBody && pBody.hasOwnProperty('Count'))
+				{
+					return fCallback(null, pBody.Count);
+				}
+				return fCallback(null, 0);
+			});
+	}
+
+	// Get a page of records from the remote server with a Meadow filter expression.
+	_getServerRecords(pFilter, pOffset, pPageSize, fCallback)
+	{
+		const tmpURL = `${this.EntitySchema.TableName}s/FilteredTo/${pFilter}/${pOffset}/${pPageSize}`;
+		this.fable.MeadowCloneRestClient.getJSON(tmpURL,
+			(pError, pResponse, pBody) =>
+			{
+				if (pError)
+				{
+					return fCallback(pError);
+				}
+				if (pBody && Array.isArray(pBody))
+				{
+					return fCallback(null, pBody);
+				}
+				return fCallback(null, []);
+			});
+	}
+
+	// Get a count from the local database with optional ID range filters.
+	_getLocalCount(pMinID, pMaxID, fCallback)
+	{
+		const tmpQuery = this.Meadow.query;
+		if (pMinID > 0)
+		{
+			tmpQuery.addFilter(this.DefaultIdentifier, pMinID, '>=');
+		}
+		if (pMaxID > 0)
+		{
+			tmpQuery.addFilter(this.DefaultIdentifier, pMaxID, '<=');
+		}
+		if (!this._hasDeletedColumn)
+		{
+			tmpQuery.setDisableDeleteTracking(true);
+		}
+		this.Meadow.doCount(tmpQuery,
+			(pError, pQuery, pCount) =>
+			{
+				if (pError)
+				{
+					return fCallback(pError);
+				}
+				return fCallback(null, pCount);
+			});
+	}
+
+	// Get the max UpdateDate from local records in an ID range.
+	_getLocalMaxUpdateDate(pMinID, pMaxID, fCallback)
+	{
+		const tmpQuery = this.Meadow.query;
+		if (pMinID > 0)
+		{
+			tmpQuery.addFilter(this.DefaultIdentifier, pMinID, '>=');
+		}
+		if (pMaxID > 0)
+		{
+			tmpQuery.addFilter(this.DefaultIdentifier, pMaxID, '<=');
+		}
+		tmpQuery.setSort({ Column: 'UpdateDate', Direction: 'Descending' });
+		tmpQuery.setCap(1);
+		if (!this._hasDeletedColumn)
+		{
+			tmpQuery.setDisableDeleteTracking(true);
+		}
+		this.Meadow.doRead(tmpQuery,
+			(pError, pQuery, pRecord) =>
+			{
+				if (pError)
+				{
+					return fCallback(pError);
+				}
+				if (!pRecord || !pRecord.UpdateDate)
+				{
+					return fCallback(null, false);
+				}
+				return fCallback(null, pRecord.UpdateDate);
+			});
+	}
+
+	// Get the min UpdateDate from local records in an ID range.
+	_getLocalMinUpdateDate(pMinID, pMaxID, fCallback)
+	{
+		const tmpQuery = this.Meadow.query;
+		if (pMinID > 0)
+		{
+			tmpQuery.addFilter(this.DefaultIdentifier, pMinID, '>=');
+		}
+		if (pMaxID > 0)
+		{
+			tmpQuery.addFilter(this.DefaultIdentifier, pMaxID, '<=');
+		}
+		tmpQuery.setSort({ Column: 'UpdateDate', Direction: 'Ascending' });
+		tmpQuery.setCap(1);
+		if (!this._hasDeletedColumn)
+		{
+			tmpQuery.setDisableDeleteTracking(true);
+		}
+		this.Meadow.doRead(tmpQuery,
+			(pError, pQuery, pRecord) =>
+			{
+				if (pError)
+				{
+					return fCallback(pError);
+				}
+				if (!pRecord || !pRecord.UpdateDate)
+				{
+					return fCallback(null, false);
+				}
+				return fCallback(null, pRecord.UpdateDate);
+			});
+	}
+
+	// Upsert a single record from the server into the local database.
+	_upsertRecord(pServerRecord, fCallback)
+	{
+		const tmpRecordToCommit = this.marshalRecord(pServerRecord);
+
+		const tmpQuery = this.Meadow.query;
+		tmpQuery.addFilter(this.DefaultIdentifier, pServerRecord[this.DefaultIdentifier]);
+		if (!this._hasDeletedColumn)
+		{
+			tmpQuery.setDisableDeleteTracking(true);
+		}
+
+		this.Meadow.doRead(tmpQuery,
+			(pReadError, pQuery, pLocalRecord) =>
+			{
+				if (pReadError)
+				{
+					this.fable.log.error(`Error reading local record ${this.EntitySchema.TableName} ID ${pServerRecord[this.DefaultIdentifier]}: ${pReadError}`);
+					return fCallback();
+				}
+
+				const tmpSyncQuery = this.Meadow.query.addRecord(tmpRecordToCommit);
+				tmpSyncQuery.setDisableAutoIdentity(true);
+				tmpSyncQuery.setDisableAutoDateStamp(true);
+				tmpSyncQuery.setDisableAutoUserStamp(true);
+				tmpSyncQuery.setDisableDeleteTracking(true);
+
+				if (!pLocalRecord)
+				{
+					// Record does not exist locally -- create
+					tmpSyncQuery.AllowIdentityInsert = true;
+					this.Meadow.doCreate(tmpSyncQuery,
+						(pCreateError) =>
+						{
+							if (pCreateError)
+							{
+								let tmpErrorStr = (typeof(pCreateError) === 'string') ? pCreateError : JSON.stringify(pCreateError);
+								if (tmpErrorStr.toLowerCase().indexOf('duplicate') > -1 || tmpErrorStr.toLowerCase().indexOf('unique') > -1)
+								{
+									// GUID conflict -- fall back to update
+									this.log.warn(`Duplicate key on create for ${this.EntitySchema.TableName} ID ${pServerRecord[this.DefaultIdentifier]}; falling back to update.`);
+									const tmpFallbackQuery = this.Meadow.query.addRecord(tmpRecordToCommit);
+									tmpFallbackQuery.setDisableAutoIdentity(true);
+									tmpFallbackQuery.setDisableAutoDateStamp(true);
+									tmpFallbackQuery.setDisableAutoUserStamp(true);
+									tmpFallbackQuery.setDisableDeleteTracking(true);
+									this.Meadow.doUpdate(tmpFallbackQuery,
+										(pUpdateError) =>
+										{
+											if (pUpdateError)
+											{
+												this.log.error(`Fallback update also failed for ${this.EntitySchema.TableName} ID ${pServerRecord[this.DefaultIdentifier]}: ${pUpdateError}`);
+											}
+											return fCallback();
+										});
+									return;
+								}
+								this.log.error(`Error creating record ${this.EntitySchema.TableName}: ${pCreateError}`, pCreateError);
+								return fCallback();
+							}
+							return fCallback();
+						});
+				}
+				else
+				{
+					// Record exists locally -- update
+					this.Meadow.doUpdate(tmpSyncQuery,
+						(pUpdateError) =>
+						{
+							if (pUpdateError)
+							{
+								this.log.error(`Error updating record ${this.EntitySchema.TableName}: ${pUpdateError}`, pUpdateError);
+							}
+							return fCallback();
+						});
+				}
+			});
+	}
+
+	// Pull all records from server matching a filter expression and upsert them locally.
+	// Fetches in pages of this.PageSize.
+	_pullServerRecords(pFilter, pEstimatedCount, fCallback)
+	{
+		if (pEstimatedCount < 1)
+		{
+			return fCallback(null, 0);
+		}
+
+		let tmpSyncedCount = 0;
+		let tmpOffset = 0;
+		let tmpDone = false;
+
+		let tmpRecordCap = (this.MaxRecordsPerEntity > 0)
+			? Math.min(pEstimatedCount, this.MaxRecordsPerEntity)
+			: pEstimatedCount;
+
+		const fFetchPage = () =>
+		{
+			if (tmpDone || tmpOffset >= tmpRecordCap)
+			{
+				return fCallback(null, tmpSyncedCount);
+			}
+
+			this._getServerRecords(pFilter, tmpOffset, this.PageSize,
+				(pError, pRecords) =>
+				{
+					if (pError)
+					{
+						this.fable.log.error(`Error fetching ${this.EntitySchema.TableName} page at offset ${tmpOffset}: ${pError}`);
+						return fCallback(pError, tmpSyncedCount);
+					}
+					if (!pRecords || pRecords.length < 1)
+					{
+						tmpDone = true;
+						return fCallback(null, tmpSyncedCount);
+					}
+
+					this.fable.Utility.eachLimit(pRecords, 5,
+						(pRecord, fRecordDone) =>
+						{
+							this._upsertRecord(pRecord,
+								() =>
+								{
+									tmpSyncedCount++;
+									return fRecordDone();
+								});
+						},
+						(pUpsertError) =>
+						{
+							tmpOffset += this.PageSize;
+							if (pRecords.length < this.PageSize)
+							{
+								tmpDone = true;
+								return fCallback(null, tmpSyncedCount);
+							}
+							this.fable.log.info(`${this.EntitySchema.TableName}: pulled ${tmpSyncedCount} of ~${tmpRecordCap} records...`);
+							return fFetchPage();
+						});
+				});
+		};
+
+		fFetchPage();
+	}
+
+	// ---- Bisection logic ----
+
+	// Compare a local ID range against the server.  If counts or date boundaries
+	// differ, subdivide until the range is small enough, then pull all records in
+	// the range from the server to bring local in sync.
+	_bisectRange(pMinID, pMaxID, pDepth, fCallback)
+	{
+		const tmpRangeSize = pMaxID - pMinID + 1;
+		const tmpIDCol = this.DefaultIdentifier;
+		const tmpRangeFilter = `FBV~${tmpIDCol}~GE~${pMinID}~FBV~${tmpIDCol}~LE~${pMaxID}`;
+
+		// Get local stats for this range
+		this._getLocalCount(pMinID, pMaxID,
+			(pLocalCountError, pLocalCount) =>
+			{
+				if (pLocalCountError)
+				{
+					this.fable.log.warn(`${this.EntitySchema.TableName}: bisect local count error for range ${pMinID}-${pMaxID}: ${pLocalCountError}`);
+					return fCallback();
+				}
+
+				// Get server count for this range
+				this._getServerCount(tmpRangeFilter,
+					(pServerCountError, pServerCount) =>
+					{
+						if (pServerCountError)
+						{
+							this.fable.log.warn(`${this.EntitySchema.TableName}: bisect server count error for range ${pMinID}-${pMaxID}: ${pServerCountError}`);
+							return fCallback();
+						}
+
+						// If counts match, check UpdateDate boundaries for this range
+						if (pLocalCount === pServerCount)
+						{
+							if (!this._hasUpdateDate)
+							{
+								// No UpdateDate column -- counts match, assume in sync
+								return fCallback();
+							}
+
+							// Compare max and min UpdateDate for this range
+							this._getLocalMaxUpdateDate(pMinID, pMaxID,
+								(pLocalMaxErr, pLocalMaxDate) =>
+								{
+									if (pLocalMaxErr || !pLocalMaxDate)
+									{
+										return fCallback();
+									}
+
+									// Get server max UpdateDate for this range (1 record, sorted desc)
+									const tmpMaxDateFilter = `${tmpRangeFilter}~FSF~UpdateDate~DESC~DESC`;
+									this._getServerRecords(tmpMaxDateFilter, 0, 1,
+										(pServerMaxErr, pServerMaxRecords) =>
+										{
+											if (pServerMaxErr || !pServerMaxRecords || pServerMaxRecords.length < 1)
+											{
+												return fCallback();
+											}
+
+											const tmpServerMaxDate = pServerMaxRecords[0].UpdateDate;
+											const tmpMaxDateDiff = Math.abs(this.fable.Dates.dayJS.utc(pLocalMaxDate).diff(this.fable.Dates.dayJS.utc(tmpServerMaxDate)));
+
+											if (tmpMaxDateDiff < 5)
+											{
+												// Max dates match and counts match -- this range is in sync
+												return fCallback();
+											}
+
+											// Dates differ even though counts match -- records have been modified.
+											// If range is small enough, pull all records; otherwise subdivide.
+											this.fable.log.info(`${this.EntitySchema.TableName}: date mismatch in range ${pMinID}-${pMaxID} (local max: ${pLocalMaxDate}, server max: ${tmpServerMaxDate})`);
+											if (tmpRangeSize <= this.BisectMinRangeSize)
+											{
+												return this._pullRangeFromServer(pMinID, pMaxID, fCallback);
+											}
+											return this._subdivideRange(pMinID, pMaxID, pDepth, fCallback);
+										});
+								});
+							return;
+						}
+
+						// Counts differ
+						this.fable.log.info(`${this.EntitySchema.TableName}: count mismatch in range ${pMinID}-${pMaxID} (local: ${pLocalCount}, server: ${pServerCount})`);
+
+						if (tmpRangeSize <= this.BisectMinRangeSize)
+						{
+							return this._pullRangeFromServer(pMinID, pMaxID, fCallback);
+						}
+
+						return this._subdivideRange(pMinID, pMaxID, pDepth, fCallback);
+					});
+			});
+	}
+
+	// Split an ID range in half and bisect each half.
+	_subdivideRange(pMinID, pMaxID, pDepth, fCallback)
+	{
+		const tmpMidID = Math.floor((pMinID + pMaxID) / 2);
+
+		this.fable.log.info(`${this.EntitySchema.TableName}: subdividing range ${pMinID}-${pMaxID} at ID ${tmpMidID} (depth ${pDepth})`);
+
+		// Bisect lower half, then upper half
+		this._bisectRange(pMinID, tmpMidID, pDepth + 1,
+			() =>
+			{
+				this._bisectRange(tmpMidID + 1, pMaxID, pDepth + 1, fCallback);
+			});
+	}
+
+	// Pull all records from the server in an ID range and upsert them locally.
+	_pullRangeFromServer(pMinID, pMaxID, fCallback)
+	{
+		const tmpIDCol = this.DefaultIdentifier;
+		const tmpFilter = `FBV~${tmpIDCol}~GE~${pMinID}~FBV~${tmpIDCol}~LE~${pMaxID}~FSF~${tmpIDCol}~ASC~ASC`;
+		const tmpEstimatedCount = pMaxID - pMinID + 1;
+
+		this.fable.log.info(`${this.EntitySchema.TableName}: pulling range ${pMinID}-${pMaxID} from server (~${tmpEstimatedCount} records)`);
+
+		this._pullServerRecords(tmpFilter, tmpEstimatedCount,
+			(pError, pSyncedCount) =>
+			{
+				if (pError)
+				{
+					this.fable.log.warn(`${this.EntitySchema.TableName}: error pulling range ${pMinID}-${pMaxID}: ${pError}`);
+				}
+				else
+				{
+					this.fable.log.info(`${this.EntitySchema.TableName}: synced ${pSyncedCount} records in range ${pMinID}-${pMaxID}`);
+				}
+				return fCallback();
+			});
+	}
+
+	// ---- Deleted records sync ----
+
 	syncDeletedRecords(fCallback)
 	{
 		const tmpDeletedColumn = this.EntitySchema.Columns.find((c) => c.Column == 'Deleted');
@@ -155,7 +579,6 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 
 		this.fable.log.info(`Checking for deleted records on server for ${this.EntitySchema.TableName}...`);
 
-		// Get the count of deleted records from the server.
 		// The explicit FBV~Deleted~EQ~1 filter overrides foxhound's automatic Deleted=0 filter.
 		this.fable.MeadowCloneRestClient.getJSON(`${this.EntitySchema.TableName}s/Count/FilteredTo/FBV~Deleted~EQ~1`,
 			(pError, pResponse, pBody) =>
@@ -277,149 +700,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 			});
 	}
 
-	addSyncAnticipateEntry(tmpSyncState, tmpAnticipate)
-	{
-		tmpAnticipate.anticipate(
-			(fNext) =>
-			{
-				const tmpURLPartial = `${this.EntitySchema.TableName}s/FilteredTo/FBV~${this.DefaultIdentifier}~GT~${tmpSyncState.LastRequestedID}~FSF~${this.DefaultIdentifier}~ASC~ASC/0/${this.PageSize}`;
-				this.fable.MeadowCloneRestClient.getJSON(tmpURLPartial,
-					(pDownloadError, pResponse, pBody) =>
-					{
-						if (pDownloadError)
-						{
-							this.fable.log.error(`Error getting URL Partial [${tmpURLPartial}]: ${pDownloadError}`, { Error: pDownloadError });
-							return fNext();
-						}
-						if (pBody && Array.isArray(pBody) && pBody.length > 0)
-						{
-							for (let i = 0; i < pBody.length; i++)
-							{
-								const tmpRecord = pBody[i];
-
-								tmpAnticipate.anticipate(
-									(fNextEntityRecordSync) =>
-									{
-										const tmpQuery = this.Meadow.query;
-
-										if (tmpRecord[this.DefaultIdentifier] > tmpSyncState.LastRequestedID)
-										{
-											tmpSyncState.LastRequestedID = tmpRecord[this.DefaultIdentifier];
-										}
-
-										if ((typeof(tmpRecord[this.DefaultIdentifier]) !== 'undefined') && (tmpRecord[this.DefaultIdentifier] > 0))
-										{
-											tmpQuery.addFilter(this.DefaultIdentifier, tmpRecord[this.DefaultIdentifier]);
-										}
-
-										if (!tmpSyncState.HasDeletedColumn)
-										{
-											tmpQuery.setDisableDeleteTracking(true);
-										}
-
-										this.Meadow.doRead(tmpQuery,
-											(pReadError, pQuery, pRecord) =>
-											{
-												if (pReadError)
-												{
-													this.fable.log.error(`Error reading record ${this.EntitySchema.TableName}: ${pReadError}`, { Error: pReadError, PassedRecord: tmpRecord });
-													return fNextEntityRecordSync();
-												}
-
-												if (pRecord)
-												{
-													const tmpAgeDifference = this.fable.Dates.dayJS(tmpRecord.UpdateDate).diff(this.fable.Dates.dayJS(pRecord.UpdateDate));
-
-													if (Math.abs(tmpAgeDifference) < 5)
-													{
-														return fNextEntityRecordSync();
-													}
-
-													this.fable.log.info(`Syncing ${this.EntitySchema.TableName} record ${tmpRecord[this.DefaultIdentifier]} with age difference of ${tmpAgeDifference} ms.`);
-												}
-
-												const tmpRecordToCommit = this.marshalRecord(tmpRecord);
-
-												const tmpSyncQuery = this.Meadow.query.addRecord(tmpRecordToCommit);
-
-												tmpSyncQuery.setDisableAutoIdentity(true);
-												tmpSyncQuery.setDisableAutoDateStamp(true);
-												tmpSyncQuery.setDisableAutoUserStamp(true);
-												tmpSyncQuery.setDisableDeleteTracking(true);
-
-												if (!pRecord)
-												{
-													// Record not found -- create
-													tmpSyncQuery.AllowIdentityInsert = true;
-
-													this.Meadow.doCreate(tmpSyncQuery,
-														(pCreateError) =>
-														{
-															if (pCreateError)
-															{
-																let tmpErrorStr = (typeof(pCreateError) === 'string') ? pCreateError : JSON.stringify(pCreateError);
-																if (tmpErrorStr.toLowerCase().indexOf('duplicate') > -1 || tmpErrorStr.toLowerCase().indexOf('unique') > -1)
-																{
-																	// Duplicate key (likely GUID conflict) -- fall back to update
-																	this.log.warn(`Duplicate key on create for ${this.EntitySchema.TableName} ID ${tmpRecord[this.DefaultIdentifier]}; falling back to update.`);
-																	const tmpFallbackQuery = this.Meadow.query.addRecord(tmpRecordToCommit);
-																	tmpFallbackQuery.setDisableAutoIdentity(true);
-																	tmpFallbackQuery.setDisableAutoDateStamp(true);
-																	tmpFallbackQuery.setDisableAutoUserStamp(true);
-																	tmpFallbackQuery.setDisableDeleteTracking(true);
-																	this.Meadow.doUpdate(tmpFallbackQuery,
-																		(pUpdateError) =>
-																		{
-																			if (pUpdateError)
-																			{
-																				this.log.error(`Fallback update also failed for ${this.EntitySchema.TableName} ID ${tmpRecord[this.DefaultIdentifier]}: ${pUpdateError}`);
-																				return fNextEntityRecordSync();
-																			}
-																			this.operation.incrementProgressTrackerStatus(`UpdateSync-${this.EntitySchema.TableName}`, 1);
-																			return fNextEntityRecordSync();
-																		});
-																	return;
-																}
-																this.log.error(`Error creating record ${this.EntitySchema.TableName}: ${pCreateError}`, pCreateError);
-																return fNextEntityRecordSync();
-															}
-															this.operation.incrementProgressTrackerStatus(`UpdateSync-${this.EntitySchema.TableName}`, 1);
-															return fNextEntityRecordSync();
-														});
-												}
-												else
-												{
-													// Record found -- update
-													this.Meadow.doUpdate(tmpSyncQuery,
-														(pUpdateError) =>
-														{
-															if (pUpdateError)
-															{
-																this.log.error(`Error updating record ${this.EntitySchema.TableName}: ${pUpdateError}`, pUpdateError);
-																return fNextEntityRecordSync();
-															}
-															this.operation.incrementProgressTrackerStatus(`UpdateSync-${this.EntitySchema.TableName}`, 1);
-															return fNextEntityRecordSync();
-														});
-												}
-											});
-									});
-							}
-							tmpSyncState.RequestsPerformed++;
-							if (tmpSyncState.RequestsPerformed < tmpSyncState.EstimatedRequestCount)
-							{
-								this.fable.log.info(`Syncing ${this.EntitySchema.TableName} request ${tmpSyncState.RequestsPerformed} of ${tmpSyncState.EstimatedRequestCount}...`);
-								this.addSyncAnticipateEntry(tmpSyncState, tmpAnticipate);
-							}
-							return fNext();
-						}
-						else
-						{
-							return fNext();
-						}
-					});
-			});
-	}
+	// ---- Main sync entry point ----
 
 	sync(fCallback)
 	{
@@ -454,53 +735,44 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 	{
 		this.operation.createTimeStamp('EntityOngoingSync');
 
-		let tmpAnticipate = this.fable.newAnticipate();
-
 		const tmpSyncState = (
 			{
-				Local: { MaxIDEntity: -1, RecordCount: 0, HasUpdateDate: false, LatestUpdateDate: false },
-				Server: { MaxIDEntity: -1, RecordCount: 0, HasUpdateDate: false, LatestUpdateDate: false },
+				Local: { MaxIDEntity: -1, RecordCount: 0 },
+				Server: { MaxIDEntity: -1, RecordCount: 0 },
 			});
+
+		// Detect schema capabilities
+		this._hasUpdateDate = false;
+		this._hasDeletedColumn = false;
+
+		if (this.EntitySchema && this.EntitySchema.MeadowSchema && Array.isArray(this.EntitySchema.MeadowSchema.Schema))
+		{
+			for (let i = 0; i < this.EntitySchema.MeadowSchema.Schema.length; i++)
+			{
+				const tmpColumn = this.EntitySchema.MeadowSchema.Schema[i];
+				if (tmpColumn.Column == 'UpdateDate')
+				{
+					this._hasUpdateDate = true;
+				}
+				if (tmpColumn.Type == 'Deleted' || tmpColumn.Column == 'Deleted')
+				{
+					this._hasDeletedColumn = true;
+				}
+			}
+		}
+
+		this.fable.log.info(`Syncing with ONGOING STRATEGY entity ${this.EntitySchema.TableName} (UpdateDate: ${this._hasUpdateDate}, Deleted: ${this._hasDeletedColumn})...`);
 
 		this.fable.Utility.waterfall(
 			[
+				// ---- Stage 1: Gather local stats ----
 				(fStageComplete) =>
 				{
-					if (!this.EntitySchema || !this.EntitySchema.MeadowSchema || !Array.isArray(this.EntitySchema.MeadowSchema.Schema))
-					{
-						return fStageComplete('MeadowSyncEntityOngoing requires a valid MeadowEntitySchema.MeadowSchema.Schema.');
-					}
-
-					for (let i = 0; i < this.EntitySchema.MeadowSchema.Schema.length; i++)
-					{
-						const tmpColumn = this.EntitySchema.MeadowSchema.Schema[i];
-						if (tmpColumn.Column == 'UpdateDate')
-						{
-							tmpSyncState.Local.HasUpdateDate = true;
-							tmpSyncState.Server.HasUpdateDate = true;
-						}
-						if (tmpColumn.Type == 'Deleted' || tmpColumn.Column == 'Deleted')
-						{
-							tmpSyncState.HasDeletedColumn = true;
-						}
-					}
-
-					if (tmpSyncState.Local.HasUpdateDate)
-					{
-						this.log.info(`Entity ${this.EntitySchema.TableName} has UpdateDate column.`);
-					}
-
-					this.log.info(`Syncing with UPDATE STRATEGY entity ${this.EntitySchema.TableName}...`);
-					return fStageComplete();
-				},
-				(fStageComplete) =>
-				{
-					// Get the Max ID from local database
+					// Local max ID
 					const tmpQuery = this.Meadow.query;
 					tmpQuery.setSort({ Column: this.DefaultIdentifier, Direction: 'Descending' });
 					tmpQuery.setCap(1);
-					// Disable delete tracking if the table has no Deleted column
-					if (!tmpSyncState.HasDeletedColumn)
+					if (!this._hasDeletedColumn)
 					{
 						tmpQuery.setDisableDeleteTracking(true);
 					}
@@ -509,31 +781,32 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 						{
 							if (pReadError)
 							{
-								this.fable.log.error(`Error reading local max entity ID ${this.EntitySchema.TableName}: ${pReadError}`, { Error: pReadError });
+								this.fable.log.error(`Error reading local max entity ID ${this.EntitySchema.TableName}: ${pReadError}`);
 								return fStageComplete(`Error reading local max entity ID ${this.EntitySchema.TableName}: ${pReadError}`);
 							}
-							if (!pRecord)
+							if (pRecord)
 							{
-								this.fable.log.warn(`No records found in local ${this.EntitySchema.TableName}.`);
-								return fStageComplete();
+								tmpSyncState.Local.MaxIDEntity = pRecord[this.DefaultIdentifier];
+								this.fable.log.info(`Found local max entity ID ${this.EntitySchema.TableName}: ${tmpSyncState.Local.MaxIDEntity}`);
 							}
-							this.fable.log.info(`Found local max entity ID ${this.EntitySchema.TableName}: ${pRecord[this.DefaultIdentifier]}`);
-							tmpSyncState.Local.MaxIDEntity = pRecord[this.DefaultIdentifier];
+							else
+							{
+								this.fable.log.info(`No local records for ${this.EntitySchema.TableName}.`);
+							}
 							return fStageComplete();
 						});
 				},
 				(fStageComplete) =>
 				{
-					// Get the Max UpdateDate from local database — skip if table has no UpdateDate column
-					if (!tmpSyncState.Local.HasUpdateDate)
+					// Local max UpdateDate
+					if (!this._hasUpdateDate)
 					{
-						this.fable.log.info(`No UpdateDate column for ${this.EntitySchema.TableName}; skipping UpdateDate check.`);
 						return fStageComplete();
 					}
 					const tmpQuery = this.Meadow.query;
 					tmpQuery.setSort({ Column: 'UpdateDate', Direction: 'Descending' });
 					tmpQuery.setCap(1);
-					if (!tmpSyncState.HasDeletedColumn)
+					if (!this._hasDeletedColumn)
 					{
 						tmpQuery.setDisableDeleteTracking(true);
 					}
@@ -542,24 +815,22 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 						{
 							if (pReadError)
 							{
-								this.fable.log.error(`Error reading local max UpdateDate ${this.EntitySchema.TableName}: ${pReadError}`, { Error: pReadError });
+								this.fable.log.error(`Error reading local max UpdateDate ${this.EntitySchema.TableName}: ${pReadError}`);
 								return fStageComplete(`Error reading local max UpdateDate ${this.EntitySchema.TableName}: ${pReadError}`);
 							}
-							if (!pRecord)
+							if (pRecord && pRecord.UpdateDate)
 							{
-								this.fable.log.warn(`No records found in local checking UpdateDate ${this.EntitySchema.TableName}.`);
-								return fStageComplete();
+								tmpSyncState.Local.MaxUpdateDate = pRecord.UpdateDate;
+								this.fable.log.info(`Found local max UpdateDate ${this.EntitySchema.TableName}: ${tmpSyncState.Local.MaxUpdateDate}`);
 							}
-							this.fable.log.info(`Found local max UpdateDate ${this.EntitySchema.TableName}: ${pRecord.UpdateDate}`);
-							tmpSyncState.Local.MaxUpdateDate = pRecord.UpdateDate;
 							return fStageComplete();
 						});
 				},
 				(fStageComplete) =>
 				{
-					// Get the count from local database
+					// Local count
 					const tmpQuery = this.Meadow.query;
-					if (!tmpSyncState.HasDeletedColumn)
+					if (!this._hasDeletedColumn)
 					{
 						tmpQuery.setDisableDeleteTracking(true);
 					}
@@ -568,16 +839,19 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 						{
 							if (pCountError)
 							{
-								this.fable.log.error(`Error getting local count of ${this.EntitySchema.TableName}: ${pCountError}`, { Error: pCountError });
+								this.fable.log.error(`Error getting local count of ${this.EntitySchema.TableName}: ${pCountError}`);
 								return fStageComplete(`Error getting local count of ${this.EntitySchema.TableName}: ${pCountError}`);
 							}
 							tmpSyncState.Local.RecordCount = pCount;
+							this.fable.log.info(`Local count ${this.EntitySchema.TableName}: ${tmpSyncState.Local.RecordCount}`);
 							return fStageComplete();
 						});
 				},
+
+				// ---- Stage 2: Gather server stats ----
 				(fStageComplete) =>
 				{
-					// Get the Max ID from server
+					// Server max ID
 					this.fable.MeadowCloneRestClient.getJSON(`${this.EntitySchema.TableName}/Max/${this.DefaultIdentifier}`,
 						(pError, pResponse, pBody) =>
 						{
@@ -588,8 +862,8 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 							}
 							if (pBody && pBody.hasOwnProperty(this.DefaultIdentifier))
 							{
-								this.fable.log.info(`Found server max entity ID ${this.EntitySchema.TableName}: ${pBody[this.DefaultIdentifier]}`);
 								tmpSyncState.Server.MaxIDEntity = pBody[this.DefaultIdentifier];
+								this.fable.log.info(`Found server max entity ID ${this.EntitySchema.TableName}: ${tmpSyncState.Server.MaxIDEntity}`);
 							}
 							else
 							{
@@ -600,32 +874,9 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 				},
 				(fStageComplete) =>
 				{
-					// Get the Max UpdateDate from server
-					this.fable.MeadowCloneRestClient.getJSON(`${this.EntitySchema.TableName}/Max/UpdateDate`,
-						(pError, pResponse, pBody) =>
-						{
-							if (pError)
-							{
-								this.fable.log.warn(`Could not get server max UpdateDate for ${this.EntitySchema.TableName} (${pError}); will sync by ID only.`);
-								return fStageComplete();
-							}
-							if (pBody && pBody.hasOwnProperty(this.DefaultIdentifier))
-							{
-								this.fable.log.info(`Found server max UpdateDate ${this.EntitySchema.TableName}: ${pBody['UpdateDate']}`);
-								tmpSyncState.Server.MaxUpdateDate = pBody.UpdateDate;
-							}
-							else
-							{
-								this.fable.log.warn(`No records found in server for max UpdateDate of ${this.EntitySchema.TableName}.`);
-							}
-							return fStageComplete();
-						});
-				},
-				(fStageComplete) =>
-				{
-					// Get the count from server
-					this.fable.MeadowCloneRestClient.getJSON(`${this.EntitySchema.TableName}s/Count`,
-						(pError, pResponse, pBody) =>
+					// Server count
+					this._getServerCount(null,
+						(pError, pCount) =>
 						{
 							if (pError)
 							{
@@ -633,51 +884,181 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 								tmpSyncState.Server.RecordCount = tmpSyncState.Server.MaxIDEntity > 0 ? tmpSyncState.Server.MaxIDEntity : 0;
 								return fStageComplete();
 							}
-							if (pBody && pBody.hasOwnProperty('Count'))
-							{
-								this.fable.log.info(`Found server count for ${this.EntitySchema.TableName}: ${pBody.Count}`);
-								tmpSyncState.Server.RecordCount = pBody.Count;
-							}
-							else
-							{
-								this.fable.log.warn(`No records found in server based on count for ${this.EntitySchema.TableName}.`);
-							}
+							tmpSyncState.Server.RecordCount = pCount;
+							this.fable.log.info(`Server count ${this.EntitySchema.TableName}: ${tmpSyncState.Server.RecordCount}`);
 							return fStageComplete();
 						});
 				},
+
+				// ---- Stage 3: UpdateDate-based fast sync ----
+				// If we have UpdateDate, compare server record count up to our local
+				// max UpdateDate.  If it matches local count, existing records are in
+				// sync and we only need to pull records newer than that date.
 				(fStageComplete) =>
 				{
-					let tmpTotalRecords = (this.MaxRecordsPerEntity > 0)
-						? Math.min(tmpSyncState.Server.RecordCount, this.MaxRecordsPerEntity)
-						: tmpSyncState.Server.RecordCount;
-					tmpSyncState.EstimatedRequestCount = Math.ceil(tmpTotalRecords / this.PageSize);
-					tmpSyncState.RequestsPerformed = 0;
-					tmpSyncState.LastRequestedID = 0;
-
-					this.operation.createProgressTracker(tmpSyncState.EstimatedRequestCount, `UpdateSync-${this.EntitySchema.TableName}`);
-					this.operation.printProgressTrackerStatus(`UpdateSync-${this.EntitySchema.TableName}`);
-
-					return fStageComplete();
-				},
-				(fStageComplete) =>
-				{
-					if (tmpSyncState.EstimatedRequestCount < 1)
+					if (!this._hasUpdateDate || !tmpSyncState.Local.MaxUpdateDate)
 					{
-						this.fable.log.info(`No records to update sync for ${this.EntitySchema.TableName}.`);
+						this.fable.log.info(`${this.EntitySchema.TableName}: no UpdateDate available; skipping UpdateDate fast-sync.`);
+						tmpSyncState.UpdateDateSyncDone = false;
 						return fStageComplete();
 					}
 
-					this.addSyncAnticipateEntry(tmpSyncState, tmpAnticipate);
+					const tmpDateStr = this._formatDateForFilter(tmpSyncState.Local.MaxUpdateDate);
+					const tmpIDCol = this.DefaultIdentifier;
+					const tmpBeforeFilter = `FBV~UpdateDate~LE~${tmpDateStr}`;
 
-					tmpAnticipate.wait(fStageComplete);
+					this.fable.log.info(`${this.EntitySchema.TableName}: checking server count with UpdateDate <= ${tmpDateStr}...`);
+
+					this._getServerCount(tmpBeforeFilter,
+						(pError, pServerCountBefore) =>
+						{
+							if (pError)
+							{
+								this.fable.log.warn(`${this.EntitySchema.TableName}: could not get server count before UpdateDate (${pError}); falling back to bisection.`);
+								tmpSyncState.UpdateDateSyncDone = false;
+								return fStageComplete();
+							}
+
+							this.fable.log.info(`${this.EntitySchema.TableName}: server has ${pServerCountBefore} records with UpdateDate <= ${tmpDateStr} (local has ${tmpSyncState.Local.RecordCount})`);
+
+							if (pServerCountBefore === tmpSyncState.Local.RecordCount)
+							{
+								// Record counts match up to our max UpdateDate -- existing records are in sync.
+								this.fable.log.info(`${this.EntitySchema.TableName}: counts match up to local max UpdateDate; existing records appear in sync.`);
+								tmpSyncState.ExistingRecordsInSync = true;
+							}
+							else
+							{
+								this.fable.log.info(`${this.EntitySchema.TableName}: count mismatch before max UpdateDate (local: ${tmpSyncState.Local.RecordCount}, server: ${pServerCountBefore}); will bisect existing records.`);
+								tmpSyncState.ExistingRecordsInSync = false;
+							}
+
+							// Now pull records with UpdateDate > local max UpdateDate (new + modified on server)
+							const tmpAfterFilter = `FBV~UpdateDate~GT~${tmpDateStr}~FSF~${tmpIDCol}~ASC~ASC`;
+
+							this._getServerCount(`FBV~UpdateDate~GT~${tmpDateStr}`,
+								(pAfterError, pServerCountAfter) =>
+								{
+									if (pAfterError)
+									{
+										this.fable.log.warn(`${this.EntitySchema.TableName}: could not get server count after UpdateDate (${pAfterError}).`);
+										tmpSyncState.UpdateDateSyncDone = false;
+										return fStageComplete();
+									}
+
+									this.fable.log.info(`${this.EntitySchema.TableName}: ${pServerCountAfter} records on server with UpdateDate > ${tmpDateStr}; pulling...`);
+
+									if (pServerCountAfter < 1)
+									{
+										tmpSyncState.UpdateDateSyncDone = true;
+										return fStageComplete();
+									}
+
+									this._pullServerRecords(tmpAfterFilter, pServerCountAfter,
+										(pPullError, pSyncedCount) =>
+										{
+											if (pPullError)
+											{
+												this.fable.log.warn(`${this.EntitySchema.TableName}: error pulling new records: ${pPullError}`);
+											}
+											else
+											{
+												this.fable.log.info(`${this.EntitySchema.TableName}: pulled ${pSyncedCount} new/modified records via UpdateDate.`);
+											}
+											tmpSyncState.UpdateDateSyncDone = true;
+											return fStageComplete();
+										});
+								});
+						});
+				},
+
+				// ---- Stage 4: Bisect existing records if counts did not match ----
+				(fStageComplete) =>
+				{
+					// If UpdateDate sync found existing records in sync, or if we have
+					// no local data yet, skip bisection.
+					if (tmpSyncState.ExistingRecordsInSync)
+					{
+						this.fable.log.info(`${this.EntitySchema.TableName}: existing records in sync; skipping bisection.`);
+						return fStageComplete();
+					}
+
+					// If we have no local records, there is nothing to bisect
+					if (tmpSyncState.Local.MaxIDEntity < 1)
+					{
+						this.fable.log.info(`${this.EntitySchema.TableName}: no local records; skipping bisection.`);
+						return fStageComplete();
+					}
+
+					// If the UpdateDate fast-sync already ran and pulled new records,
+					// refresh local count to see if we are now in sync
+					if (tmpSyncState.UpdateDateSyncDone)
+					{
+						return this._getLocalCount(0, 0,
+							(pError, pNewLocalCount) =>
+							{
+								if (pError || pNewLocalCount === tmpSyncState.Server.RecordCount)
+								{
+									this.fable.log.info(`${this.EntitySchema.TableName}: counts now match after UpdateDate pull (${pNewLocalCount} local, ${tmpSyncState.Server.RecordCount} server); skipping bisection.`);
+									return fStageComplete();
+								}
+
+								this.fable.log.info(`${this.EntitySchema.TableName}: counts still differ after UpdateDate pull (${pNewLocalCount} local, ${tmpSyncState.Server.RecordCount} server); bisecting existing records...`);
+								return this._bisectRange(1, tmpSyncState.Local.MaxIDEntity, 0, fStageComplete);
+							});
+					}
+
+					// No UpdateDate available -- bisect the full ID range
+					this.fable.log.info(`${this.EntitySchema.TableName}: bisecting full ID range 1-${tmpSyncState.Local.MaxIDEntity}...`);
+					return this._bisectRange(1, tmpSyncState.Local.MaxIDEntity, 0, fStageComplete);
+				},
+
+				// ---- Stage 5: Pull any remaining new records by ID ----
+				// If no UpdateDate sync ran (table lacks UpdateDate), pull records
+				// with ID > local max ID.
+				(fStageComplete) =>
+				{
+					if (tmpSyncState.UpdateDateSyncDone)
+					{
+						// UpdateDate sync already handled new records
+						return fStageComplete();
+					}
+
+					if (tmpSyncState.Server.MaxIDEntity <= tmpSyncState.Local.MaxIDEntity)
+					{
+						this.fable.log.info(`${this.EntitySchema.TableName}: no new records by ID (server max ${tmpSyncState.Server.MaxIDEntity} <= local max ${tmpSyncState.Local.MaxIDEntity}).`);
+						return fStageComplete();
+					}
+
+					const tmpIDCol = this.DefaultIdentifier;
+					const tmpFilter = `FBV~${tmpIDCol}~GT~${tmpSyncState.Local.MaxIDEntity}~FSF~${tmpIDCol}~ASC~ASC`;
+					const tmpEstimated = tmpSyncState.Server.MaxIDEntity - tmpSyncState.Local.MaxIDEntity;
+
+					this.fable.log.info(`${this.EntitySchema.TableName}: pulling new records with ID > ${tmpSyncState.Local.MaxIDEntity} (~${tmpEstimated} estimated)...`);
+
+					this._pullServerRecords(tmpFilter, tmpEstimated,
+						(pError, pSyncedCount) =>
+						{
+							if (pError)
+							{
+								this.fable.log.warn(`${this.EntitySchema.TableName}: error pulling new records by ID: ${pError}`);
+							}
+							else
+							{
+								this.fable.log.info(`${this.EntitySchema.TableName}: pulled ${pSyncedCount} new records by ID.`);
+							}
+							return fStageComplete();
+						});
 				},
 			],
 			(pError) =>
 			{
 				if (pError)
 				{
-					this.fable.log.error(`Error performing Update sync ${this.EntitySchema.TableName}: ${pError}`, { Error: pError });
+					this.fable.log.error(`Error performing ongoing sync ${this.EntitySchema.TableName}: ${pError}`, { Error: pError });
 				}
+
+				this.fable.log.info(`${this.EntitySchema.TableName}: ongoing sync complete.`);
 
 				if (this.SyncDeletedRecords)
 				{
