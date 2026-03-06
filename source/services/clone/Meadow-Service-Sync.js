@@ -87,7 +87,7 @@ class MeadowSync extends libFableServiceProviderBase
 		let tmpErrorCount = 0;
 		let tmpSuccessCount = 0;
 
-		this.fable.Utility.eachLimit(this.MeadowSchemaTableList, 1,
+		this.fable.Utility.eachLimit(this.MeadowSchemaTableList, 5,
 			(pEntitySchemaName, fSyncInitializationComplete) =>
 			{
 				tmpEntityIndex++;
