@@ -54,6 +54,17 @@ class MeadowSync extends libFableServiceProviderBase
 			this.SyncDeletedRecords = !!this.options.SyncDeletedRecords;
 		}
 
+		// When > 0, limit sync to at most this many records per entity.
+		this.MaxRecordsPerEntity = 0;
+		if (this.fable.ProgramConfiguration.hasOwnProperty('MaxRecordsPerEntity'))
+		{
+			this.MaxRecordsPerEntity = parseInt(this.fable.ProgramConfiguration.MaxRecordsPerEntity, 10) || 0;
+		}
+		else if (this.options.hasOwnProperty('MaxRecordsPerEntity'))
+		{
+			this.MaxRecordsPerEntity = parseInt(this.options.MaxRecordsPerEntity, 10) || 0;
+		}
+
 		this.MeadowSchema = false;
 		this.MeadowSchemaTableList = false;
 
@@ -89,6 +100,7 @@ class MeadowSync extends libFableServiceProviderBase
 						ConnectionPool: this.options.ConnectionPool,
 						PageSize: this.options.PageSize || 100,
 						SyncDeletedRecords: this.SyncDeletedRecords,
+						MaxRecordsPerEntity: this.MaxRecordsPerEntity,
 					};
 
 					let tmpSyncEntity;

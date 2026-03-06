@@ -40,6 +40,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 		this.DefaultIdentifier = this.EntitySchema.MeadowSchema.DefaultIdentifier;
 		this.PageSize = this.options.PageSize || 100;
 		this.SyncDeletedRecords = this.options.SyncDeletedRecords || false;
+		this.MaxRecordsPerEntity = this.options.MaxRecordsPerEntity || 0;
 
 		this.Meadow = false;
 
@@ -117,7 +118,14 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 						}
 						break;
 					default:
-						if (pSourceRecord[tmpColumn.Column] !== '')
+						if (tmpColumn.DataType == 'DateTime')
+						{
+							if ((typeof(pSourceRecord[tmpColumn.Column]) == 'string') && (pSourceRecord[tmpColumn.Column].length > 0))
+							{
+								tmpRecordToCommit[tmpColumn.Column] = this.fable.Dates.dayJS.utc(pSourceRecord[tmpColumn.Column]).format('YYYY-MM-DD HH:mm:ss.SSS');
+							}
+						}
+						else if (pSourceRecord[tmpColumn.Column] !== '')
 						{
 							tmpRecordToCommit[tmpColumn.Column] = pSourceRecord[tmpColumn.Column];
 						}
@@ -165,8 +173,11 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 				this.fable.log.info(`Found ${tmpDeletedCount} deleted records on server for ${this.EntitySchema.TableName}; syncing deletions...`);
 
 				// Generate paginated URLs for deleted records
+				let tmpDeleteCap = (this.MaxRecordsPerEntity > 0)
+					? Math.min(tmpDeletedCount, this.MaxRecordsPerEntity)
+					: tmpDeletedCount;
 				const tmpDeleteURLPartials = [];
-				for (let i = 0; i < tmpDeletedCount; i += this.PageSize)
+				for (let i = 0; i < tmpDeleteCap; i += this.PageSize)
 				{
 					tmpDeleteURLPartials.push(`${this.EntitySchema.TableName}s/FilteredTo/FBV~Deleted~EQ~1~FSF~${this.DefaultIdentifier}~ASC~ASC/${i}/${this.PageSize}`);
 				}
@@ -298,6 +309,11 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 											tmpQuery.addFilter(this.DefaultIdentifier, tmpRecord[this.DefaultIdentifier]);
 										}
 
+										if (!tmpSyncState.HasDeletedColumn)
+										{
+											tmpQuery.setDisableDeleteTracking(true);
+										}
+
 										this.Meadow.doRead(tmpQuery,
 											(pReadError, pQuery, pRecord) =>
 											{
@@ -338,6 +354,29 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 														{
 															if (pCreateError)
 															{
+																let tmpErrorStr = (typeof(pCreateError) === 'string') ? pCreateError : JSON.stringify(pCreateError);
+																if (tmpErrorStr.toLowerCase().indexOf('duplicate') > -1 || tmpErrorStr.toLowerCase().indexOf('unique') > -1)
+																{
+																	// Duplicate key (likely GUID conflict) -- fall back to update
+																	this.log.warn(`Duplicate key on create for ${this.EntitySchema.TableName} ID ${tmpRecord[this.DefaultIdentifier]}; falling back to update.`);
+																	const tmpFallbackQuery = this.Meadow.query.addRecord(tmpRecordToCommit);
+																	tmpFallbackQuery.setDisableAutoIdentity(true);
+																	tmpFallbackQuery.setDisableAutoDateStamp(true);
+																	tmpFallbackQuery.setDisableAutoUserStamp(true);
+																	tmpFallbackQuery.setDisableDeleteTracking(true);
+																	this.Meadow.doUpdate(tmpFallbackQuery,
+																		(pUpdateError) =>
+																		{
+																			if (pUpdateError)
+																			{
+																				this.log.error(`Fallback update also failed for ${this.EntitySchema.TableName} ID ${tmpRecord[this.DefaultIdentifier]}: ${pUpdateError}`);
+																				return fNextEntityRecordSync();
+																			}
+																			this.operation.incrementProgressTrackerStatus(`UpdateSync-${this.EntitySchema.TableName}`, 1);
+																			return fNextEntityRecordSync();
+																		});
+																	return;
+																}
 																this.log.error(`Error creating record ${this.EntitySchema.TableName}: ${pCreateError}`, pCreateError);
 																return fNextEntityRecordSync();
 															}
@@ -407,9 +446,16 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 						{
 							tmpSyncState.Local.HasUpdateDate = true;
 							tmpSyncState.Server.HasUpdateDate = true;
-							this.log.info(`Entity ${this.EntitySchema.TableName} has UpdateDate column.`);
-							break;
 						}
+						if (tmpColumn.Type == 'Deleted' || tmpColumn.Column == 'Deleted')
+						{
+							tmpSyncState.HasDeletedColumn = true;
+						}
+					}
+
+					if (tmpSyncState.Local.HasUpdateDate)
+					{
+						this.log.info(`Entity ${this.EntitySchema.TableName} has UpdateDate column.`);
 					}
 
 					this.log.info(`Syncing with UPDATE STRATEGY entity ${this.EntitySchema.TableName}...`);
@@ -421,6 +467,11 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 					const tmpQuery = this.Meadow.query;
 					tmpQuery.setSort({ Column: this.DefaultIdentifier, Direction: 'Descending' });
 					tmpQuery.setCap(1);
+					// Disable delete tracking if the table has no Deleted column
+					if (!tmpSyncState.HasDeletedColumn)
+					{
+						tmpQuery.setDisableDeleteTracking(true);
+					}
 					this.Meadow.doRead(tmpQuery,
 						(pReadError, pQuery, pRecord) =>
 						{
@@ -441,10 +492,19 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 				},
 				(fStageComplete) =>
 				{
-					// Get the Max UpdateDate from local database
+					// Get the Max UpdateDate from local database — skip if table has no UpdateDate column
+					if (!tmpSyncState.Local.HasUpdateDate)
+					{
+						this.fable.log.info(`No UpdateDate column for ${this.EntitySchema.TableName}; skipping UpdateDate check.`);
+						return fStageComplete();
+					}
 					const tmpQuery = this.Meadow.query;
 					tmpQuery.setSort({ Column: 'UpdateDate', Direction: 'Descending' });
 					tmpQuery.setCap(1);
+					if (!tmpSyncState.HasDeletedColumn)
+					{
+						tmpQuery.setDisableDeleteTracking(true);
+					}
 					this.Meadow.doRead(tmpQuery,
 						(pReadError, pQuery, pRecord) =>
 						{
@@ -467,6 +527,10 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 				{
 					// Get the count from local database
 					const tmpQuery = this.Meadow.query;
+					if (!tmpSyncState.HasDeletedColumn)
+					{
+						tmpQuery.setDisableDeleteTracking(true);
+					}
 					this.Meadow.doCount(tmpQuery,
 						(pCountError, pQuery, pCount) =>
 						{
@@ -550,7 +614,10 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 				},
 				(fStageComplete) =>
 				{
-					tmpSyncState.EstimatedRequestCount = Math.ceil(tmpSyncState.Server.RecordCount / this.PageSize);
+					let tmpTotalRecords = (this.MaxRecordsPerEntity > 0)
+						? Math.min(tmpSyncState.Server.RecordCount, this.MaxRecordsPerEntity)
+						: tmpSyncState.Server.RecordCount;
+					tmpSyncState.EstimatedRequestCount = Math.ceil(tmpTotalRecords / this.PageSize);
 					tmpSyncState.RequestsPerformed = 0;
 					tmpSyncState.LastRequestedID = 0;
 

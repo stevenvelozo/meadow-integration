@@ -5,6 +5,7 @@ const libPath = require('path');
 const libMeadowConnectionManager = require('../../services/clone/Meadow-Service-ConnectionManager.js');
 const libMeadowCloneRestClient = require('../../services/clone/Meadow-Service-RestClient.js');
 const libMeadowSync = require('../../services/clone/Meadow-Service-Sync.js');
+const libSessionManagerSetup = require('../../Meadow-Integration-SessionManagerSetup.js');
 
 class DataClone extends libCLICommandLineCommand
 {
@@ -163,11 +164,40 @@ class DataClone extends libCLICommandLineCommand
 
 		this.fable.serviceManager.addServiceType('MeadowSync', libMeadowSync);
 
+		// Initialize SessionManager if configured
+		let tmpSessionManager = libSessionManagerSetup.initializeSessionManager(this.fable, tmpConfig.SessionManager);
+		if (tmpSessionManager)
+		{
+			// Connect SessionManager to the clone RestClient so credentials are auto-injected
+			libSessionManagerSetup.connectSessionManagerToRestClient(this.fable, this.fable.MeadowCloneRestClient.restClient);
+		}
+
 		this.fable.Utility.waterfall(
 			[
 				(fStageComplete) =>
 				{
-					// Authenticate with the source API
+					// Authenticate SessionManager sessions (if configured)
+					if (tmpSessionManager)
+					{
+						this.log.info('Authenticating SessionManager sessions...');
+						libSessionManagerSetup.authenticateSessions(this.fable,
+							(pError) =>
+							{
+								if (pError)
+								{
+									this.log.error('Error authenticating SessionManager sessions.', pError);
+								}
+								return fStageComplete();
+							});
+					}
+					else
+					{
+						return fStageComplete();
+					}
+				},
+				(fStageComplete) =>
+				{
+					// Authenticate with the source API using built-in credentials
 					if (tmpConfig.Source.UserID && tmpConfig.Source.Password)
 					{
 						this.log.info('Authenticating with source API...');
@@ -187,7 +217,7 @@ class DataClone extends libCLICommandLineCommand
 					}
 					else
 					{
-						this.log.info('No credentials configured; skipping authentication.');
+						this.log.info('No Source credentials configured; skipping built-in authentication.');
 						return fStageComplete();
 					}
 				},

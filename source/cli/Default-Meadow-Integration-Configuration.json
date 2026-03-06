@@ -34,5 +34,9 @@
 		"PageSize": 100,
 		"SyncEntityList": [],
 		"SyncEntityOptions": {}
+	},
+	"SessionManager":
+	{
+		"Sessions": {}
 	}
 }

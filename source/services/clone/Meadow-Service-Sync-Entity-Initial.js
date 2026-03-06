@@ -40,6 +40,7 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 		this.DefaultIdentifier = this.EntitySchema.MeadowSchema.DefaultIdentifier;
 		this.PageSize = this.options.PageSize || 100;
 		this.SyncDeletedRecords = this.options.SyncDeletedRecords || false;
+		this.MaxRecordsPerEntity = this.options.MaxRecordsPerEntity || 0;
 
 		this.Meadow = false;
 
@@ -197,8 +198,11 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 				this.fable.log.info(`Found ${tmpDeletedCount} deleted records on server for ${this.EntitySchema.TableName}; syncing deletions...`);
 
 				// Generate paginated URLs for deleted records
+				let tmpDeleteCap = (this.MaxRecordsPerEntity > 0)
+					? Math.min(tmpDeletedCount, this.MaxRecordsPerEntity)
+					: tmpDeletedCount;
 				const tmpDeleteURLPartials = [];
-				for (let i = 0; i < tmpDeletedCount; i += this.PageSize)
+				for (let i = 0; i < tmpDeleteCap; i += this.PageSize)
 				{
 					tmpDeleteURLPartials.push(`${this.EntitySchema.TableName}s/FilteredTo/FBV~Deleted~EQ~1~FSF~${this.DefaultIdentifier}~ASC~ASC/${i}/${this.PageSize}`);
 				}
@@ -307,6 +311,19 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 				Server: { MaxIDEntity: -1, RecordCount: 0 },
 			});
 
+		// Detect whether the table has a Deleted column
+		if (this.EntitySchema.MeadowSchema && Array.isArray(this.EntitySchema.MeadowSchema.Schema))
+		{
+			for (let i = 0; i < this.EntitySchema.MeadowSchema.Schema.length; i++)
+			{
+				const tmpColumn = this.EntitySchema.MeadowSchema.Schema[i];
+				if (tmpColumn.Type == 'Deleted' || tmpColumn.Column == 'Deleted')
+				{
+					tmpSyncState.HasDeletedColumn = true;
+				}
+			}
+		}
+
 		this.fable.Utility.waterfall(
 			[
 				(fStageComplete) =>
@@ -315,6 +332,10 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 					const tmpQuery = this.Meadow.query;
 					tmpQuery.setSort({ Column: this.DefaultIdentifier, Direction: 'Descending' });
 					tmpQuery.setCap(1);
+					if (!tmpSyncState.HasDeletedColumn)
+					{
+						tmpQuery.setDisableDeleteTracking(true);
+					}
 					this.Meadow.doRead(tmpQuery,
 						(pReadError, pQuery, pRecord) =>
 						{
@@ -333,6 +354,10 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 				{
 					// Get the count from local database
 					const tmpQuery = this.Meadow.query;
+					if (!tmpSyncState.HasDeletedColumn)
+					{
+						tmpQuery.setDisableDeleteTracking(true);
+					}
 					this.Meadow.doCount(tmpQuery,
 						(pCountError, pQuery, pCount) =>
 						{
@@ -382,17 +407,27 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 				{
 					tmpSyncState.EstimatedRecordCount = tmpSyncState.Server.RecordCount - tmpSyncState.Local.RecordCount;
 
+					// Apply MaxRecordsPerEntity cap if configured
+					let tmpRecordCap = (this.MaxRecordsPerEntity > 0)
+						? Math.min(tmpSyncState.Server.RecordCount, this.MaxRecordsPerEntity)
+						: tmpSyncState.Server.RecordCount;
+
+					if (this.MaxRecordsPerEntity > 0 && tmpSyncState.EstimatedRecordCount > this.MaxRecordsPerEntity)
+					{
+						tmpSyncState.EstimatedRecordCount = this.MaxRecordsPerEntity;
+					}
+
 					this.operation.createProgressTracker(tmpSyncState.EstimatedRecordCount, `FullSync-${this.EntitySchema.TableName}`);
 					this.operation.printProgressTrackerStatus(`FullSync-${this.EntitySchema.TableName}`);
 
 					// Generate paginated URL partials
 					tmpSyncState.URLPartials = [];
-					for (let i = 0; i < tmpSyncState.Server.RecordCount; i += this.PageSize)
+					for (let i = 0; i < tmpRecordCap; i += this.PageSize)
 					{
 						tmpSyncState.URLPartials.push(`${this.EntitySchema.TableName}s/FilteredTo/FBV~${this.DefaultIdentifier}~GT~${tmpSyncState.Local.MaxIDEntity}~FSF~${this.DefaultIdentifier}~ASC~ASC/${i}/${this.PageSize}`);
 					}
 
-					this.fable.log.info(`${this.EntitySchema.TableName}: downloading ${tmpSyncState.URLPartials.length} pages (local: ${tmpSyncState.Local.RecordCount}/${tmpSyncState.Local.MaxIDEntity}, server: ${tmpSyncState.Server.RecordCount}/${tmpSyncState.Server.MaxIDEntity}, estimated new: ${tmpSyncState.EstimatedRecordCount})`);
+					this.fable.log.info(`${this.EntitySchema.TableName}: downloading ${tmpSyncState.URLPartials.length} pages (local: ${tmpSyncState.Local.RecordCount}/${tmpSyncState.Local.MaxIDEntity}, server: ${tmpSyncState.Server.RecordCount}/${tmpSyncState.Server.MaxIDEntity}, estimated new: ${tmpSyncState.EstimatedRecordCount}${this.MaxRecordsPerEntity > 0 ? `, capped at ${this.MaxRecordsPerEntity}` : ''})`);
 
 					return fStageComplete();
 				},
@@ -429,6 +464,11 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 													tmpQuery.addFilter(this.DefaultIdentifier, tmpRecord[this.DefaultIdentifier]);
 												}
 
+												if (!tmpSyncState.HasDeletedColumn)
+												{
+													tmpQuery.setDisableDeleteTracking(true);
+												}
+
 												this.Meadow.doRead(tmpQuery,
 													(pReadError, pQuery, pRecord) =>
 													{
@@ -456,6 +496,31 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 																{
 																	if (pCreateError)
 																	{
+																		let tmpErrorStr = (typeof(pCreateError) === 'string') ? pCreateError : JSON.stringify(pCreateError);
+																		if (tmpErrorStr.toLowerCase().indexOf('duplicate') > -1 || tmpErrorStr.toLowerCase().indexOf('unique') > -1)
+																		{
+																			// Duplicate key (likely GUID conflict) -- fall back to update
+																			this.log.warn(`${this.EntitySchema.TableName}: duplicate key on create for ID ${tmpRecord[this.DefaultIdentifier]}; falling back to update.`);
+																			const tmpUpdateQuery = this.Meadow.query.addRecord(tmpRecordToCommit);
+																			tmpUpdateQuery.setDisableAutoIdentity(true);
+																			tmpUpdateQuery.setDisableAutoDateStamp(true);
+																			tmpUpdateQuery.setDisableAutoUserStamp(true);
+																			tmpUpdateQuery.setDisableDeleteTracking(true);
+																			this.Meadow.doUpdate(tmpUpdateQuery,
+																				(pUpdateError) =>
+																				{
+																					if (pUpdateError)
+																					{
+																						tmpRecordsErrored++;
+																						this.log.error(`${this.EntitySchema.TableName}: fallback update also failed for ID ${tmpRecord[this.DefaultIdentifier]}: ${pUpdateError}`);
+																						return fEntitySyncComplete();
+																					}
+																					tmpRecordsCreated++;
+																					this.operation.incrementProgressTrackerStatus(`FullSync-${this.EntitySchema.TableName}`, 1);
+																					return fEntitySyncComplete();
+																				});
+																			return;
+																		}
 																		tmpRecordsErrored++;
 																		this.log.error(`${this.EntitySchema.TableName}: doCreate error for ID ${tmpRecord[this.DefaultIdentifier]}: ${pCreateError}`);
 																		return fEntitySyncComplete();

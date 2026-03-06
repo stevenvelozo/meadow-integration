@@ -40,10 +40,11 @@
         "fable": "^3.1.63",
         "fable-serviceproviderbase": "^3.0.19",
         "meadow": "^2.0.30",
-        "meadow-connection-mysql": "^1.0.14",
         "meadow-connection-mssql": "^1.0.16",
+        "meadow-connection-mysql": "^1.0.14",
         "orator": "^6.0.4",
         "orator-serviceserver-restify": "^2.0.9",
-        "pict-service-commandlineutility": "^1.0.19"
+        "pict-service-commandlineutility": "^1.0.19",
+        "pict-sessionmanager": "^1.0.2"
     }
 }

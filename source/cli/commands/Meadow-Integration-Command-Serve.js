@@ -30,10 +30,15 @@ class MeadowIntegrationCommandServe extends libCommandLineCommand
 
 		this.log.info(`Starting Meadow Integration REST server on port ${tmpPort}...`);
 
-		let tmpServer = new MeadowIntegrationServer(
-			{
-				APIServerPort: tmpPort
-			});
+		let tmpServerSettings = { APIServerPort: tmpPort };
+
+		// Pass SessionManager config from program configuration to the server
+		if (this.fable.ProgramConfiguration && this.fable.ProgramConfiguration.SessionManager)
+		{
+			tmpServerSettings.SessionManager = this.fable.ProgramConfiguration.SessionManager;
+		}
+
+		let tmpServer = new MeadowIntegrationServer(tmpServerSettings);
 
 		tmpServer.start(
 			(pError) =>
