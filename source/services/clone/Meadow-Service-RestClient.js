@@ -6,6 +6,14 @@ const defaultRestClientOptions = (
 	{
 		DownloadBatchSize: 100,
 
+		// Request timeout in milliseconds for normal remote API calls.
+		// Default: 60 seconds.
+		RequestTimeout: 60000,
+
+		// Request timeout in milliseconds for MAX(column) queries,
+		// which can be very slow on large tables. Default: 5 minutes.
+		MaxRequestTimeout: 300000,
+
 		ServerURL: 'https://localhost:8080/1.0/',
 		UserID: false,
 		Password: false,
@@ -36,7 +44,12 @@ class MeadowCloneRestClient extends libFableServiceProviderBase
 		this.restClient = this.fable.serviceManager.instantiateServiceProvider('RestClient', {}, 'MeadowCloneRestClient-RestClient');
 		this.cache = {};
 
-		const agentOptions = { keepAlive: true };
+		this.requestTimeout = this.options.RequestTimeout;
+		this.maxRequestTimeout = this.options.MaxRequestTimeout;
+
+		// Use the longer of the two timeouts for the agent's socket timeout
+		// so that MAX queries don't get killed at the socket level.
+		const agentOptions = { keepAlive: true, timeout: Math.max(this.requestTimeout, this.maxRequestTimeout) };
 
 		if (this.serverURL && this.serverURL.startsWith('http:'))
 		{
