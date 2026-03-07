@@ -1,6 +1,6 @@
 {
     "name": "meadow-integration",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "description": "Meadow Data Integration",
     "bin": {
         "mdwint": "source/cli/Meadow-Integration-CLI-Run.js"

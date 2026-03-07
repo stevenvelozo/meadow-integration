@@ -65,6 +65,18 @@ class MeadowSync extends libFableServiceProviderBase
 			this.MaxRecordsPerEntity = parseInt(this.options.MaxRecordsPerEntity, 10) || 0;
 		}
 
+		// Tolerance window in milliseconds for cross-database timestamp precision differences.
+		// Passed through to Ongoing sync entities for bisection date comparison.
+		this.DateTimePrecisionMS = 1000;
+		if (this.fable.ProgramConfiguration.hasOwnProperty('DateTimePrecisionMS'))
+		{
+			this.DateTimePrecisionMS = parseInt(this.fable.ProgramConfiguration.DateTimePrecisionMS, 10) || 1000;
+		}
+		else if (this.options.hasOwnProperty('DateTimePrecisionMS'))
+		{
+			this.DateTimePrecisionMS = parseInt(this.options.DateTimePrecisionMS, 10) || 1000;
+		}
+
 		this.MeadowSchema = false;
 		this.MeadowSchemaTableList = false;
 
@@ -101,6 +113,7 @@ class MeadowSync extends libFableServiceProviderBase
 						PageSize: this.options.PageSize || 100,
 						SyncDeletedRecords: this.SyncDeletedRecords,
 						MaxRecordsPerEntity: this.MaxRecordsPerEntity,
+						DateTimePrecisionMS: this.DateTimePrecisionMS,
 					};
 
 					let tmpSyncEntity;

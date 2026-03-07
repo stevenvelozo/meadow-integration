@@ -46,6 +46,15 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 		// pull all records in the range from the server instead of subdividing further.
 		this.BisectMinRangeSize = this.options.BisectMinRangeSize || 1000;
 
+		// Tolerance window in milliseconds for cross-database timestamp precision differences.
+		// MySQL DATETIME stores whole seconds, MSSQL DATETIME rounds to ~3.33ms increments,
+		// PostgreSQL TIMESTAMP stores microseconds, and SQLite stores as TEXT.  When comparing
+		// timestamps across systems, the maximum rounding error is 1000ms (MySQL second-level
+		// truncation).  Default 1000ms covers all supported provider combinations.
+		this.DateTimePrecisionMS = (typeof(this.options.DateTimePrecisionMS) === 'number')
+			? this.options.DateTimePrecisionMS
+			: 1000;
+
 		this.Meadow = false;
 
 		this.operation = new libMeadowOperation(this.fable);
@@ -150,10 +159,31 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 
 	// ---- REST / Local query helpers ----
 
+	// Normalize a date value to a UTC dayJS instance.
+	//
+	// Local dates stored in SQLite are in UTC but formatted without a timezone
+	// indicator (e.g. "2022-05-10 22:50:26.000").  When the driver or ORM wraps
+	// them in a JavaScript Date object, JS interprets them as local time, shifting
+	// the value by the machine's UTC offset.  To recover the original naive UTC
+	// time, we format through local time (which undoes the offset) then re-parse
+	// as UTC.  Server dates already carry a "Z" suffix and are parsed correctly.
+	_normalizeDateUTC(pDate)
+	{
+		if (typeof(pDate) === 'string')
+		{
+			// String dates — strip any trailing Z or timezone so dayJS.utc() treats as UTC
+			return this.fable.Dates.dayJS.utc(pDate);
+		}
+		// Date objects (from SQLite via ORM) — format as local time string to recover
+		// the naive stored value, then re-parse as UTC
+		let tmpNaiveStr = this.fable.Dates.dayJS(pDate).format('YYYY-MM-DD HH:mm:ss.SSS');
+		return this.fable.Dates.dayJS.utc(tmpNaiveStr);
+	}
+
 	// Format a date value for use in Meadow REST filter expressions (FBV).
 	_formatDateForFilter(pDate)
 	{
-		return this.fable.Dates.dayJS.utc(pDate).format('YYYY-MM-DDTHH:mm:ss.SSS');
+		return this._normalizeDateUTC(pDate).format('YYYY-MM-DDTHH:mm:ss.SSS');
 	}
 
 	// Get a count from the remote server, optionally filtered.
@@ -433,6 +463,16 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 		fFetchPage();
 	}
 
+	// Increment the FullSync progress tracker by pCount records checked/synced.
+	_incrementProgress(pCount)
+	{
+		let tmpTracker = this.operation.progressTrackers[`FullSync-${this.EntitySchema.TableName}`];
+		if (tmpTracker && pCount > 0)
+		{
+			tmpTracker.CurrentCount = Math.min(tmpTracker.CurrentCount + pCount, tmpTracker.TotalCount);
+		}
+	}
+
 	// ---- Bisection logic ----
 
 	// Compare a local ID range against the server.  If counts or date boundaries
@@ -470,6 +510,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 							if (!this._hasUpdateDate)
 							{
 								// No UpdateDate column -- counts match, assume in sync
+								this._incrementProgress(pServerCount);
 								return fCallback();
 							}
 
@@ -493,11 +534,12 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 											}
 
 											const tmpServerMaxDate = pServerMaxRecords[0].UpdateDate;
-											const tmpMaxDateDiff = Math.abs(this.fable.Dates.dayJS.utc(pLocalMaxDate).diff(this.fable.Dates.dayJS.utc(tmpServerMaxDate)));
+											const tmpMaxDateDiff = Math.abs(this._normalizeDateUTC(pLocalMaxDate).diff(this._normalizeDateUTC(tmpServerMaxDate)));
 
-											if (tmpMaxDateDiff < 5)
+											if (tmpMaxDateDiff <= this.DateTimePrecisionMS)
 											{
 												// Max dates match and counts match -- this range is in sync
+												this._incrementProgress(pServerCount);
 												return fCallback();
 											}
 
@@ -562,6 +604,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 				{
 					this.fable.log.info(`${this.EntitySchema.TableName}: synced ${pSyncedCount} records in range ${pMinID}-${pMaxID}`);
 				}
+				this._incrementProgress(pSyncedCount || 0);
 				return fCallback();
 			});
 	}
@@ -890,6 +933,13 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 						});
 				},
 
+					// Create a progress tracker so callers (e.g. data-cloner UI) can see Total/Synced
+				(fStageComplete) =>
+				{
+					this.operation.createProgressTracker(tmpSyncState.Server.RecordCount, `FullSync-${this.EntitySchema.TableName}`);
+					return fStageComplete();
+				},
+
 				// ---- Stage 3: UpdateDate-based fast sync ----
 				// If we have UpdateDate, compare server record count up to our local
 				// max UpdateDate.  If it matches local count, existing records are in
@@ -926,6 +976,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 								// Record counts match up to our max UpdateDate -- existing records are in sync.
 								this.fable.log.info(`${this.EntitySchema.TableName}: counts match up to local max UpdateDate; existing records appear in sync.`);
 								tmpSyncState.ExistingRecordsInSync = true;
+								this._incrementProgress(pServerCountBefore);
 							}
 							else
 							{
@@ -951,6 +1002,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 									if (pServerCountAfter < 1)
 									{
 										tmpSyncState.UpdateDateSyncDone = true;
+										// No new records -- nothing additional to count
 										return fStageComplete();
 									}
 
@@ -965,6 +1017,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 											{
 												this.fable.log.info(`${this.EntitySchema.TableName}: pulled ${pSyncedCount} new/modified records via UpdateDate.`);
 											}
+											this._incrementProgress(pSyncedCount || 0);
 											tmpSyncState.UpdateDateSyncDone = true;
 											return fStageComplete();
 										});
@@ -1047,6 +1100,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 							{
 								this.fable.log.info(`${this.EntitySchema.TableName}: pulled ${pSyncedCount} new records by ID.`);
 							}
+							this._incrementProgress(pSyncedCount || 0);
 							return fStageComplete();
 						});
 				},
@@ -1056,6 +1110,13 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 				if (pError)
 				{
 					this.fable.log.error(`Error performing ongoing sync ${this.EntitySchema.TableName}: ${pError}`, { Error: pError });
+				}
+
+				// Mark progress tracker as complete so the UI shows the correct totals
+				let tmpTracker = this.operation.progressTrackers[`FullSync-${this.EntitySchema.TableName}`];
+				if (tmpTracker)
+				{
+					tmpTracker.CurrentCount = tmpTracker.TotalCount;
 				}
 
 				this.fable.log.info(`${this.EntitySchema.TableName}: ongoing sync complete.`);
