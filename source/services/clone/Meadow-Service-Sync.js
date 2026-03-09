@@ -65,6 +65,18 @@ class MeadowSync extends libFableServiceProviderBase
 			this.MaxRecordsPerEntity = parseInt(this.options.MaxRecordsPerEntity, 10) || 0;
 		}
 
+		// When true, use ID-based keyset pagination instead of OFFSET pagination.
+		// This avoids table scans on large datasets by filtering WHERE ID > lastMaxID.
+		this.UseAdvancedIDPagination = false;
+		if (this.fable.ProgramConfiguration.hasOwnProperty('UseAdvancedIDPagination'))
+		{
+			this.UseAdvancedIDPagination = !!this.fable.ProgramConfiguration.UseAdvancedIDPagination;
+		}
+		else if (this.options.hasOwnProperty('UseAdvancedIDPagination'))
+		{
+			this.UseAdvancedIDPagination = !!this.options.UseAdvancedIDPagination;
+		}
+
 		// Tolerance window in milliseconds for cross-database timestamp precision differences.
 		// Passed through to Ongoing sync entities for bisection date comparison.
 		this.DateTimePrecisionMS = 1000;
@@ -114,6 +126,7 @@ class MeadowSync extends libFableServiceProviderBase
 						SyncDeletedRecords: this.SyncDeletedRecords,
 						MaxRecordsPerEntity: this.MaxRecordsPerEntity,
 						DateTimePrecisionMS: this.DateTimePrecisionMS,
+						UseAdvancedIDPagination: this.UseAdvancedIDPagination,
 					};
 
 					let tmpSyncEntity;
