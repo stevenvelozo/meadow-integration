@@ -448,9 +448,10 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 					tmpSyncState.EstimatedRecordCount = tmpSyncState.Server.RecordCount - tmpSyncState.Local.RecordCount;
 
 					// Apply MaxRecordsPerEntity cap if configured
-					let tmpRecordCap = (this.MaxRecordsPerEntity > 0)
+					tmpSyncState.RecordCap = (this.MaxRecordsPerEntity > 0)
 						? Math.min(tmpSyncState.Server.RecordCount, this.MaxRecordsPerEntity)
 						: tmpSyncState.Server.RecordCount;
+					let tmpRecordCap = tmpSyncState.RecordCap;
 
 					if (this.MaxRecordsPerEntity > 0 && tmpSyncState.EstimatedRecordCount > this.MaxRecordsPerEntity)
 					{
@@ -617,7 +618,7 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 
 						const fFetchPage = () =>
 						{
-							if (tmpTotalFetched >= tmpRecordCap)
+							if (tmpTotalFetched >= tmpSyncState.RecordCap)
 							{
 								return fSyncComplete();
 							}
