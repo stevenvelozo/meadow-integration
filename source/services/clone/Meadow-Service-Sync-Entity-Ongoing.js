@@ -372,12 +372,20 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 											{
 												this.log.error(`Fallback update also failed for ${this.EntitySchema.TableName} ID ${pServerRecord[this.DefaultIdentifier]}: ${pUpdateError}`);
 											}
+											else
+											{
+												this._recordsUpdated++;
+											}
 											return fCallback();
 										});
 									return;
 								}
 								this.log.error(`Error creating record ${this.EntitySchema.TableName}: ${pCreateError}`, pCreateError);
 								return fCallback();
+							}
+							else
+							{
+								this._recordsCreated++;
 							}
 							return fCallback();
 						});
@@ -391,6 +399,10 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 							if (pUpdateError)
 							{
 								this.log.error(`Error updating record ${this.EntitySchema.TableName}: ${pUpdateError}`, pUpdateError);
+							}
+							else
+							{
+								this._recordsUpdated++;
 							}
 							return fCallback();
 						});
@@ -407,12 +419,22 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 			return fCallback(null, 0);
 		}
 
+		// Check the global cap before starting -- if we have already synced
+		// MaxRecordsPerEntity records across all stages, stop immediately.
+		if (this.MaxRecordsPerEntity > 0 && this._totalSyncedThisSync >= this.MaxRecordsPerEntity)
+		{
+			this.fable.log.info(`${this.EntitySchema.TableName}: global record cap reached (${this._totalSyncedThisSync}/${this.MaxRecordsPerEntity}); skipping pull.`);
+			return fCallback(null, 0);
+		}
+
 		let tmpSyncedCount = 0;
 		let tmpOffset = 0;
 		let tmpDone = false;
 
+		// Apply per-call cap based on estimated count, then further limit by
+		// how many records remain before hitting the global MaxRecordsPerEntity.
 		let tmpRecordCap = (this.MaxRecordsPerEntity > 0)
-			? Math.min(pEstimatedCount, this.MaxRecordsPerEntity)
+			? Math.min(pEstimatedCount, this.MaxRecordsPerEntity - this._totalSyncedThisSync)
 			: pEstimatedCount;
 
 		const fFetchPage = () =>
@@ -443,6 +465,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 								() =>
 								{
 									tmpSyncedCount++;
+									this._totalSyncedThisSync++;
 									// Use setImmediate to yield the event loop and prevent
 									// stack overflow when SQLite callbacks complete synchronously
 									return setImmediate(fRecordDone);
@@ -485,6 +508,12 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 	// the range from the server to bring local in sync.
 	_bisectRange(pMinID, pMaxID, pDepth, fCallback)
 	{
+		// If the global record cap has been reached, stop bisecting
+		if (this.MaxRecordsPerEntity > 0 && this._totalSyncedThisSync >= this.MaxRecordsPerEntity)
+		{
+			return fCallback();
+		}
+
 		const tmpRangeSize = pMaxID - pMinID + 1;
 		const tmpIDCol = this.DefaultIdentifier;
 		const tmpRangeFilter = `FBV~${tmpIDCol}~GE~${pMinID}~FBV~${tmpIDCol}~LE~${pMaxID}`;
@@ -768,7 +797,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 			{
 				if (pReadError)
 				{
-					let tmpErrorStr = (typeof(pReadError) === 'string') ? pReadError : JSON.stringify(pReadError);
+					let tmpErrorStr = (typeof(pReadError) === 'string') ? pReadError : String(pReadError);
 					if (tmpErrorStr.indexOf('Invalid column') > -1 || tmpErrorStr.indexOf('Invalid object') > -1 || tmpErrorStr.indexOf('no such column') > -1 || tmpErrorStr.indexOf('no such table') > -1)
 					{
 						this.log.warn(`${this.EntitySchema.TableName}: local table schema mismatch (${pReadError}); skipping sync.`);
@@ -782,6 +811,13 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 	_syncInternal(fCallback)
 	{
 		this.operation.createTimeStamp('EntityOngoingSync');
+
+		// Track total records synced across all stages to enforce MaxRecordsPerEntity globally
+		this._totalSyncedThisSync = 0;
+
+		// Track per-record create vs update counts for the sync report
+		this._recordsCreated = 0;
+		this._recordsUpdated = 0;
 
 		const tmpSyncState = (
 			{
@@ -941,7 +977,10 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 					// Create a progress tracker so callers (e.g. data-cloner UI) can see Total/Synced
 				(fStageComplete) =>
 				{
-					this.operation.createProgressTracker(tmpSyncState.Server.RecordCount, `FullSync-${this.EntitySchema.TableName}`);
+					let tmpTrackerTotal = (this.MaxRecordsPerEntity > 0)
+					? Math.min(tmpSyncState.Server.RecordCount, this.MaxRecordsPerEntity)
+					: tmpSyncState.Server.RecordCount;
+				this.operation.createProgressTracker(tmpTrackerTotal, `FullSync-${this.EntitySchema.TableName}`);
 					return fStageComplete();
 				},
 
@@ -1125,6 +1164,15 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 				}
 
 				this.fable.log.info(`${this.EntitySchema.TableName}: ongoing sync complete.`);
+
+		// Store sync results so callers can inspect the breakdown
+		this.syncResults = {
+			Created: this._recordsCreated,
+			Updated: this._recordsUpdated,
+			Deleted: 0,
+			ServerRecordCount: tmpSyncState.Server.RecordCount,
+			LocalRecordCount: tmpSyncState.Local.RecordCount
+		};
 
 				if (this.SyncDeletedRecords)
 				{
