@@ -443,11 +443,15 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 								() =>
 								{
 									tmpSyncedCount++;
-									return fRecordDone();
+									// Use setImmediate to yield the event loop and prevent
+									// stack overflow when SQLite callbacks complete synchronously
+									return setImmediate(fRecordDone);
 								});
 						},
 						(pUpsertError) =>
 						{
+							// Increment per-page progress so the UI reflects sync in real-time
+							this._incrementProgress(pRecords.length);
 							tmpOffset += this.PageSize;
 							if (pRecords.length < this.PageSize)
 							{
@@ -455,7 +459,8 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 								return fCallback(null, tmpSyncedCount);
 							}
 							this.fable.log.info(`${this.EntitySchema.TableName}: pulled ${tmpSyncedCount} of ~${tmpRecordCap} records...`);
-							return fFetchPage();
+							// Use setImmediate to break the recursive call chain across pages
+							return setImmediate(fFetchPage);
 						});
 				});
 		};
@@ -604,7 +609,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 				{
 					this.fable.log.info(`${this.EntitySchema.TableName}: synced ${pSyncedCount} records in range ${pMinID}-${pMaxID}`);
 				}
-				this._incrementProgress(pSyncedCount || 0);
+				// Per-page progress is now tracked inside _pullServerRecords()
 				return fCallback();
 			});
 	}
@@ -1017,7 +1022,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 											{
 												this.fable.log.info(`${this.EntitySchema.TableName}: pulled ${pSyncedCount} new/modified records via UpdateDate.`);
 											}
-											this._incrementProgress(pSyncedCount || 0);
+											// Per-page progress is now tracked inside _pullServerRecords()
 											tmpSyncState.UpdateDateSyncDone = true;
 											return fStageComplete();
 										});
@@ -1100,7 +1105,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 							{
 								this.fable.log.info(`${this.EntitySchema.TableName}: pulled ${pSyncedCount} new records by ID.`);
 							}
-							this._incrementProgress(pSyncedCount || 0);
+							// Per-page progress is now tracked inside _pullServerRecords()
 							return fStageComplete();
 						});
 				},

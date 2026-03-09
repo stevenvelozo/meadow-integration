@@ -297,6 +297,10 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 					(pDeleteSyncError) =>
 					{
 						this.fable.log.info(`Delete sync complete for ${this.EntitySchema.TableName} (${tmpDeletedCount} deleted records processed).`);
+						if (this.syncResults)
+						{
+							this.syncResults.Deleted = tmpDeletedCount;
+						}
 						return fCallback();
 					});
 			});
@@ -599,6 +603,21 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 							{
 								this.fable.log.error(`Error returned URL Partial .. this may not be an error: ${pDownloadError}`);
 							}
+
+							// Store sync results on the entity so callers can inspect the breakdown
+							this.syncResults = (
+								{
+									Created: tmpRecordsCreated,
+									Skipped: tmpRecordsSkipped,
+									Errors: tmpRecordsErrored,
+									Deleted: 0,
+									ServerRecordCount: tmpSyncState.Server.RecordCount,
+									LocalRecordCount: tmpSyncState.Local.RecordCount,
+									ServerMaxID: tmpSyncState.Server.MaxIDEntity,
+									LocalMaxID: tmpSyncState.Local.MaxIDEntity,
+									EstimatedNew: tmpSyncState.EstimatedRecordCount
+								});
+
 							fStageComplete();
 						});
 				},
