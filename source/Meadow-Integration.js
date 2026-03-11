@@ -8,6 +8,9 @@ const libSyncEntityInitial = require(`./services/clone/Meadow-Service-Sync-Entit
 const libSyncEntityOngoing = require(`./services/clone/Meadow-Service-Sync-Entity-Ongoing.js`);
 const libOperation = require(`./services/clone/Meadow-Service-Operation.js`);
 
+const libIntegrationAdapter = require(`./Meadow-Service-Integration-Adapter.js`);
+const libGUIDMap = require(`./Meadow-Service-Integration-GUIDMap.js`);
+
 module.exports = (
 	{
 		TabularCheck: libTabularCheck,
@@ -18,5 +21,8 @@ module.exports = (
 		Sync: libSync,
 		SyncEntityInitial: libSyncEntityInitial,
 		SyncEntityOngoing: libSyncEntityOngoing,
-		Operation: libOperation
+		Operation: libOperation,
+
+		IntegrationAdapter: libIntegrationAdapter,
+		GUIDMap: libGUIDMap
 	});

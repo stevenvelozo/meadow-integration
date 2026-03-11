@@ -65,7 +65,16 @@ class MeadowGUIDMap extends libFableServiceProviderBase
 		return (this._GUIDMap[pEntity].hasOwnProperty(pGUID)) ? this._GUIDMap[pEntity][pGUID] : false;
 	}
 
-	getIDFromGUIDAsync(pEntity, pGUID, fCallback)
+	/**
+	 * Get an ID from a GUID, loading from the server if not already cached.
+	 *
+	 * @param {string} pEntity - The entity name
+	 * @param {string} pGUID - The GUID to look up
+	 * @param {function} fCallback - Callback (pError, pID)
+	 * @param {object} [pClient] - Optional REST client to use for the server lookup
+	 *                              (defaults to this.fable.MeadowRestClient or this.fable.MeadowCloneRestClient)
+	 */
+	getIDFromGUIDAsync(pEntity, pGUID, fCallback, pClient)
 	{
 		if (!this._GUIDMap.hasOwnProperty(pEntity))
 		{
@@ -79,8 +88,16 @@ class MeadowGUIDMap extends libFableServiceProviderBase
 		}
 		else
 		{
+			// Resolve the REST client to use for the server lookup
+			let tmpClient = pClient || this.fable.MeadowRestClient || this.fable.MeadowCloneRestClient;
+
+			if (!tmpClient || typeof(tmpClient.getEntityByGUID) !== 'function')
+			{
+				return fCallback(new Error(`No REST client with getEntityByGUID available for GUID lookup of [${pEntity}].[${pGUID}].`), false);
+			}
+
 			// Try to load it from the server
-			this.fable.MeadowRestClient.getEntityByGUID(pEntity, pGUID,
+			tmpClient.getEntityByGUID(pEntity, pGUID,
 				(pError, pBody) =>
 				{
 					if (pError)

@@ -1,0 +1,23 @@
+{
+	"Source":
+	{
+		"ServerURL": "https://api.example.com/1.0/",
+		"UserID": "integration_user",
+		"Password": "integration_password"
+	},
+	"SessionManager":
+	{
+		"Sessions":
+		{
+			"Default":
+			{
+				"ServerURL": "https://api.example.com/1.0/",
+				"Credentials":
+				{
+					"username": "session_user",
+					"password": "session_password"
+				}
+			}
+		}
+	}
+}

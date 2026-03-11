@@ -14,12 +14,17 @@
   - [Comprehensions](comprehensions.md)
   - [Mapping Files](mapping-files.md)
 
+- Comprehension Push
+
+  - [Integration Adapter](integration-adapter.md)
+  - [Push Configuration](comprehension-push/configuration.md)
+
 - Data Synchronization
 
   - [Data Clone Overview](data-clone/overview.md)
   - [Connection Manager](data-clone/connection-manager.md)
   - [Sync Modes](data-clone/sync-modes.md)
-  - [Configuration](data-clone/configuration.md)
+  - [Clone Configuration](data-clone/configuration.md)
   - [Docker Deployment](data-clone/docker.md)
 
 - CLI Reference

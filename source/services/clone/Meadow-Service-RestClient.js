@@ -155,6 +155,45 @@ class MeadowCloneRestClient extends libFableServiceProviderBase
 			});
 	}
 
+	upsertEntities(pEntity, pRecordArray, fCallback)
+	{
+		let tmpRequestOptions = (
+			{
+				url: `${this.serverURL}${pEntity}s/Upserts`,
+				body: pRecordArray,
+			});
+		tmpRequestOptions = this._prepareRequestOptions(tmpRequestOptions);
+
+		this.restClient.putJSON(tmpRequestOptions,
+			(pError, pResponse, pBody) =>
+			{
+				if (pError)
+				{
+					this.log.error(`Error bulk upserting ${pEntity} records: ${pError.message}`);
+				}
+				return fCallback(pError, pBody);
+			});
+	}
+
+	getEntityByGUID(pEntity, pGUID, fCallback)
+	{
+		let tmpRequestOptions = (
+			{
+				url: `${this.serverURL}${pEntity}/By/GUID${pEntity}/${pGUID}`,
+			});
+		tmpRequestOptions = this._prepareRequestOptions(tmpRequestOptions);
+
+		return this.restClient.getJSON(tmpRequestOptions,
+			(pError, pResponse, pBody) =>
+			{
+				if (pError)
+				{
+					this.log.error(`Error getting ${pEntity} by GUID [${pGUID}]: ${pError.message}`);
+				}
+				return fCallback(pError, pBody);
+			});
+	}
+
 	deleteEntity(pEntity, pIDRecord, fCallback)
 	{
 		let tmpRequestOptions = (

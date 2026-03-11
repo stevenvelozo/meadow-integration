@@ -158,5 +158,6 @@ Both pipelines share the Fable service provider pattern for dependency injection
 - [Comprehensions](comprehensions.md) -- The comprehension data format in detail
 - [Programmatic API](programmatic-api.md) -- Using services directly in your code
 - [Integration Adapter](integration-adapter.md) -- Pushing data to Meadow REST APIs
+- [Comprehension Push Configuration](comprehension-push/configuration.md) -- CLI options and config file for pushing comprehensions
 - [Data Clone Overview](data-clone/overview.md) -- Synchronizing remote APIs to local databases
 - [Examples](examples-walkthrough.md) -- Walkthrough of all runnable examples
