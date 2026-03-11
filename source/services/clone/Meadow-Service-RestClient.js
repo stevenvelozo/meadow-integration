@@ -177,9 +177,11 @@ class MeadowCloneRestClient extends libFableServiceProviderBase
 
 	getEntityByGUID(pEntity, pGUID, fCallback)
 	{
+		// Meadow's "ReadBy" endpoint uses the plural entity name with pagination:
+		//   GET /{Entity}s/By/GUID{Entity}/{Value}/{Start}/{Cap}
 		let tmpRequestOptions = (
 			{
-				url: `${this.serverURL}${pEntity}/By/GUID${pEntity}/${pGUID}`,
+				url: `${this.serverURL}${pEntity}s/By/GUID${pEntity}/${pGUID}/0/1`,
 			});
 		tmpRequestOptions = this._prepareRequestOptions(tmpRequestOptions);
 
@@ -189,6 +191,11 @@ class MeadowCloneRestClient extends libFableServiceProviderBase
 				if (pError)
 				{
 					this.log.error(`Error getting ${pEntity} by GUID [${pGUID}]: ${pError.message}`);
+				}
+				// The /By/ endpoint returns an array; extract the first record for convenience.
+				if (Array.isArray(pBody) && pBody.length > 0)
+				{
+					return fCallback(pError, pBody[0]);
 				}
 				return fCallback(pError, pBody);
 			});
