@@ -11,6 +11,13 @@ const libOperation = require(`./services/clone/Meadow-Service-Operation.js`);
 const libIntegrationAdapter = require(`./Meadow-Service-Integration-Adapter.js`);
 const libGUIDMap = require(`./Meadow-Service-Integration-GUIDMap.js`);
 
+const libFileParser = require(`./services/parser/Service-FileParser.js`);
+const libFileParserCSV = require(`./services/parser/Service-FileParser-CSV.js`);
+const libFileParserJSON = require(`./services/parser/Service-FileParser-JSON.js`);
+const libFileParserXLSX = require(`./services/parser/Service-FileParser-XLSX.js`);
+const libFileParserXML = require(`./services/parser/Service-FileParser-XML.js`);
+const libFileParserFixedWidth = require(`./services/parser/Service-FileParser-FixedWidth.js`);
+
 module.exports = (
 	{
 		TabularCheck: libTabularCheck,
@@ -24,5 +31,12 @@ module.exports = (
 		Operation: libOperation,
 
 		IntegrationAdapter: libIntegrationAdapter,
-		GUIDMap: libGUIDMap
+		GUIDMap: libGUIDMap,
+
+		FileParser: libFileParser,
+		FileParserCSV: libFileParserCSV,
+		FileParserJSON: libFileParserJSON,
+		FileParserXLSX: libFileParserXLSX,
+		FileParserXML: libFileParserXML,
+		FileParserFixedWidth: libFileParserFixedWidth
 	});
