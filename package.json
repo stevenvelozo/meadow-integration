@@ -45,8 +45,10 @@
         "meadow-connection-mysql": "^1.0.14",
         "orator": "^6.0.4",
         "orator-serviceserver-restify": "^2.0.9",
+        "pict-section-flow": "^0.0.17",
         "pict-service-commandlineutility": "^1.0.19",
         "pict-sessionmanager": "^1.0.2",
+        "pict-view": "^1.0.67",
         "xlsx": "^0.18.5"
     }
 }

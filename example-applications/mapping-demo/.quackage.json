@@ -1,0 +1,10 @@
+{
+	"GulpfileConfiguration": {
+		"EntrypointInputSourceFile": "{~Data:AppData.CWD~}/source/MappingDemoApp.js",
+		"LibraryObjectName": "MappingDemoApplication",
+		"LibraryOutputFolder": "{~Data:AppData.CWD~}/web/",
+		"LibraryUniminifiedFileName": "mapping-demo-editor.js",
+		"LibraryMinifiedFileName": "mapping-demo-editor.min.js",
+		"BrowserifyIgnore": []
+	}
+}

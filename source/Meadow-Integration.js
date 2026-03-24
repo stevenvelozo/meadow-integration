@@ -18,6 +18,13 @@ const libFileParserXLSX = require(`./services/parser/Service-FileParser-XLSX.js`
 const libFileParserXML = require(`./services/parser/Service-FileParser-XML.js`);
 const libFileParserFixedWidth = require(`./services/parser/Service-FileParser-FixedWidth.js`);
 
+const libMeadowMappingEditorView = require(`./views/PictView-MeadowMappingEditor.js`);
+const libMappingEditorSchemaUtils = require(`./views/MappingEditor-SchemaUtils.js`);
+const libFlowCardMappingSource = require(`./views/flow-cards/FlowCard-MappingSource.js`);
+const libFlowCardMappingTarget = require(`./views/flow-cards/FlowCard-MappingTarget.js`);
+const libFlowCardTemplateExpression = require(`./views/flow-cards/FlowCard-TemplateExpression.js`);
+const libFlowCardSolverExpression = require(`./views/flow-cards/FlowCard-SolverExpression.js`);
+
 module.exports = (
 	{
 		TabularCheck: libTabularCheck,
@@ -38,5 +45,13 @@ module.exports = (
 		FileParserJSON: libFileParserJSON,
 		FileParserXLSX: libFileParserXLSX,
 		FileParserXML: libFileParserXML,
-		FileParserFixedWidth: libFileParserFixedWidth
+		FileParserFixedWidth: libFileParserFixedWidth,
+
+		// Visual mapping editor components (for browser bundles)
+		MeadowMappingEditorView: libMeadowMappingEditorView,
+		MappingEditorSchemaUtils: libMappingEditorSchemaUtils,
+		FlowCardMappingSource: libFlowCardMappingSource,
+		FlowCardMappingTarget: libFlowCardMappingTarget,
+		FlowCardTemplateExpression: libFlowCardTemplateExpression,
+		FlowCardSolverExpression: libFlowCardSolverExpression
 	});

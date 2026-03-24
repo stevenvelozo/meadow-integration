@@ -1,0 +1,14 @@
+{
+	"Entity": "Book",
+	"GUIDTemplate": "DemoBook-{~D:Record.id~}",
+	"Mappings":
+	{
+		"Title": "{~D:Record.title~}",
+		"Language": "{~D:Record.language_code~}",
+		"PublicationYear": "{~D:Record.original_publication_year~}",
+		"ISBN": "{~D:Record.isbn~}",
+		"Genre": "Classic",
+		"Type": "Fiction",
+		"ImageURL": ""
+	}
+}

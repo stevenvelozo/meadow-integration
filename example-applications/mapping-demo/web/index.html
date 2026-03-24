@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meadow-Integration Pipeline Demo</title>
+<style id="PICT-CSS"></style>
+<style>
+	:root {
+		--brand:        #18a5a0;
+		--brand-dark:   #127b77;
+		--bg:           #f5efe4;
+		--bg-surface:   #fdf8f0;
+		--bg-card:      #ffffff;
+		--text:         #3a3020;
+		--text-mid:     #6b5c45;
+		--text-dim:     #a09070;
+		--border:       #d6c8ae;
+		--border-sub:   #ece3d0;
+		--success:      #2ecc71;
+		--error:        #e74c3c;
+		--warn:         #f39c12;
+		--step-1:       #18a5a0;
+		--step-2:       #3498db;
+		--step-3:       #c0392b;
+		--step-4:       #9b59b6;
+		--step-5:       #e67e22;
+		--step-6:       #2ecc71;
+	}
+
+	/* ── Mapping editor integration ── */
+	.meadow-mapping-editor {
+		display: none;
+	}
+	.meadow-mapping-editor.active {
+		display: block;
+	}
+	/* Override facto-specific CSS vars with demo theme equivalents */
+	.meadow-mapping-editor,
+	.meadow-flow-container,
+	.meadow-mapping-btn,
+	.meadow-mapping-json-editor {
+		--facto-brand:          var(--brand);
+		--facto-border:         var(--border);
+		--facto-border-subtle:  var(--border-sub);
+		--facto-bg-surface:     var(--bg-surface);
+		--facto-bg-input:       var(--bg-card);
+		--facto-text:           var(--text);
+		--facto-text-tertiary:  var(--text-dim);
+	}
+
+	* { box-sizing: border-box; margin: 0; padding: 0; }
+
+	body {
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		background: var(--bg);
+		color: var(--text);
+		min-height: 100vh;
+	}
+
+	/* ── Header ── */
+	.demo-header {
+		background: var(--text);
+		color: #fff;
+		padding: 1.25rem 2rem;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+	.demo-header h1 {
+		font-size: 1.25rem;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+	}
+	.demo-header .subtitle {
+		font-size: 0.8rem;
+		opacity: 0.6;
+		font-weight: 400;
+	}
+	.demo-badge {
+		margin-left: auto;
+		background: var(--brand);
+		color: #fff;
+		padding: 0.25em 0.7em;
+		border-radius: 999px;
+		font-size: 0.72rem;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+	}
+
+	/* ── Pipeline flow bar ── */
+	.pipeline-bar {
+		background: var(--bg-surface);
+		border-bottom: 1px solid var(--border);
+		padding: 0.75rem 2rem;
+		display: flex;
+		align-items: center;
+		gap: 0;
+		overflow-x: auto;
+	}
+	.pipeline-step {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.4em 0.9em;
+		border-radius: 4px;
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--text-dim);
+		cursor: pointer;
+		white-space: nowrap;
+		transition: background 0.15s, color 0.15s;
+	}
+	.pipeline-step:hover { background: var(--border-sub); color: var(--text); }
+	.pipeline-step.done  { color: var(--text-mid); }
+	.pipeline-step.done .step-num { background: var(--success); color: #fff; }
+	.pipeline-step .step-num {
+		width: 1.5em; height: 1.5em;
+		border-radius: 50%;
+		background: var(--border);
+		color: var(--text-dim);
+		display: flex; align-items: center; justify-content: center;
+		font-size: 0.75em;
+		font-weight: 700;
+		transition: background 0.2s, color 0.2s;
+	}
+	.pipeline-arrow {
+		color: var(--border);
+		font-size: 0.9rem;
+		padding: 0 0.2rem;
+		user-select: none;
+	}
+
+	/* ── Main layout ── */
+	.demo-main {
+		max-width: 960px;
+		margin: 2rem auto;
+		padding: 0 1.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+	}
+
+	/* ── Step card ── */
+	.step-card {
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		overflow: hidden;
+	}
+	.step-card-header {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.9rem 1.25rem;
+		border-bottom: 1px solid var(--border-sub);
+	}
+	.step-color-bar {
+		width: 4px;
+		height: 2rem;
+		border-radius: 2px;
+		flex-shrink: 0;
+	}
+	.step-card-header h2 {
+		font-size: 1rem;
+		font-weight: 700;
+		flex: 1;
+	}
+	.step-card-header .step-desc {
+		font-size: 0.78rem;
+		color: var(--text-dim);
+		display: block;
+		margin-top: 0.15em;
+		font-weight: 400;
+	}
+	.step-card-body {
+		padding: 1.1rem 1.25rem;
+	}
+
+	/* ── Run button ── */
+	.run-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4em;
+		padding: 0.45em 1.1em;
+		font-size: 0.85rem;
+		font-weight: 600;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		transition: opacity 0.15s, transform 0.1s;
+		color: #fff;
+	}
+	.run-btn:hover  { opacity: 0.88; }
+	.run-btn:active { transform: scale(0.98); }
+	.run-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+	.run-btn .icon { font-size: 1em; }
+
+	/* ── Result panel ── */
+	.result-panel {
+		margin-top: 0.9rem;
+		border: 1px solid var(--border-sub);
+		border-radius: 6px;
+		overflow: hidden;
+		display: none;
+	}
+	.result-panel.visible { display: block; }
+	.result-panel-header {
+		background: var(--bg);
+		border-bottom: 1px solid var(--border-sub);
+		padding: 0.4em 0.75em;
+		font-size: 0.7rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--text-dim);
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+	}
+	.result-badge {
+		padding: 0.1em 0.5em;
+		border-radius: 3px;
+		font-size: 0.68rem;
+		font-weight: 700;
+	}
+	.result-badge.ok    { background: #d4edda; color: #155724; }
+	.result-badge.err   { background: #f8d7da; color: #721c24; }
+	.result-badge.info  { background: #d1ecf1; color: #0c5460; }
+
+	/* ── Data table ── */
+	.data-table-wrap {
+		overflow-x: auto;
+		padding: 0.5rem 0.75rem;
+	}
+	.data-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.8rem;
+	}
+	.data-table th {
+		text-align: left;
+		color: var(--text-dim);
+		font-weight: 600;
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		padding: 0.35em 0.6em;
+		border-bottom: 1px solid var(--border);
+		white-space: nowrap;
+	}
+	.data-table td {
+		padding: 0.35em 0.6em;
+		border-bottom: 1px solid var(--border-sub);
+		color: var(--text);
+		max-width: 200px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.data-table tr:last-child td { border-bottom: none; }
+	.data-table tr:hover td { background: var(--bg); }
+
+	/* ── JSON viewer ── */
+	.json-viewer {
+		padding: 0.75rem;
+		font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+		font-size: 0.78rem;
+		line-height: 1.6;
+		color: var(--text);
+		white-space: pre-wrap;
+		word-break: break-all;
+		background: var(--bg);
+		max-height: 320px;
+		overflow-y: auto;
+	}
+	.json-key    { color: #2980b9; }
+	.json-string { color: #27ae60; }
+	.json-number { color: #8e44ad; }
+	.json-bool   { color: var(--warn); }
+
+	/* ── Stats row ── */
+	.stats-row {
+		display: flex;
+		gap: 0.75rem;
+		padding: 0.6rem 0.75rem;
+		flex-wrap: wrap;
+	}
+	.stat-chip {
+		padding: 0.3em 0.75em;
+		background: var(--bg);
+		border: 1px solid var(--border);
+		border-radius: 4px;
+		font-size: 0.78rem;
+	}
+	.stat-chip strong { color: var(--brand-dark); }
+
+	/* ── Spinner ── */
+	.spinner {
+		display: inline-block;
+		width: 0.9em; height: 0.9em;
+		border: 2px solid rgba(255,255,255,0.4);
+		border-top-color: #fff;
+		border-radius: 50%;
+		animation: spin 0.6s linear infinite;
+	}
+	@keyframes spin { to { transform: rotate(360deg); } }
+
+	/* ── Footer ── */
+	.demo-footer {
+		text-align: center;
+		padding: 2rem;
+		font-size: 0.75rem;
+		color: var(--text-dim);
+	}
+	.demo-footer a { color: var(--brand); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header class="demo-header">
+	<div>
+		<h1>Meadow-Integration Pipeline Demo</h1>
+		<span class="subtitle">meadow-integration &rsaquo; example-applications/mapping-demo</span>
+	</div>
+	<span class="demo-badge">LIVE</span>
+</header>
+
+<nav class="pipeline-bar">
+	<div class="pipeline-step" id="nav-1" onclick="scrollToStep(1)">
+		<span class="step-num">1</span> Parse
+	</div>
+	<span class="pipeline-arrow">&#8594;</span>
+	<div class="pipeline-step" id="nav-2" onclick="scrollToStep(2)">
+		<span class="step-num">2</span> Map
+	</div>
+	<span class="pipeline-arrow">&#8594;</span>
+	<div class="pipeline-step" id="nav-3" onclick="scrollToStep(3)">
+		<span class="step-num">3</span> Visual Map
+	</div>
+	<span class="pipeline-arrow">&#8594;</span>
+	<div class="pipeline-step" id="nav-4" onclick="scrollToStep(4)">
+		<span class="step-num">4</span> Transform
+	</div>
+	<span class="pipeline-arrow">&#8594;</span>
+	<div class="pipeline-step" id="nav-5" onclick="scrollToStep(5)">
+		<span class="step-num">5</span> Load
+	</div>
+	<span class="pipeline-arrow">&#8594;</span>
+	<div class="pipeline-step" id="nav-6" onclick="scrollToStep(6)">
+		<span class="step-num">6</span> Verify
+	</div>
+</nav>
+
+<main class="demo-main">
+
+	<!-- Step 1: Parse -->
+	<section class="step-card" id="step-1">
+		<div class="step-card-header">
+			<div class="step-color-bar" style="background: var(--step-1);"></div>
+			<div>
+				<h2>Step 1 &mdash; Parse</h2>
+				<span class="step-desc">Read <code>data/books-sample.csv</code> and parse into raw records</span>
+			</div>
+			<button class="run-btn" id="btn-1" style="background: var(--step-1);" onclick="runParse()">
+				<span class="icon">&#9654;</span> Run Parse
+			</button>
+		</div>
+		<div class="step-card-body">
+			<p style="font-size:0.82rem; color:var(--text-mid); margin-bottom:0.75rem;">
+				The first stage reads a CSV file and parses it into an array of plain JavaScript objects
+				keyed by column header. No transformation is applied &mdash; this is the raw source data.
+			</p>
+			<div class="result-panel" id="result-1">
+				<div class="result-panel-header">
+					<span>Result</span>
+					<span class="result-badge info" id="badge-1"></span>
+				</div>
+				<div id="output-1"></div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Step 2: Map -->
+	<section class="step-card" id="step-2">
+		<div class="step-card-header">
+			<div class="step-color-bar" style="background: var(--step-2);"></div>
+			<div>
+				<h2>Step 2 &mdash; Map</h2>
+				<span class="step-desc">Load <code>mappings/books-to-book.json</code> &mdash; defines how CSV columns become entity fields</span>
+			</div>
+			<button class="run-btn" id="btn-2" style="background: var(--step-2);" onclick="runMap()">
+				<span class="icon">&#9654;</span> Load Mapping
+			</button>
+		</div>
+		<div class="step-card-body">
+			<p style="font-size:0.82rem; color:var(--text-mid); margin-bottom:0.75rem;">
+				A mapping file declares the target <strong>Entity</strong>, a <strong>GUIDTemplate</strong>
+				(unique stable key per record), and a <strong>Mappings</strong> object where each value is a
+				Pict template expression that produces the target field value from the source record.
+				Literal values like <code>"Classic"</code> are valid alongside template expressions.
+			</p>
+			<div class="result-panel" id="result-2">
+				<div class="result-panel-header">
+					<span>Result</span>
+					<span class="result-badge info" id="badge-2"></span>
+				</div>
+				<div id="output-2"></div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Step 3: Visual Map -->
+	<section class="step-card" id="step-3">
+		<div class="step-card-header">
+			<div class="step-color-bar" style="background: var(--step-3);"></div>
+			<div>
+				<h2>Step 3 &mdash; Visual Mapping Editor</h2>
+				<span class="step-desc">Wire CSV source fields to Book entity columns using the flow canvas</span>
+			</div>
+			<button class="run-btn" id="btn-3" style="background: var(--step-3);" onclick="openVisualEditor()">
+				<span class="icon">&#9654;</span> Open Editor
+			</button>
+		</div>
+		<div class="step-card-body">
+			<p style="font-size:0.82rem; color:var(--text-mid); margin-bottom:0.75rem;">
+				The <strong>Visual Mapping Editor</strong> lets you draw connections between source fields
+				(CSV columns) and target columns (Book entity schema) on an interactive flow canvas.
+				Add <strong>TPL</strong> nodes (purple) to apply Pict template expressions like
+				<code>{~D:Record.title~}</code>, or <strong>SOL</strong> nodes (orange) for conditional
+				solver expressions. Click <em>Save Mapping</em> to apply the wiring to the pipeline &mdash;
+				the Transform step will use your visual mapping.
+			</p>
+
+			<!-- Placeholder shown before the editor is opened -->
+			<div id="mapping-editor-placeholder" style="padding:1.5rem; text-align:center; border:2px dashed var(--border); border-radius:6px; color:var(--text-dim); font-size:0.82rem;">
+				Click <strong>Open Editor</strong> to launch the visual flow mapper.<br>
+				<span style="font-size:0.75em; margin-top:0.5em; display:block;">
+					Requires a built bundle &mdash; run <code>npm run build</code> in this directory first.
+				</span>
+			</div>
+
+			<!-- Pict renders the mapping editor view into this container -->
+			<div id="MeadowMap-Editor-Container"></div>
+
+			<div class="result-panel" id="result-3">
+				<div class="result-panel-header">
+					<span>Result</span>
+					<span class="result-badge info" id="badge-3"></span>
+				</div>
+				<div id="output-3"></div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Step 4: Transform -->
+	<section class="step-card" id="step-4">
+		<div class="step-card-header">
+			<div class="step-color-bar" style="background: var(--step-4);"></div>
+			<div>
+				<h2>Step 4 &mdash; Transform (Comprehension)</h2>
+				<span class="step-desc">Run <strong>TabularTransform</strong> to produce a comprehension from the mapped records</span>
+			</div>
+			<button class="run-btn" id="btn-4" style="background: var(--step-4);" onclick="runTransform()">
+				<span class="icon">&#9654;</span> Transform
+			</button>
+		</div>
+		<div class="step-card-body">
+			<p style="font-size:0.82rem; color:var(--text-mid); margin-bottom:0.75rem;">
+				<strong>TabularTransform</strong> applies the mapping configuration to each raw record and
+				builds a <em>comprehension</em> &mdash; a deduplicated dictionary keyed by GUID. The comprehension
+				is the canonical intermediate format in the meadow-integration pipeline.
+				Duplicate GUIDs are merged; bad records (empty GUIDs) are tracked separately.
+				If you saved a visual mapping in Step 3, it will be used here instead of the static JSON config.
+			</p>
+			<div class="result-panel" id="result-4">
+				<div class="result-panel-header">
+					<span>Result</span>
+					<span class="result-badge info" id="badge-4"></span>
+				</div>
+				<div id="output-4"></div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Step 5: Load -->
+	<section class="step-card" id="step-5">
+		<div class="step-card-header">
+			<div class="step-color-bar" style="background: var(--step-5);"></div>
+			<div>
+				<h2>Step 5 &mdash; Load (IntegrationAdapter)</h2>
+				<span class="step-desc">Push the comprehension into the bookstore database via <strong>IntegrationAdapter</strong></span>
+			</div>
+			<button class="run-btn" id="btn-5" style="background: var(--step-5);" onclick="runLoad()">
+				<span class="icon">&#9654;</span> Load to DB
+			</button>
+		</div>
+		<div class="step-card-body">
+			<p style="font-size:0.82rem; color:var(--text-mid); margin-bottom:0.75rem;">
+				<strong>IntegrationAdapter</strong> iterates the comprehension and calls the Meadow REST API
+				for each record: GET by GUID to check existence, then POST (create) or PUT (update).
+				GUIDs are tracked in the <strong>GUIDMap</strong> so re-runs are idempotent upserts.
+				The bookstore API is powered by <code>meadow-endpoints</code> on an in-memory SQLite database.
+			</p>
+			<div class="result-panel" id="result-5">
+				<div class="result-panel-header">
+					<span>Result</span>
+					<span class="result-badge info" id="badge-5"></span>
+				</div>
+				<div id="output-5"></div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Step 6: Verify -->
+	<section class="step-card" id="step-6">
+		<div class="step-card-header">
+			<div class="step-color-bar" style="background: var(--step-6);"></div>
+			<div>
+				<h2>Step 6 &mdash; Verify</h2>
+				<span class="step-desc">Read the loaded books back from the bookstore database</span>
+			</div>
+			<button class="run-btn" id="btn-6" style="background: var(--step-6);" onclick="runVerify()">
+				<span class="icon">&#9654;</span> Read Books
+			</button>
+		</div>
+		<div class="step-card-body">
+			<p style="font-size:0.82rem; color:var(--text-mid); margin-bottom:0.75rem;">
+				After loading, query the database directly to confirm the records are persisted.
+				You can also hit the live Meadow-Endpoints API at
+				<a href="/1.0/Books/0/20" target="_blank"><code>GET /1.0/Books/0/20</code></a>
+				to see the full record structure with auto-generated IDs, audit timestamps, and GUIDs.
+			</p>
+			<div class="result-panel" id="result-6">
+				<div class="result-panel-header">
+					<span>Result</span>
+					<span class="result-badge info" id="badge-6"></span>
+				</div>
+				<div id="output-6"></div>
+			</div>
+		</div>
+	</section>
+
+</main>
+
+<footer class="demo-footer">
+	<a href="/1.0/Demo/Status" target="_blank">API Status</a>
+	&nbsp;&middot;&nbsp;
+	<a href="/1.0/Books/0/20" target="_blank">Books Endpoint</a>
+	&nbsp;&middot;&nbsp;
+	meadow-integration &mdash; MIT License
+</footer>
+
+<script>
+// ── Utilities ──────────────────────────────────────────────────────────────────
+
+function scrollToStep(n)
+{
+	document.getElementById('step-' + n).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function showSpinner(btnEl)
+{
+	let tmpSpan = btnEl.querySelector('.icon');
+	tmpSpan.innerHTML = '<span class="spinner"></span>';
+	btnEl.disabled = true;
+}
+
+function resetBtn(btnEl, icon, label)
+{
+	let tmpSpan = btnEl.querySelector('.icon');
+	tmpSpan.innerHTML = icon;
+	btnEl.disabled = false;
+}
+
+function showResult(n, content, badgeText, badgeClass)
+{
+	let tmpPanel = document.getElementById('result-' + n);
+	let tmpBadge = document.getElementById('badge-' + n);
+	let tmpOutput = document.getElementById('output-' + n);
+
+	tmpPanel.classList.add('visible');
+	tmpBadge.textContent = badgeText;
+	tmpBadge.className = 'result-badge ' + (badgeClass || 'info');
+	tmpOutput.innerHTML = content;
+}
+
+function markNavDone(n)
+{
+	document.getElementById('nav-' + n).classList.add('done');
+}
+
+function syntaxHighlight(obj)
+{
+	let tmpJSON = JSON.stringify(obj, null, 2);
+	tmpJSON = tmpJSON.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+	return tmpJSON.replace(
+		/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+		function(match)
+		{
+			let cls = 'json-number';
+			if (/^"/.test(match))
+			{
+				cls = (/:$/.test(match)) ? 'json-key' : 'json-string';
+			}
+			else if (/true|false/.test(match))
+			{
+				cls = 'json-bool';
+			}
+			return '<span class="' + cls + '">' + match + '</span>';
+		});
+}
+
+function buildTable(records, columns)
+{
+	if (!records || records.length === 0)
+	{
+		return '<p style="padding:0.75rem; font-size:0.8rem; color:var(--text-dim);">No records.</p>';
+	}
+
+	let tmpCols = columns || Object.keys(records[0]);
+	let tmpHTML = '<div class="data-table-wrap"><table class="data-table"><thead><tr>';
+
+	for (let i = 0; i < tmpCols.length; i++)
+	{
+		tmpHTML += '<th>' + tmpCols[i] + '</th>';
+	}
+	tmpHTML += '</tr></thead><tbody>';
+
+	for (let r = 0; r < records.length; r++)
+	{
+		tmpHTML += '<tr>';
+		for (let c = 0; c < tmpCols.length; c++)
+		{
+			let tmpVal = records[r][tmpCols[c]];
+			if (tmpVal === null || tmpVal === undefined) { tmpVal = ''; }
+			tmpHTML += '<td title="' + String(tmpVal).replace(/"/g, '&quot;') + '">'
+				+ String(tmpVal).replace(/</g, '&lt;') + '</td>';
+		}
+		tmpHTML += '</tr>';
+	}
+
+	tmpHTML += '</tbody></table></div>';
+	return tmpHTML;
+}
+
+function buildStats(chips)
+{
+	let tmpHTML = '<div class="stats-row">';
+	for (let i = 0; i < chips.length; i++)
+	{
+		tmpHTML += '<div class="stat-chip">' + chips[i][0] + ': <strong>' + chips[i][1] + '</strong></div>';
+	}
+	tmpHTML += '</div>';
+	return tmpHTML;
+}
+
+async function apiCall(method, path, body)
+{
+	let tmpOpts = { method: method, headers: { 'Content-Type': 'application/json' } };
+	if (body)
+	{
+		tmpOpts.body = JSON.stringify(body);
+	}
+	let tmpResp = await fetch(path, tmpOpts);
+	return await tmpResp.json();
+}
+
+// ── Step 1: Parse ──────────────────────────────────────────────────────────────
+
+async function runParse()
+{
+	let tmpBtn = document.getElementById('btn-1');
+	showSpinner(tmpBtn);
+
+	try
+	{
+		let tmpData = await apiCall('GET', '/1.0/Demo/SampleData');
+		let tmpHTML = buildStats([
+			['File', 'data/books-sample.csv'],
+			['Records', tmpData.Count],
+			['Columns', tmpData.Headers.length]
+		]);
+		tmpHTML += buildTable(tmpData.Records, ['id', 'title', 'original_publication_year', 'isbn', 'language_code']);
+		showResult(1, tmpHTML, tmpData.Count + ' records', 'ok');
+		markNavDone(1);
+	}
+	catch (e)
+	{
+		showResult(1, '<p style="padding:0.75rem;color:var(--error);">' + e.message + '</p>', 'Error', 'err');
+	}
+
+	resetBtn(tmpBtn, '&#10003;', 'Done');
+}
+
+// ── Step 2: Map ───────────────────────────────────────────────────────────────
+
+async function runMap()
+{
+	let tmpBtn = document.getElementById('btn-2');
+	showSpinner(tmpBtn);
+
+	try
+	{
+		let tmpData = await apiCall('GET', '/1.0/Demo/Mapping');
+		let tmpCfg = tmpData.Configuration;
+
+		let tmpHTML = buildStats([
+			['File', tmpData.MappingFile],
+			['Entity', tmpCfg.Entity],
+			['GUID Template', tmpCfg.GUIDTemplate],
+			['Fields', Object.keys(tmpCfg.Mappings || {}).length]
+		]);
+
+		let tmpMappingRows = [];
+		let tmpKeys = Object.keys(tmpCfg.Mappings || {});
+		for (let i = 0; i < tmpKeys.length; i++)
+		{
+			tmpMappingRows.push({ 'Target Field': tmpKeys[i], 'Expression': tmpCfg.Mappings[tmpKeys[i]] });
+		}
+		tmpHTML += buildTable(tmpMappingRows, ['Target Field', 'Expression']);
+		tmpHTML += '<div class="json-viewer">' + syntaxHighlight(tmpCfg) + '</div>';
+
+		showResult(2, tmpHTML, tmpCfg.Entity + ' mapping', 'ok');
+		markNavDone(2);
+	}
+	catch (e)
+	{
+		showResult(2, '<p style="padding:0.75rem;color:var(--error);">' + e.message + '</p>', 'Error', 'err');
+	}
+
+	resetBtn(tmpBtn, '&#10003;', 'Done');
+}
+
+// ── Step 3: Visual Mapping Editor ─────────────────────────────────────────────
+
+function openVisualEditor()
+{
+	if (typeof window.openMappingEditor === 'function')
+	{
+		window.openMappingEditor();
+		markNavDone(3);
+	}
+	else
+	{
+		showResult(3,
+			'<p style="padding:0.75rem;color:var(--error);">Editor bundle not loaded. Run <code>npm run build</code> in the mapping-demo directory first, then restart the server.</p>',
+			'Build needed', 'err');
+		let tmpPanel = document.getElementById('result-3');
+		if (tmpPanel) tmpPanel.classList.add('visible');
+	}
+}
+
+// Listen for the editor closed event to refresh the mapping display
+document.addEventListener('mapping-editor-closed', function()
+{
+	showResult(3,
+		'<div style="padding:0.75rem; font-size:0.82rem; color:var(--text-mid);">Mapping saved. Run <strong>Step 4 &mdash; Transform</strong> to apply your new wiring.</div>',
+		'Mapping saved', 'ok');
+});
+
+// ── Step 4: Transform ─────────────────────────────────────────────────────────
+
+async function runTransform()
+{
+	let tmpBtn = document.getElementById('btn-4');
+	showSpinner(tmpBtn);
+
+	try
+	{
+		let tmpData = await apiCall('POST', '/1.0/Demo/Transform');
+
+		let tmpHTML = buildStats([
+			['Entity', tmpData.Entity],
+			['Records in comprehension', tmpData.TotalRecords],
+			['Bad records', tmpData.BadRecords],
+			['Format', 'GUID-keyed dictionary']
+		]);
+
+		// Show a few sample transformed records as a table
+		let tmpSampleKeys = Object.keys(tmpData.SampleRecords);
+		let tmpSampleArr = [];
+		for (let i = 0; i < tmpSampleKeys.length; i++)
+		{
+			tmpSampleArr.push(tmpData.SampleRecords[tmpSampleKeys[i]]);
+		}
+
+		if (tmpSampleArr.length > 0)
+		{
+			tmpHTML += '<div style="padding:0 0.75rem 0.4rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-dim); margin-top:0.5rem;">Sample Comprehension Records</div>';
+			tmpHTML += buildTable(tmpSampleArr, ['GUIDBook', 'Title', 'Language', 'PublicationYear', 'ISBN', 'Genre']);
+		}
+
+		tmpHTML += '<div style="padding:0 0.75rem 0.4rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-dim); margin-top:0.5rem;">Full Comprehension (JSON)</div>';
+		tmpHTML += '<div class="json-viewer">' + syntaxHighlight(tmpData.Comprehension) + '</div>';
+
+		showResult(4, tmpHTML, tmpData.TotalRecords + ' records', 'ok');
+		markNavDone(4);
+	}
+	catch (e)
+	{
+		showResult(4, '<p style="padding:0.75rem;color:var(--error);">' + e.message + '</p>', 'Error', 'err');
+	}
+
+	resetBtn(tmpBtn, '&#10003;', 'Done');
+}
+
+// ── Step 5: Load ──────────────────────────────────────────────────────────────
+
+async function runLoad()
+{
+	let tmpBtn = document.getElementById('btn-5');
+	showSpinner(tmpBtn);
+
+	try
+	{
+		let tmpData = await apiCall('POST', '/1.0/Demo/Load');
+
+		if (tmpData.Error)
+		{
+			showResult(5, '<p style="padding:0.75rem;color:var(--error);">' + tmpData.Error + '</p>', 'Error', 'err');
+		}
+		else
+		{
+			let tmpHTML = buildStats([
+				['Entity', tmpData.Entity],
+				['Records pushed', tmpData.RecordsPushed],
+				['Target', 'SQLite in-memory bookstore'],
+				['Method', 'IntegrationAdapter (upsert via Meadow REST API)']
+			]);
+			tmpHTML += '<div class="json-viewer">' + syntaxHighlight(tmpData) + '</div>';
+			showResult(5, tmpHTML, tmpData.RecordsPushed + ' loaded', 'ok');
+			markNavDone(5);
+		}
+	}
+	catch (e)
+	{
+		showResult(5, '<p style="padding:0.75rem;color:var(--error);">' + e.message + '</p>', 'Error', 'err');
+	}
+
+	resetBtn(tmpBtn, '&#10003;', 'Done');
+}
+
+// ── Step 6: Verify ────────────────────────────────────────────────────────────
+
+async function runVerify()
+{
+	let tmpBtn = document.getElementById('btn-6');
+	showSpinner(tmpBtn);
+
+	try
+	{
+		let tmpData = await apiCall('GET', '/1.0/Demo/Books');
+
+		let tmpHTML = buildStats([
+			['Books in database', tmpData.Count],
+			['Storage', 'SQLite in-memory'],
+			['Live endpoint', '/1.0/Books/0/20']
+		]);
+
+		tmpHTML += buildTable(tmpData.Books, ['IDBook', 'Title', 'Genre', 'Language', 'PublicationYear', 'ISBN']);
+
+		tmpHTML += '<div style="padding:0.6rem 0.75rem; font-size:0.78rem; color:var(--text-mid);">'
+			+ 'Also try the live Meadow-Endpoints API: '
+			+ '<a href="/1.0/Books/0/20" target="_blank" style="color:var(--brand);">/1.0/Books/0/20</a>'
+			+ '</div>';
+
+		showResult(6, tmpHTML, tmpData.Count + ' books verified', 'ok');
+		markNavDone(6);
+	}
+	catch (e)
+	{
+		showResult(6, '<p style="padding:0.75rem;color:var(--error);">' + e.message + '</p>', 'Error', 'err');
+	}
+
+	resetBtn(tmpBtn, '&#10003;', 'Done');
+}
+</script>
+
+<!-- Pict runtime + mapping editor bundle (built by: npm run build) -->
+<script src="/pict.min.js" type="text/javascript"></script>
+<script src="/mapping-demo-editor.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+	// Initialize the pict mapping editor application after DOM is ready.
+	// Pict.safeLoadPictApplication waits for DOMContentLoaded automatically.
+	if (typeof Pict !== 'undefined' && typeof MappingDemoApplication !== 'undefined')
+	{
+		Pict.safeLoadPictApplication(MappingDemoApplication, 2);
+	}
+</script>
+</body>
+</html>

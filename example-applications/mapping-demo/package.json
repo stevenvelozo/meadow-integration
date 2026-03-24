@@ -1,0 +1,14 @@
+{
+	"name": "mapping-demo",
+	"version": "1.0.0",
+	"description": "Meadow-Integration pipeline demo: parse → map → visual map → comprehension → load",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js",
+		"build": "node generate-build-config.js && ../../node_modules/.bin/quack build",
+		"demo": "npm run build && node server.js"
+	},
+	"author": "steven velozo <steven@velozo.com>",
+	"license": "MIT",
+	"dependencies": {}
+}
