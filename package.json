@@ -17,6 +17,7 @@
     "author": "steven velozo <steven@velozo.com>",
     "license": "MIT",
     "devDependencies": {
+        "meadow-connection-sqlite": "^1.0.17",
         "quackage": "^1.0.65"
     },
     "mocha": {

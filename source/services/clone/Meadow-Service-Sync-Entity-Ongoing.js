@@ -42,6 +42,11 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 		this.SyncDeletedRecords = this.options.SyncDeletedRecords || false;
 		this.MaxRecordsPerEntity = this.options.MaxRecordsPerEntity || 0;
 
+		// Optional query string appended to deleted record API requests.
+		// Used to work around older APIs where FBV~Deleted~EQ~1 does not
+		// override the automatic Deleted=0 filter (e.g. "includeDeleted=true").
+		this.SyncDeletedRecordsQueryString = this.options.SyncDeletedRecordsQueryString || '';
+
 		// Minimum range size for bisection -- when a range is this small or smaller,
 		// pull all records in the range from the server instead of subdividing further.
 		this.BisectMinRangeSize = this.options.BisectMinRangeSize || 1000;
@@ -645,6 +650,12 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 
 	// ---- Deleted records sync ----
 
+	_appendDeletedQueryString(pURL)
+	{
+		if (!this.SyncDeletedRecordsQueryString) return pURL;
+		return pURL + (pURL.indexOf('?') > -1 ? '&' : '?') + this.SyncDeletedRecordsQueryString;
+	}
+
 	syncDeletedRecords(fCallback)
 	{
 		const tmpDeletedColumn = this.EntitySchema.Columns.find((c) => c.Column == 'Deleted');
@@ -657,7 +668,9 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 		this.fable.log.info(`Checking for deleted records on server for ${this.EntitySchema.TableName}...`);
 
 		// The explicit FBV~Deleted~EQ~1 filter overrides foxhound's automatic Deleted=0 filter.
-		this.fable.MeadowCloneRestClient.getJSON(`${this.EntitySchema.TableName}s/Count/FilteredTo/FBV~Deleted~EQ~1`,
+		// On older APIs where this doesn't work, SyncDeletedRecordsQueryString provides a
+		// fallback (e.g. "includeDeleted=true") that disables server-side delete tracking.
+		this.fable.MeadowCloneRestClient.getJSON(this._appendDeletedQueryString(`${this.EntitySchema.TableName}s/Count/FilteredTo/FBV~Deleted~EQ~1`),
 			(pError, pResponse, pBody) =>
 			{
 				if (pError || !pBody || !pBody.hasOwnProperty('Count'))
@@ -682,7 +695,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 				const tmpDeleteURLPartials = [];
 				for (let i = 0; i < tmpDeleteCap; i += this.PageSize)
 				{
-					tmpDeleteURLPartials.push(`${this.EntitySchema.TableName}s/FilteredTo/FBV~Deleted~EQ~1~FSF~${this.DefaultIdentifier}~ASC~ASC/${i}/${this.PageSize}`);
+					tmpDeleteURLPartials.push(this._appendDeletedQueryString(`${this.EntitySchema.TableName}s/FilteredTo/FBV~Deleted~EQ~1~FSF~${this.DefaultIdentifier}~ASC~ASC/${i}/${this.PageSize}`));
 				}
 
 				this.fable.Utility.eachLimit(tmpDeleteURLPartials, 1,

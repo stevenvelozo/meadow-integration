@@ -89,6 +89,20 @@ class MeadowSync extends libFableServiceProviderBase
 			this.DateTimePrecisionMS = parseInt(this.options.DateTimePrecisionMS, 10) || 1000;
 		}
 
+		// Optional query string appended to deleted record API requests for all entities.
+		// Used to work around older APIs where FBV~Deleted~EQ~1 does not override the
+		// automatic Deleted=0 filter (e.g. "includeDeleted=true").
+		// Can be overridden per-entity via SyncEntityOptions.
+		this.SyncDeletedRecordsQueryString = '';
+		if (this.fable.ProgramConfiguration.hasOwnProperty('SyncDeletedRecordsQueryString'))
+		{
+			this.SyncDeletedRecordsQueryString = this.fable.ProgramConfiguration.SyncDeletedRecordsQueryString;
+		}
+		else if (this.options.hasOwnProperty('SyncDeletedRecordsQueryString'))
+		{
+			this.SyncDeletedRecordsQueryString = this.options.SyncDeletedRecordsQueryString;
+		}
+
 		this.MeadowSchema = false;
 		this.MeadowSchemaTableList = false;
 
@@ -124,10 +138,17 @@ class MeadowSync extends libFableServiceProviderBase
 						ConnectionPool: this.options.ConnectionPool,
 						PageSize: this.options.PageSize || 100,
 						SyncDeletedRecords: this.SyncDeletedRecords,
+						SyncDeletedRecordsQueryString: this.SyncDeletedRecordsQueryString,
 						MaxRecordsPerEntity: this.MaxRecordsPerEntity,
 						DateTimePrecisionMS: this.DateTimePrecisionMS,
 						UseAdvancedIDPagination: this.UseAdvancedIDPagination,
 					};
+
+					// Apply per-entity option overrides if configured
+					if (this.SyncEntityOptions.hasOwnProperty(tmpEntitySchema.TableName))
+					{
+						Object.assign(tmpSyncEntityOptions, this.SyncEntityOptions[tmpEntitySchema.TableName]);
+					}
 
 					let tmpSyncEntity;
 

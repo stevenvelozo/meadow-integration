@@ -43,6 +43,11 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 		this.MaxRecordsPerEntity = this.options.MaxRecordsPerEntity || 0;
 		this.UseAdvancedIDPagination = this.options.UseAdvancedIDPagination || false;
 
+		// Optional query string appended to deleted record API requests.
+		// Used to work around older APIs where FBV~Deleted~EQ~1 does not
+		// override the automatic Deleted=0 filter (e.g. "includeDeleted=true").
+		this.SyncDeletedRecordsQueryString = this.options.SyncDeletedRecordsQueryString || '';
+
 		this.Meadow = false;
 
 		this.operation = new libMeadowOperation(this.fable);
@@ -119,7 +124,7 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 					{
 						this.log.warn(`${this.EntitySchema.TableName}: Index creation error: ${pIndexError}`);
 					}
-					return fValidateAndCallback(pIndexError || pCreateError);
+					return fCallback(pIndexError || pCreateError);
 				});
 			});
 		}
@@ -170,6 +175,12 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 		return tmpRecordToCommit;
 	}
 
+	_appendDeletedQueryString(pURL)
+	{
+		if (!this.SyncDeletedRecordsQueryString) return pURL;
+		return pURL + (pURL.indexOf('?') > -1 ? '&' : '?') + this.SyncDeletedRecordsQueryString;
+	}
+
 	syncDeletedRecords(fCallback)
 	{
 		const tmpDeletedColumn = this.EntitySchema.Columns.find((c) => c.Column == 'Deleted');
@@ -183,7 +194,9 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 
 		// Get the count of deleted records from the server.
 		// The explicit FBV~Deleted~EQ~1 filter overrides foxhound's automatic Deleted=0 filter.
-		this.fable.MeadowCloneRestClient.getJSON(`${this.EntitySchema.TableName}s/Count/FilteredTo/FBV~Deleted~EQ~1`,
+		// On older APIs where this doesn't work, SyncDeletedRecordsQueryString provides a
+		// fallback (e.g. "includeDeleted=true") that disables server-side delete tracking.
+		this.fable.MeadowCloneRestClient.getJSON(this._appendDeletedQueryString(`${this.EntitySchema.TableName}s/Count/FilteredTo/FBV~Deleted~EQ~1`),
 			(pError, pResponse, pBody) =>
 			{
 				if (pError || !pBody || !pBody.hasOwnProperty('Count'))
@@ -208,7 +221,7 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 				const tmpDeleteURLPartials = [];
 				for (let i = 0; i < tmpDeleteCap; i += this.PageSize)
 				{
-					tmpDeleteURLPartials.push(`${this.EntitySchema.TableName}s/FilteredTo/FBV~Deleted~EQ~1~FSF~${this.DefaultIdentifier}~ASC~ASC/${i}/${this.PageSize}`);
+					tmpDeleteURLPartials.push(this._appendDeletedQueryString(`${this.EntitySchema.TableName}s/FilteredTo/FBV~Deleted~EQ~1~FSF~${this.DefaultIdentifier}~ASC~ASC/${i}/${this.PageSize}`));
 				}
 
 				this.fable.Utility.eachLimit(tmpDeleteURLPartials, 1,
