@@ -1,6 +1,6 @@
 {
     "name": "meadow-integration",
-    "version": "1.0.20",
+    "version": "1.0.21",
     "description": "Meadow Data Integration",
     "bin": {
         "mdwint": "source/cli/Meadow-Integration-CLI-Run.js"
@@ -17,7 +17,7 @@
     "author": "steven velozo <steven@velozo.com>",
     "license": "MIT",
     "devDependencies": {
-        "meadow-connection-sqlite": "^1.0.17",
+        "meadow-connection-sqlite": "^1.0.18",
         "quackage": "^1.0.65"
     },
     "mocha": {
