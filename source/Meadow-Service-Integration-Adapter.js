@@ -258,15 +258,12 @@ class MeadowIntegrationAdapter extends libFableServiceProviderBase
 				let tmpSchemaURL = `${this.Entity}/Schema`;
 
 				tmpClient.getJSON(tmpSchemaURL,
-					(pError, pBody) =>
+					(pError, pResponse, pParsedBody) =>
 					{
-						// getJSON on MeadowCloneRestClient returns (pError, pResponse, pBody)
-						// but some clients return (pError, pBody).  Handle both:
-						let tmpBody = pBody;
-						if (arguments.length >= 3)
-						{
-							tmpBody = arguments[2];
-						}
+						// getJSON returns (pError, pResponse, pParsedBody).
+						// Use the parsed body (3rd arg) if present; fall back to
+						// pResponse for clients that return (pError, pBody) only.
+						let tmpBody = (typeof(pParsedBody) === 'object') ? pParsedBody : pResponse;
 
 						if (tmpBody && (typeof(tmpBody) == 'object'))
 						{
