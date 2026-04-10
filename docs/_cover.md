@@ -1,4 +1,4 @@
-# Meadow Integration <small>1.1</small>
+# Meadow Integration
 
 > Data integration toolkit for transforming, synchronizing, and managing data with Meadow entity comprehensions
 
