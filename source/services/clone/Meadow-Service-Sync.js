@@ -1,6 +1,9 @@
 const libFableServiceProviderBase = require('fable-serviceproviderbase');
 const libMeadowSyncEntityInitial = require('./Meadow-Service-Sync-Entity-Initial.js');
 const libMeadowSyncEntityOngoing = require('./Meadow-Service-Sync-Entity-Ongoing.js');
+const libMeadowSyncEntityOngoingEventualConsistency = require('./Meadow-Service-Sync-Entity-OngoingEventualConsistency.js');
+const libMeadowSyncEntityTrueUp = require('./Meadow-Service-Sync-Entity-TrueUp.js');
+const libMeadowSyncEntityComparisonOnly = require('./Meadow-Service-Sync-Entity-ComparisonOnly.js');
 
 class MeadowSync extends libFableServiceProviderBase
 {
@@ -18,6 +21,21 @@ class MeadowSync extends libFableServiceProviderBase
 		if (!this.fable.ServiceManager.servicesMap.hasOwnProperty('MeadowSyncEntityOngoing'))
 		{
 			this.fable.ServiceManager.addServiceType('MeadowSyncEntityOngoing', libMeadowSyncEntityOngoing);
+		}
+
+		if (!this.fable.ServiceManager.servicesMap.hasOwnProperty('MeadowSyncEntityOngoingEventualConsistency'))
+		{
+			this.fable.ServiceManager.addServiceType('MeadowSyncEntityOngoingEventualConsistency', libMeadowSyncEntityOngoingEventualConsistency);
+		}
+
+		if (!this.fable.ServiceManager.servicesMap.hasOwnProperty('MeadowSyncEntityTrueUp'))
+		{
+			this.fable.ServiceManager.addServiceType('MeadowSyncEntityTrueUp', libMeadowSyncEntityTrueUp);
+		}
+
+		if (!this.fable.ServiceManager.servicesMap.hasOwnProperty('MeadowSyncEntityComparisonOnly'))
+		{
+			this.fable.ServiceManager.addServiceType('MeadowSyncEntityComparisonOnly', libMeadowSyncEntityComparisonOnly);
 		}
 
 		// If this is empty, we will sync everything in the loaded Schema.
@@ -103,6 +121,28 @@ class MeadowSync extends libFableServiceProviderBase
 			this.SyncDeletedRecordsQueryString = this.options.SyncDeletedRecordsQueryString;
 		}
 
+		// Milliseconds devoted to backwards bisection in OngoingEventualConsistency mode.
+		this.BackSyncTimeLimit = 30000;
+		if (this.fable.ProgramConfiguration.hasOwnProperty('BackSyncTimeLimit'))
+		{
+			this.BackSyncTimeLimit = parseInt(this.fable.ProgramConfiguration.BackSyncTimeLimit, 10) || 30000;
+		}
+		else if (this.options.hasOwnProperty('BackSyncTimeLimit'))
+		{
+			this.BackSyncTimeLimit = parseInt(this.options.BackSyncTimeLimit, 10) || 30000;
+		}
+
+		// Page size for the linear keyset-paginated walk in TrueUp mode.
+		this.TrueUpPageSize = 500;
+		if (this.fable.ProgramConfiguration.hasOwnProperty('TrueUpPageSize'))
+		{
+			this.TrueUpPageSize = parseInt(this.fable.ProgramConfiguration.TrueUpPageSize, 10) || 500;
+		}
+		else if (this.options.hasOwnProperty('TrueUpPageSize'))
+		{
+			this.TrueUpPageSize = parseInt(this.options.TrueUpPageSize, 10) || 500;
+		}
+
 		this.MeadowSchema = false;
 		this.MeadowSchemaTableList = false;
 
@@ -142,6 +182,8 @@ class MeadowSync extends libFableServiceProviderBase
 						MaxRecordsPerEntity: this.MaxRecordsPerEntity,
 						DateTimePrecisionMS: this.DateTimePrecisionMS,
 						UseAdvancedIDPagination: this.UseAdvancedIDPagination,
+						BackSyncTimeLimit: this.BackSyncTimeLimit,
+						TrueUpPageSize: this.TrueUpPageSize,
 					};
 
 					// Apply per-entity option overrides if configured
@@ -151,15 +193,28 @@ class MeadowSync extends libFableServiceProviderBase
 					}
 
 					let tmpSyncEntity;
+					let tmpServiceTypeName;
 
-					if (this.SyncMode == 'Ongoing')
+					switch (this.SyncMode)
 					{
-						tmpSyncEntity = this.fable.serviceManager.instantiateServiceProvider('MeadowSyncEntityOngoing', tmpSyncEntityOptions, `SyncEntity-${tmpEntitySchema.TableName}`);
+						case 'Ongoing':
+							tmpServiceTypeName = 'MeadowSyncEntityOngoing';
+							break;
+						case 'OngoingEventualConsistency':
+							tmpServiceTypeName = 'MeadowSyncEntityOngoingEventualConsistency';
+							break;
+						case 'TrueUp':
+							tmpServiceTypeName = 'MeadowSyncEntityTrueUp';
+							break;
+						case 'ComparisonOnly':
+							tmpServiceTypeName = 'MeadowSyncEntityComparisonOnly';
+							break;
+						default:
+							tmpServiceTypeName = 'MeadowSyncEntityInitial';
+							break;
 					}
-					else
-					{
-						tmpSyncEntity = this.fable.serviceManager.instantiateServiceProvider('MeadowSyncEntityInitial', tmpSyncEntityOptions, `SyncEntity-${tmpEntitySchema.TableName}`);
-					}
+
+					tmpSyncEntity = this.fable.serviceManager.instantiateServiceProvider(tmpServiceTypeName, tmpSyncEntityOptions, `SyncEntity-${tmpEntitySchema.TableName}`);
 
 					this.MeadowSyncEntities[tmpEntitySchema.TableName] = tmpSyncEntity;
 

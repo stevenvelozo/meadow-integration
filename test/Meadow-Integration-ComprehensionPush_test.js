@@ -79,7 +79,15 @@ suite
 								NameFirst TEXT DEFAULT '',
 								NameLast TEXT DEFAULT '',
 								FullName TEXT DEFAULT '',
-								Config TEXT DEFAULT ''
+								Config TEXT DEFAULT '',
+								IDCustomer INTEGER DEFAULT 0,
+								Email TEXT DEFAULT '',
+								Phone TEXT DEFAULT '',
+								Address TEXT DEFAULT '',
+								City TEXT DEFAULT '',
+								State TEXT DEFAULT '',
+								Postal TEXT DEFAULT '',
+								Country TEXT DEFAULT ''
 							);
 							CREATE TABLE IF NOT EXISTS Book (
 								IDBook INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -97,13 +105,15 @@ suite
 								ISBN TEXT DEFAULT '',
 								Language TEXT DEFAULT '',
 								ImageURL TEXT DEFAULT '',
-								PublicationYear INTEGER DEFAULT 0
+								PublicationYear INTEGER DEFAULT 0,
+								IDCustomer INTEGER DEFAULT 0
 							);
 							CREATE TABLE IF NOT EXISTS BookAuthorJoin (
 								IDBookAuthorJoin INTEGER PRIMARY KEY AUTOINCREMENT,
 								GUIDBookAuthorJoin TEXT DEFAULT '',
 								IDBook INTEGER DEFAULT 0,
-								IDAuthor INTEGER DEFAULT 0
+								IDAuthor INTEGER DEFAULT 0,
+								IDCustomer INTEGER DEFAULT 0
 							);
 							CREATE TABLE IF NOT EXISTS Author (
 								IDAuthor INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -116,7 +126,8 @@ suite
 								DeleteDate TEXT DEFAULT '',
 								DeletingIDUser INTEGER DEFAULT 0,
 								Name TEXT DEFAULT '',
-								IDUser INTEGER DEFAULT 0
+								IDUser INTEGER DEFAULT 0,
+								IDCustomer INTEGER DEFAULT 0
 							);
 							CREATE TABLE IF NOT EXISTS BookPrice (
 								IDBookPrice INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -133,7 +144,8 @@ suite
 								EndDate TEXT DEFAULT '',
 								Discountable INTEGER DEFAULT 0,
 								CouponCode TEXT DEFAULT '',
-								IDBook INTEGER DEFAULT 0
+								IDBook INTEGER DEFAULT 0,
+								IDCustomer INTEGER DEFAULT 0
 							);
 							CREATE TABLE IF NOT EXISTS BookStore (
 								IDBookStore INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -150,7 +162,11 @@ suite
 								City TEXT DEFAULT '',
 								State TEXT DEFAULT '',
 								Postal TEXT DEFAULT '',
-								Country TEXT DEFAULT ''
+								Country TEXT DEFAULT '',
+								IDCustomer INTEGER DEFAULT 0,
+								StoreType TEXT DEFAULT '',
+								Phone TEXT DEFAULT '',
+								Email TEXT DEFAULT ''
 							);
 							CREATE TABLE IF NOT EXISTS BookStoreInventory (
 								IDBookStoreInventory INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -168,7 +184,8 @@ suite
 								IDBook INTEGER DEFAULT 0,
 								IDBookStore INTEGER DEFAULT 0,
 								IDBookPrice INTEGER DEFAULT 0,
-								StockingAssociate INTEGER DEFAULT 0
+								StockingAssociate INTEGER DEFAULT 0,
+								IDCustomer INTEGER DEFAULT 0
 							);
 							CREATE TABLE IF NOT EXISTS Review (
 								IDReview INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -183,7 +200,84 @@ suite
 								Text TEXT DEFAULT '',
 								Rating INTEGER DEFAULT 0,
 								IDBook INTEGER DEFAULT 0,
-								IDUser INTEGER DEFAULT 0
+								IDUser INTEGER DEFAULT 0,
+								IDCustomer INTEGER DEFAULT 0
+							);
+							CREATE TABLE IF NOT EXISTS Customer (
+								IDCustomer INTEGER PRIMARY KEY AUTOINCREMENT,
+								GUIDCustomer TEXT DEFAULT '',
+								CreateDate TEXT DEFAULT '',
+								CreatingIDUser INTEGER DEFAULT 0,
+								UpdateDate TEXT DEFAULT '',
+								UpdatingIDUser INTEGER DEFAULT 0,
+								Deleted INTEGER DEFAULT 0,
+								DeleteDate TEXT DEFAULT '',
+								DeletingIDUser INTEGER DEFAULT 0,
+								Name TEXT DEFAULT '',
+								Description TEXT DEFAULT '',
+								ContactName TEXT DEFAULT '',
+								ContactEmail TEXT DEFAULT '',
+								ContactPhone TEXT DEFAULT '',
+								Address TEXT DEFAULT '',
+								City TEXT DEFAULT '',
+								State TEXT DEFAULT '',
+								Postal TEXT DEFAULT '',
+								Country TEXT DEFAULT '',
+								Active INTEGER DEFAULT 0
+							);
+							CREATE TABLE IF NOT EXISTS BookStoreEmployee (
+								IDBookStoreEmployee INTEGER PRIMARY KEY AUTOINCREMENT,
+								GUIDBookStoreEmployee TEXT DEFAULT '',
+								CreateDate TEXT DEFAULT '',
+								CreatingIDUser INTEGER DEFAULT 0,
+								UpdateDate TEXT DEFAULT '',
+								UpdatingIDUser INTEGER DEFAULT 0,
+								Deleted INTEGER DEFAULT 0,
+								DeleteDate TEXT DEFAULT '',
+								DeletingIDUser INTEGER DEFAULT 0,
+								Title TEXT DEFAULT '',
+								HireDate TEXT DEFAULT '',
+								TerminationDate TEXT DEFAULT '',
+								IsActive INTEGER DEFAULT 0,
+								IDUser INTEGER DEFAULT 0,
+								IDBookStore INTEGER DEFAULT 0,
+								IDCustomer INTEGER DEFAULT 0
+							);
+							CREATE TABLE IF NOT EXISTS BookStoreSale (
+								IDBookStoreSale INTEGER PRIMARY KEY AUTOINCREMENT,
+								GUIDBookStoreSale TEXT DEFAULT '',
+								CreateDate TEXT DEFAULT '',
+								CreatingIDUser INTEGER DEFAULT 0,
+								UpdateDate TEXT DEFAULT '',
+								UpdatingIDUser INTEGER DEFAULT 0,
+								Deleted INTEGER DEFAULT 0,
+								DeleteDate TEXT DEFAULT '',
+								DeletingIDUser INTEGER DEFAULT 0,
+								SaleDate TEXT DEFAULT '',
+								TotalAmount REAL DEFAULT 0,
+								PaymentMethod TEXT DEFAULT '',
+								TransactionID TEXT DEFAULT '',
+								IDBookStore INTEGER DEFAULT 0,
+								IDUser INTEGER DEFAULT 0,
+								IDCustomer INTEGER DEFAULT 0
+							);
+							CREATE TABLE IF NOT EXISTS BookStoreSaleItem (
+								IDBookStoreSaleItem INTEGER PRIMARY KEY AUTOINCREMENT,
+								GUIDBookStoreSaleItem TEXT DEFAULT '',
+								CreateDate TEXT DEFAULT '',
+								CreatingIDUser INTEGER DEFAULT 0,
+								UpdateDate TEXT DEFAULT '',
+								UpdatingIDUser INTEGER DEFAULT 0,
+								Deleted INTEGER DEFAULT 0,
+								DeleteDate TEXT DEFAULT '',
+								DeletingIDUser INTEGER DEFAULT 0,
+								Quantity INTEGER DEFAULT 0,
+								UnitPrice REAL DEFAULT 0,
+								LineTotal REAL DEFAULT 0,
+								IDBookStoreSale INTEGER DEFAULT 0,
+								IDBook INTEGER DEFAULT 0,
+								IDBookPrice INTEGER DEFAULT 0,
+								IDCustomer INTEGER DEFAULT 0
 							);
 						`);
 
