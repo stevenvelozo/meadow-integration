@@ -122,12 +122,20 @@ class MeadowSyncEntityOngoingEventualConsistency extends libMeadowSyncEntityOngo
 		this.fable.log.info(`${this.EntitySchema.TableName}: subdividing range ${pMinID}-${pMaxID} at ID ${tmpMidID} (depth ${pDepth}, upper half first)`);
 
 		// Upper half first (reversed from standard bisection)
-		this._bisectRangeWithTimeBudget(tmpMidID + 1, pMaxID, pDepth + 1, pStartTime, pTimeLimit,
-			() =>
-			{
-				// Then lower half (if time remains -- checked at entry of next call)
-				this._bisectRangeWithTimeBudget(pMinID, tmpMidID, pDepth + 1, pStartTime, pTimeLimit, fCallback);
-			});
+		// Use setImmediate to break the recursive call chain for synchronous
+		// database providers (e.g. better-sqlite3).
+		setImmediate(() =>
+		{
+			this._bisectRangeWithTimeBudget(tmpMidID + 1, pMaxID, pDepth + 1, pStartTime, pTimeLimit,
+				() =>
+				{
+					// Then lower half (if time remains -- checked at entry of next call)
+					setImmediate(() =>
+					{
+						this._bisectRangeWithTimeBudget(pMinID, tmpMidID, pDepth + 1, pStartTime, pTimeLimit, fCallback);
+					});
+				});
+		});
 	}
 
 	_syncInternal(fCallback)

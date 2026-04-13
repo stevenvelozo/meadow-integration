@@ -211,11 +211,21 @@ class MeadowSyncEntityComparisonOnly extends libMeadowSyncEntityOngoing
 
 		this.fable.log.info(`${this.EntitySchema.TableName}: compare subdividing range ${pMinID}-${pMaxID} at ID ${tmpMidID} (depth ${pDepth})`);
 
-		this._compareRange(pMinID, tmpMidID, pDepth + 1, pReport,
-			() =>
-			{
-				this._compareRange(tmpMidID + 1, pMaxID, pDepth + 1, pReport, fCallback);
-			});
+		// Use setImmediate to break the recursive call chain.  With synchronous
+		// database providers (e.g. better-sqlite3), the entire bisection tree
+		// would otherwise execute in a single call stack, exhausting it for
+		// large ID ranges.
+		setImmediate(() =>
+		{
+			this._compareRange(pMinID, tmpMidID, pDepth + 1, pReport,
+				() =>
+				{
+					setImmediate(() =>
+					{
+						this._compareRange(tmpMidID + 1, pMaxID, pDepth + 1, pReport, fCallback);
+					});
+				});
+		});
 	}
 
 	_syncInternal(fCallback)
