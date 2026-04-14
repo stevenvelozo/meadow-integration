@@ -688,105 +688,115 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 
 				this.fable.log.info(`Found ${tmpDeletedCount} deleted records on server for ${this.EntitySchema.TableName}; syncing deletions...`);
 
-				// Generate paginated URLs for deleted records
 				let tmpDeleteCap = (this.MaxRecordsPerEntity > 0)
 					? Math.min(tmpDeletedCount, this.MaxRecordsPerEntity)
 					: tmpDeletedCount;
-				const tmpDeleteURLPartials = [];
-				for (let i = 0; i < tmpDeleteCap; i += this.PageSize)
+
+				let tmpOffset = 0;
+				let tmpProcessed = 0;
+
+				// Fetch deleted record pages one at a time rather than
+				// pre-generating all URL partials.  With millions of deleted
+				// records this avoids allocating hundreds of thousands of
+				// URL strings and prevents stack overflow in the iterator.
+				const fFetchDeletedPage = () =>
 				{
-					tmpDeleteURLPartials.push(this._appendDeletedQueryString(`${this.EntitySchema.TableName}s/FilteredTo/FBV~Deleted~EQ~1~FSF~${this.DefaultIdentifier}~ASC~ASC/${i}/${this.PageSize}`));
-				}
-
-				this.fable.Utility.eachLimit(tmpDeleteURLPartials, 1,
-					(pURLPartial, fPageComplete) =>
+					if (tmpOffset >= tmpDeleteCap)
 					{
-						this.fable.MeadowCloneRestClient.getJSON(pURLPartial,
-							(pDownloadError, pResponse, pBody) =>
+						this.fable.log.info(`Delete sync complete for ${this.EntitySchema.TableName} (${tmpProcessed} of ${tmpDeletedCount} deleted records processed).`);
+						return fCallback();
+					}
+
+					const tmpURL = this._appendDeletedQueryString(`${this.EntitySchema.TableName}s/FilteredTo/FBV~Deleted~EQ~1~FSF~${this.DefaultIdentifier}~ASC~ASC/${tmpOffset}/${this.PageSize}`);
+					tmpOffset += this.PageSize;
+
+					this.fable.MeadowCloneRestClient.getJSON(tmpURL,
+						(pDownloadError, pResponse, pBody) =>
+						{
+							if (pDownloadError || !pBody || !Array.isArray(pBody) || pBody.length < 1)
 							{
-								if (pDownloadError || !pBody || !Array.isArray(pBody) || pBody.length < 1)
+								this.fable.log.info(`Delete sync complete for ${this.EntitySchema.TableName} (${tmpProcessed} of ${tmpDeletedCount} deleted records processed).`);
+								return fCallback();
+							}
+
+							this.fable.Utility.eachLimit(pBody, 5,
+								(pEntityRecord, fRecordComplete) =>
 								{
-									return fPageComplete();
-								}
-
-								this.fable.Utility.eachLimit(pBody, 5,
-									(pEntityRecord, fRecordComplete) =>
+									const tmpRecordID = pEntityRecord[this.DefaultIdentifier];
+									if (!tmpRecordID || tmpRecordID < 1)
 									{
-										const tmpRecordID = pEntityRecord[this.DefaultIdentifier];
-										if (!tmpRecordID || tmpRecordID < 1)
+										return setImmediate(fRecordComplete);
+									}
+
+									// Read local record with delete tracking disabled so we can see all records
+									const tmpQuery = this.Meadow.query;
+									tmpQuery.addFilter(this.DefaultIdentifier, tmpRecordID);
+									tmpQuery.setDisableDeleteTracking(true);
+
+									this.Meadow.doRead(tmpQuery,
+										(pReadError, pQuery, pRecord) =>
 										{
-											return setImmediate(fRecordComplete);
-										}
-
-										// Read local record with delete tracking disabled so we can see all records
-										const tmpQuery = this.Meadow.query;
-										tmpQuery.addFilter(this.DefaultIdentifier, tmpRecordID);
-										tmpQuery.setDisableDeleteTracking(true);
-
-										this.Meadow.doRead(tmpQuery,
-											(pReadError, pQuery, pRecord) =>
+											if (pReadError || !pRecord)
 											{
-												if (pReadError || !pRecord)
-												{
-													// Record doesn't exist locally -- create it as deleted
-													const tmpRecordToCommit = this.marshalRecord(pEntityRecord);
-
-													const tmpCreateQuery = this.Meadow.query.addRecord(tmpRecordToCommit);
-													tmpCreateQuery.setDisableAutoIdentity(true);
-													tmpCreateQuery.setDisableAutoDateStamp(true);
-													tmpCreateQuery.setDisableAutoUserStamp(true);
-													tmpCreateQuery.setDisableDeleteTracking(true);
-													tmpCreateQuery.AllowIdentityInsert = true;
-
-													this.Meadow.doCreate(tmpCreateQuery,
-														(pCreateError) =>
-														{
-															if (pCreateError)
-															{
-																this.log.error(`Error creating deleted record ${this.EntitySchema.TableName} ID ${tmpRecordID}: ${pCreateError}`);
-															}
-															return setImmediate(fRecordComplete);
-														});
-													return;
-												}
-
-												if (pRecord.Deleted == 1)
-												{
-													// Already marked deleted locally
-													return setImmediate(fRecordComplete);
-												}
-
-												// Record exists locally but is not deleted -- update it
+												// Record doesn't exist locally -- create it as deleted
 												const tmpRecordToCommit = this.marshalRecord(pEntityRecord);
 
-												const tmpUpdateQuery = this.Meadow.query.addRecord(tmpRecordToCommit);
-												tmpUpdateQuery.setDisableAutoIdentity(true);
-												tmpUpdateQuery.setDisableAutoDateStamp(true);
-												tmpUpdateQuery.setDisableAutoUserStamp(true);
-												tmpUpdateQuery.setDisableDeleteTracking(true);
+												const tmpCreateQuery = this.Meadow.query.addRecord(tmpRecordToCommit);
+												tmpCreateQuery.setDisableAutoIdentity(true);
+												tmpCreateQuery.setDisableAutoDateStamp(true);
+												tmpCreateQuery.setDisableAutoUserStamp(true);
+												tmpCreateQuery.setDisableDeleteTracking(true);
+												tmpCreateQuery.AllowIdentityInsert = true;
 
-												this.Meadow.doUpdate(tmpUpdateQuery,
-													(pUpdateError) =>
+												this.Meadow.doCreate(tmpCreateQuery,
+													(pCreateError) =>
 													{
-														if (pUpdateError)
+														if (pCreateError)
 														{
-															this.log.error(`Error marking record as deleted ${this.EntitySchema.TableName} ID ${tmpRecordID}: ${pUpdateError}`);
+															this.log.error(`Error creating deleted record ${this.EntitySchema.TableName} ID ${tmpRecordID}: ${pCreateError}`);
 														}
+														tmpProcessed++;
 														return setImmediate(fRecordComplete);
 													});
-											});
-									},
-									(pRecordSyncError) =>
-									{
-										return fPageComplete();
-									});
-							});
-					},
-					(pDeleteSyncError) =>
-					{
-						this.fable.log.info(`Delete sync complete for ${this.EntitySchema.TableName} (${tmpDeletedCount} deleted records processed).`);
-						return fCallback();
-					});
+												return;
+											}
+
+											if (pRecord.Deleted == 1)
+											{
+												// Already marked deleted locally
+												tmpProcessed++;
+												return setImmediate(fRecordComplete);
+											}
+
+											// Record exists locally but is not deleted -- update it
+											const tmpRecordToCommit = this.marshalRecord(pEntityRecord);
+
+											const tmpUpdateQuery = this.Meadow.query.addRecord(tmpRecordToCommit);
+											tmpUpdateQuery.setDisableAutoIdentity(true);
+											tmpUpdateQuery.setDisableAutoDateStamp(true);
+											tmpUpdateQuery.setDisableAutoUserStamp(true);
+											tmpUpdateQuery.setDisableDeleteTracking(true);
+
+											this.Meadow.doUpdate(tmpUpdateQuery,
+												(pUpdateError) =>
+												{
+													if (pUpdateError)
+													{
+														this.log.error(`Error marking record as deleted ${this.EntitySchema.TableName} ID ${tmpRecordID}: ${pUpdateError}`);
+													}
+													tmpProcessed++;
+													return setImmediate(fRecordComplete);
+												});
+										});
+								},
+								(pRecordSyncError) =>
+								{
+									return setImmediate(fFetchDeletedPage);
+								});
+						});
+				};
+
+				fFetchDeletedPage();
 			});
 	}
 
