@@ -458,7 +458,13 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 				},
 				(fStageComplete) =>
 				{
-					tmpSyncState.EstimatedRecordCount = tmpSyncState.Server.RecordCount - tmpSyncState.Local.RecordCount;
+					// The raw diff can be negative when local has more records
+					// than the server (e.g. records were deleted server-side but
+					// the local copy still has them).  Clamp the estimate to 0
+					// so progress trackers and downstream reports never show a
+					// negative total.
+					let tmpRawEstimate = tmpSyncState.Server.RecordCount - tmpSyncState.Local.RecordCount;
+					tmpSyncState.EstimatedRecordCount = Math.max(0, tmpRawEstimate);
 
 					// Apply MaxRecordsPerEntity cap if configured
 					tmpSyncState.RecordCap = (this.MaxRecordsPerEntity > 0)
@@ -473,6 +479,29 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 
 					this.operation.createProgressTracker(tmpSyncState.EstimatedRecordCount, `FullSync-${this.EntitySchema.TableName}`);
 					this.operation.printProgressTrackerStatus(`FullSync-${this.EntitySchema.TableName}`);
+
+					// Fast path: if there is nothing new to pull (estimate is
+					// zero or negative), skip the download phase entirely.
+					// Running the paginated loop would otherwise make one or
+					// more requests just to receive an empty response and then
+					// short-circuit with an "Error: Records depleted!" log —
+					// noisy and a waste of round-trips.  Zero out RecordCap
+					// as well so the advanced-ID-pagination loop
+					// (which gates on RecordCap, not URLPartials) also skips.
+					if (tmpSyncState.EstimatedRecordCount <= 0)
+					{
+						tmpSyncState.URLPartials = [];
+						tmpSyncState.RecordCap = 0;
+						if (tmpRawEstimate < 0)
+						{
+							this.fable.log.info(`${this.EntitySchema.TableName}: local has ${-tmpRawEstimate} more record(s) than server (local: ${tmpSyncState.Local.RecordCount}, server: ${tmpSyncState.Server.RecordCount}); nothing to download.`);
+						}
+						else
+						{
+							this.fable.log.info(`${this.EntitySchema.TableName}: record counts match (${tmpSyncState.Server.RecordCount}); nothing to download.`);
+						}
+						return fStageComplete();
+					}
 
 					if (this.UseAdvancedIDPagination)
 					{
