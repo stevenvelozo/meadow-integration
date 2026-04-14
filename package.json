@@ -1,6 +1,6 @@
 {
     "name": "meadow-integration",
-    "version": "1.0.28",
+    "version": "1.0.29",
     "description": "Meadow Data Integration",
     "bin": {
         "mdwint": "source/cli/Meadow-Integration-CLI-Run.js"
@@ -40,7 +40,7 @@
         ]
     },
     "dependencies": {
-        "fable": "^3.1.67",
+        "fable": "^3.1.70",
         "fable-serviceproviderbase": "^3.0.19",
         "fast-xml-parser": "^4.4.1",
         "meadow": "^2.0.33",

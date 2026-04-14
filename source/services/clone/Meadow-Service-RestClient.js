@@ -1,6 +1,4 @@
 const libFableServiceProviderBase = require('fable-serviceproviderbase');
-const Http = require('http');
-const Https = require('https');
 
 const defaultRestClientOptions = (
 	{
@@ -41,30 +39,22 @@ class MeadowCloneRestClient extends libFableServiceProviderBase
 			this._SessionToken = this.options.SessionToken;
 		}
 
-		this.restClient = this.fable.serviceManager.instantiateServiceProvider('RestClient', {}, 'MeadowCloneRestClient-RestClient');
+		// Fable settings override instance options for timeouts
+		this.requestTimeout = this.fable.settings.RestClientRequestTimeout || this.options.RequestTimeout;
+		this.maxRequestTimeout = this.fable.settings.RestClientMaxRequestTimeout || this.options.MaxRequestTimeout;
+
+		// When keep-alive is enabled via fable settings (RestClientKeepAlive), use a
+		// socket timeout based on the longer of the two request timeouts so that
+		// slow MAX queries don't get killed at the socket level.
+		let tmpRestClientOptions = (
+			{
+				KeepAliveAgentOptions:
+					{
+						timeout: Math.max(this.requestTimeout, this.maxRequestTimeout)
+					}
+			});
+		this.restClient = this.fable.serviceManager.instantiateServiceProvider('RestClient', tmpRestClientOptions, 'MeadowCloneRestClient-RestClient');
 		this.cache = {};
-
-		this.requestTimeout = this.options.RequestTimeout;
-		this.maxRequestTimeout = this.options.MaxRequestTimeout;
-
-		// Use the longer of the two timeouts for the agent's socket timeout
-		// so that MAX queries don't get killed at the socket level.
-		const agentOptions = { keepAlive: true, timeout: Math.max(this.requestTimeout, this.maxRequestTimeout) };
-
-		if (this.serverURL && this.serverURL.startsWith('http:'))
-		{
-			this.agent = new Http.Agent(agentOptions);
-		}
-		else
-		{
-			this.agent = new Https.Agent(agentOptions);
-		}
-
-		this.restClient.prepareRequestOptions = (pOptions) =>
-		{
-			pOptions.agent = this.agent;
-			return pOptions;
-		};
 	}
 
 	prepareRequestOptions(pOptions)
