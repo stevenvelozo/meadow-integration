@@ -138,6 +138,158 @@ class MeadowSyncEntityOngoingEventualConsistency extends libMeadowSyncEntityOngo
 		});
 	}
 
+	// Override deleted record sync with a time-budgeted version.
+	// The base syncDeletedRecords() walks ALL deleted records on the server
+	// with no limit, which defeats the purpose of eventual consistency.
+	// This version processes pages until BackSyncTimeLimit is exhausted.
+	syncDeletedRecords(fCallback)
+	{
+		const tmpDeletedColumn = this.EntitySchema.Columns.find((c) => c.Column == 'Deleted');
+		if (!tmpDeletedColumn)
+		{
+			this.fable.log.info(`No Deleted column for ${this.EntitySchema.TableName}; skipping delete sync.`);
+			return fCallback();
+		}
+
+		this.fable.log.info(`Checking for deleted records on server for ${this.EntitySchema.TableName} (time-budgeted)...`);
+
+		this.fable.MeadowCloneRestClient.getJSON(this._appendDeletedQueryString(`${this.EntitySchema.TableName}s/Count/FilteredTo/FBV~Deleted~EQ~1`),
+			(pError, pResponse, pBody) =>
+			{
+				if (pError || !pBody || !pBody.hasOwnProperty('Count'))
+				{
+					this.fable.log.warn(`Could not get deleted record count for ${this.EntitySchema.TableName}; skipping delete sync.`);
+					return fCallback();
+				}
+
+				const tmpDeletedCount = pBody.Count;
+				if (tmpDeletedCount < 1)
+				{
+					this.fable.log.info(`No deleted records on server for ${this.EntitySchema.TableName}.`);
+					return fCallback();
+				}
+
+				this.fable.log.info(`Found ${tmpDeletedCount} deleted records on server for ${this.EntitySchema.TableName}; syncing deletions with ${this.BackSyncTimeLimit}ms budget...`);
+
+				let tmpDeleteCap = (this.MaxRecordsPerEntity > 0)
+					? Math.min(tmpDeletedCount, this.MaxRecordsPerEntity)
+					: tmpDeletedCount;
+				const tmpDeleteURLPartials = [];
+				for (let i = 0; i < tmpDeleteCap; i += this.PageSize)
+				{
+					tmpDeleteURLPartials.push(this._appendDeletedQueryString(`${this.EntitySchema.TableName}s/FilteredTo/FBV~Deleted~EQ~1~FSF~${this.DefaultIdentifier}~ASC~ASC/${i}/${this.PageSize}`));
+				}
+
+				const tmpStartTime = Date.now();
+				let tmpProcessed = 0;
+				let tmpTimeBudgetExhausted = false;
+
+				this.fable.Utility.eachLimit(tmpDeleteURLPartials, 1,
+					(pURLPartial, fPageComplete) =>
+					{
+						// Check time budget before each page
+						if (Date.now() - tmpStartTime >= this.BackSyncTimeLimit)
+						{
+							tmpTimeBudgetExhausted = true;
+							return fPageComplete();
+						}
+
+						this.fable.MeadowCloneRestClient.getJSON(pURLPartial,
+							(pDownloadError, pResponse, pBody) =>
+							{
+								if (pDownloadError || !pBody || !Array.isArray(pBody) || pBody.length < 1)
+								{
+									return fPageComplete();
+								}
+
+								this.fable.Utility.eachLimit(pBody, 5,
+									(pEntityRecord, fRecordComplete) =>
+									{
+										const tmpRecordID = pEntityRecord[this.DefaultIdentifier];
+										if (!tmpRecordID || tmpRecordID < 1)
+										{
+											return fRecordComplete();
+										}
+
+										const tmpQuery = this.Meadow.query;
+										tmpQuery.addFilter(this.DefaultIdentifier, tmpRecordID);
+										tmpQuery.setDisableDeleteTracking(true);
+
+										this.Meadow.doRead(tmpQuery,
+											(pReadError, pQuery, pRecord) =>
+											{
+												if (pReadError || !pRecord)
+												{
+													const tmpRecordToCommit = this.marshalRecord(pEntityRecord);
+
+													const tmpCreateQuery = this.Meadow.query.addRecord(tmpRecordToCommit);
+													tmpCreateQuery.setDisableAutoIdentity(true);
+													tmpCreateQuery.setDisableAutoDateStamp(true);
+													tmpCreateQuery.setDisableAutoUserStamp(true);
+													tmpCreateQuery.setDisableDeleteTracking(true);
+													tmpCreateQuery.AllowIdentityInsert = true;
+
+													this.Meadow.doCreate(tmpCreateQuery,
+														(pCreateError) =>
+														{
+															if (pCreateError)
+															{
+																this.log.error(`Error creating deleted record ${this.EntitySchema.TableName} ID ${tmpRecordID}: ${pCreateError}`);
+															}
+															tmpProcessed++;
+															return fRecordComplete();
+														});
+													return;
+												}
+
+												if (pRecord.Deleted == 1)
+												{
+													tmpProcessed++;
+													return fRecordComplete();
+												}
+
+												const tmpRecordToCommit = this.marshalRecord(pEntityRecord);
+
+												const tmpUpdateQuery = this.Meadow.query.addRecord(tmpRecordToCommit);
+												tmpUpdateQuery.setDisableAutoIdentity(true);
+												tmpUpdateQuery.setDisableAutoDateStamp(true);
+												tmpUpdateQuery.setDisableAutoUserStamp(true);
+												tmpUpdateQuery.setDisableDeleteTracking(true);
+
+												this.Meadow.doUpdate(tmpUpdateQuery,
+													(pUpdateError) =>
+													{
+														if (pUpdateError)
+														{
+															this.log.error(`Error marking record as deleted ${this.EntitySchema.TableName} ID ${tmpRecordID}: ${pUpdateError}`);
+														}
+														tmpProcessed++;
+														return fRecordComplete();
+													});
+											});
+									},
+									(pRecordSyncError) =>
+									{
+										return fPageComplete();
+									});
+							});
+					},
+					(pDeleteSyncError) =>
+					{
+						const tmpElapsed = Date.now() - tmpStartTime;
+						if (tmpTimeBudgetExhausted)
+						{
+							this.fable.log.info(`Delete sync time budget exhausted for ${this.EntitySchema.TableName} after ${tmpElapsed}ms (${tmpProcessed} of ${tmpDeletedCount} deleted records processed).`);
+						}
+						else
+						{
+							this.fable.log.info(`Delete sync complete for ${this.EntitySchema.TableName} (${tmpProcessed} of ${tmpDeletedCount} deleted records processed in ${tmpElapsed}ms).`);
+						}
+						return fCallback();
+					});
+			});
+	}
+
 	_syncInternal(fCallback)
 	{
 		this.operation.createTimeStamp('EntityOngoingEventualConsistencySync');
