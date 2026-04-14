@@ -715,7 +715,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 										const tmpRecordID = pEntityRecord[this.DefaultIdentifier];
 										if (!tmpRecordID || tmpRecordID < 1)
 										{
-											return fRecordComplete();
+											return setImmediate(fRecordComplete);
 										}
 
 										// Read local record with delete tracking disabled so we can see all records
@@ -745,7 +745,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 															{
 																this.log.error(`Error creating deleted record ${this.EntitySchema.TableName} ID ${tmpRecordID}: ${pCreateError}`);
 															}
-															return fRecordComplete();
+															return setImmediate(fRecordComplete);
 														});
 													return;
 												}
@@ -753,7 +753,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 												if (pRecord.Deleted == 1)
 												{
 													// Already marked deleted locally
-													return fRecordComplete();
+													return setImmediate(fRecordComplete);
 												}
 
 												// Record exists locally but is not deleted -- update it
@@ -772,7 +772,7 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 														{
 															this.log.error(`Error marking record as deleted ${this.EntitySchema.TableName} ID ${tmpRecordID}: ${pUpdateError}`);
 														}
-														return fRecordComplete();
+														return setImmediate(fRecordComplete);
 													});
 											});
 									},

@@ -208,7 +208,7 @@ class MeadowSyncEntityOngoingEventualConsistency extends libMeadowSyncEntityOngo
 										const tmpRecordID = pEntityRecord[this.DefaultIdentifier];
 										if (!tmpRecordID || tmpRecordID < 1)
 										{
-											return fRecordComplete();
+											return setImmediate(fRecordComplete);
 										}
 
 										const tmpQuery = this.Meadow.query;
@@ -237,7 +237,7 @@ class MeadowSyncEntityOngoingEventualConsistency extends libMeadowSyncEntityOngo
 																this.log.error(`Error creating deleted record ${this.EntitySchema.TableName} ID ${tmpRecordID}: ${pCreateError}`);
 															}
 															tmpProcessed++;
-															return fRecordComplete();
+															return setImmediate(fRecordComplete);
 														});
 													return;
 												}
@@ -245,7 +245,7 @@ class MeadowSyncEntityOngoingEventualConsistency extends libMeadowSyncEntityOngo
 												if (pRecord.Deleted == 1)
 												{
 													tmpProcessed++;
-													return fRecordComplete();
+													return setImmediate(fRecordComplete);
 												}
 
 												const tmpRecordToCommit = this.marshalRecord(pEntityRecord);
@@ -264,7 +264,7 @@ class MeadowSyncEntityOngoingEventualConsistency extends libMeadowSyncEntityOngo
 															this.log.error(`Error marking record as deleted ${this.EntitySchema.TableName} ID ${tmpRecordID}: ${pUpdateError}`);
 														}
 														tmpProcessed++;
-														return fRecordComplete();
+														return setImmediate(fRecordComplete);
 													});
 											});
 									},
