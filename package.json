@@ -1,6 +1,6 @@
 {
     "name": "meadow-integration",
-    "version": "1.0.32",
+    "version": "1.0.33",
     "description": "Meadow Data Integration",
     "bin": {
         "mdwint": "source/cli/Meadow-Integration-CLI-Run.js"
@@ -44,7 +44,7 @@
         "fable-serviceproviderbase": "^3.0.19",
         "fast-xml-parser": "^4.4.1",
         "meadow": "^2.0.35",
-        "meadow-connection-mssql": "^1.0.19",
+        "meadow-connection-mssql": "^1.0.20",
         "meadow-connection-mysql": "^1.0.17",
         "orator": "^6.0.4",
         "orator-serviceserver-restify": "^2.0.10",
