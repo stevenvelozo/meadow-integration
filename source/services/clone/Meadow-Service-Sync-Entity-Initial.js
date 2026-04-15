@@ -86,18 +86,32 @@ class MeadowSyncEntityInitial extends libFableServiceProviderBase
 					this.log.warn(`${this.EntitySchema.TableName}: createTable returned error: ${pCreateError}`);
 				}
 
+				// Sync-entity init intentionally does not create indexes here.
+				// In the DataCloner flow there is no MeadowConnectionManager
+				// service registered, so the legacy createIndex path was dead
+				// code that just logged noise ("No connection manager
+				// available; skipping index creation for X") for every table.
+				// Indexes are created via the provider's own createIndices /
+				// generateCreateIndexStatements methods, invoked by the
+				// DataCloner's dedicated /indices/create endpoint after the
+				// initial sync is complete — that's the point where it makes
+				// sense to build indexes, since they're expensive on populated
+				// tables.
+				//
+				// Preserve the legacy MeadowConnectionManager path for the CLI
+				// Meadow-Integration-Command-DataClone.js flow (which does
+				// register that service), but do it silently when neither
+				// indexable column nor connection manager is available.
 				const tmpGUIDColumn = this.EntitySchema.Columns.find((c) => c.DataType == 'GUID');
 				const tmpDeletedColumn = this.EntitySchema.Columns.find((c) => c.Column == 'Deleted');
 
-				if (!tmpGUIDColumn && !tmpDeletedColumn)
-				{
-					this.log.info(`No GUID or Deleted columns for ${this.EntitySchema.TableName}; skipping index creation`);
-					return fCallback(pCreateError);
-				}
+				let tmpCanCreateIndexes = (tmpGUIDColumn || tmpDeletedColumn)
+					&& this.fable.MeadowConnectionManager
+					&& this.fable.MeadowConnectionManager.ConnectionPool
+					&& typeof(this.fable.MeadowConnectionManager.createIndex) === 'function';
 
-				if (!this.fable.MeadowConnectionManager || !this.fable.MeadowConnectionManager.ConnectionPool)
+				if (!tmpCanCreateIndexes)
 				{
-					this.log.info(`No connection manager available; skipping index creation for ${this.EntitySchema.TableName}`);
 					return fCallback(pCreateError);
 				}
 

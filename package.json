@@ -43,15 +43,15 @@
         "fable": "^3.1.70",
         "fable-serviceproviderbase": "^3.0.19",
         "fast-xml-parser": "^4.4.1",
-        "meadow": "^2.0.33",
-        "meadow-connection-mssql": "^1.0.16",
-        "meadow-connection-mysql": "^1.0.14",
+        "meadow": "^2.0.35",
+        "meadow-connection-mssql": "^1.0.19",
+        "meadow-connection-mysql": "^1.0.17",
         "orator": "^6.0.4",
         "orator-serviceserver-restify": "^2.0.10",
         "pict-section-flow": "^0.0.17",
         "pict-service-commandlineutility": "^1.0.19",
         "pict-sessionmanager": "^1.0.2",
-        "pict-view": "^1.0.67",
+        "pict-view": "^1.0.68",
         "xlsx": "^0.18.5"
     }
 }

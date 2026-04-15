@@ -80,19 +80,23 @@ class MeadowSyncEntityOngoing extends libFableServiceProviderBase
 		{
 			return this.Meadow.provider.getProvider().createTable(this.EntitySchema, (pCreateError) =>
 			{
-
+				// Sync-entity init intentionally does not create indexes here
+				// in the DataCloner flow.  See the comment in
+				// Meadow-Service-Sync-Entity-Initial.js for the rationale —
+				// indexes go through the provider's createIndices path
+				// (triggered by DataCloner's /indices/create endpoint) rather
+				// than via MeadowConnectionManager, which isn't registered in
+				// the DataCloner service container.
 				const tmpGUIDColumn = this.EntitySchema.Columns.find((c) => c.DataType == 'GUID');
 				const tmpDeletedColumn = this.EntitySchema.Columns.find((c) => c.Column == 'Deleted');
 
-				if (!tmpGUIDColumn && !tmpDeletedColumn)
-				{
-					this.log.info(`No GUID or Deleted columns for ${this.EntitySchema.TableName}; skipping index creation`);
-					return fCallback(pCreateError);
-				}
+				let tmpCanCreateIndexes = (tmpGUIDColumn || tmpDeletedColumn)
+					&& this.fable.MeadowConnectionManager
+					&& this.fable.MeadowConnectionManager.ConnectionPool
+					&& typeof(this.fable.MeadowConnectionManager.createIndex) === 'function';
 
-				if (!this.fable.MeadowConnectionManager || !this.fable.MeadowConnectionManager.ConnectionPool)
+				if (!tmpCanCreateIndexes)
 				{
-					this.log.info(`No connection manager available; skipping index creation for ${this.EntitySchema.TableName}`);
 					return fCallback(pCreateError);
 				}
 
