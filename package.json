@@ -1,7 +1,38 @@
 {
     "name": "meadow-integration",
-    "version": "1.0.35",
+    "version": "1.0.36",
     "description": "Meadow Data Integration",
+    "retoldBeacon": {
+        "displayName": "Meadow Integration",
+        "description": "Parse / transform / LabWriter capabilities that seed operations dispatch to via the Ultravisor.",
+        "category": "integration",
+        "mode": "capability-provider",
+        "providerPath": "./source/Meadow-Integration-BeaconProvider.js",
+        "capability": "MeadowIntegration",
+        "healthCheck": {
+            "path": "/"
+        },
+        "defaultPort": 54400,
+        "requiresUltravisor": true,
+        "configForm": {
+            "Fields": []
+        },
+        "docker": {
+            "image": "retold-beacon-host-meadow-integration",
+            "dockerfile": "retold-beacon-host-meadow-integration.Dockerfile",
+            "exposedPort": 54400,
+            "hostPackage": "retold-beacon-host",
+            "dataMountPath": "/app/data",
+            "configMountPath": "/app/data/config.json",
+            "extraMounts": [
+                {
+                    "Source": "seed_datasets",
+                    "Target": "/app/seed_datasets",
+                    "ReadOnly": true
+                }
+            ]
+        }
+    },
     "bin": {
         "mdwint": "source/cli/Meadow-Integration-CLI-Run.js"
     },
@@ -19,7 +50,7 @@
     "devDependencies": {
         "meadow-connection-sqlite": "^1.0.18",
         "pict-docuserve": "^0.1.5",
-        "quackage": "^1.1.1"
+        "quackage": "^1.1.2"
     },
     "mocha": {
         "diff": true,
@@ -40,10 +71,10 @@
         ]
     },
     "dependencies": {
-        "fable": "^3.1.70",
+        "fable": "^3.1.71",
         "fable-serviceproviderbase": "^3.0.19",
         "fast-xml-parser": "^4.4.1",
-        "meadow": "^2.0.35",
+        "meadow": "^2.0.37",
         "meadow-connection-mssql": "^1.0.21",
         "meadow-connection-mysql": "^1.0.17",
         "orator": "^6.0.4",
