@@ -1,6 +1,6 @@
 {
     "name": "meadow-integration",
-    "version": "1.0.36",
+    "version": "1.0.37",
     "description": "Meadow Data Integration",
     "retoldBeacon": {
         "displayName": "Meadow Integration",
@@ -77,7 +77,7 @@
         "meadow": "^2.0.37",
         "meadow-connection-mssql": "^1.0.21",
         "meadow-connection-mysql": "^1.0.17",
-        "orator": "^6.0.4",
+        "orator": "^6.1.0",
         "orator-serviceserver-restify": "^2.0.10",
         "pict-section-flow": "^0.0.17",
         "pict-service-commandlineutility": "^1.0.19",

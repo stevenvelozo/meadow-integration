@@ -100,9 +100,25 @@ class MeadowIntegrationBeaconProvider
 					let tmpSettings  = pWorkItem.Settings || {};
 					let tmpBeaconURL = tmpSettings.BeaconURL;
 					let tmpEntity    = tmpSettings.EntityName;
-					let tmpRecords   = tmpSettings.Records || [];
+					let tmpRecords   = tmpSettings.Records;
 					if (!tmpBeaconURL) { return fCallback(new Error('BeaconURL is required.')); }
 					if (!tmpEntity)    { return fCallback(new Error('EntityName is required.')); }
+					// Defensive: catch the "engine left an unresolved {~D:~} string
+					// in Records" failure mode loudly instead of iterating over
+					// the string's characters and POSTing garbage. The execution
+					// engine's template resolver SHOULD substitute Array-typed
+					// settings whose value is a single whole-string reference,
+					// but if it doesn't (older engine, mis-wired graph) this
+					// catches it at the boundary with a useful message.
+					if (tmpRecords === undefined || tmpRecords === null) { tmpRecords = []; }
+					if (!Array.isArray(tmpRecords))
+					{
+						return fCallback(new Error(
+							`BulkInsertViaBeacon: Records must be an array, got ${typeof(tmpRecords)}` +
+							(typeof(tmpRecords) === 'string'
+								? ` (looks like an unresolved template: "${tmpRecords.slice(0, 80)}")`
+								: '')));
+					}
 
 					let tmpURL    = new URL(tmpBeaconURL);
 					let tmpHttp   = tmpURL.protocol === 'https:' ? require('https') : require('http');
