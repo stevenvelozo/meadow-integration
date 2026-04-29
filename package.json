@@ -48,7 +48,7 @@
     "author": "steven velozo <steven@velozo.com>",
     "license": "MIT",
     "devDependencies": {
-        "meadow-connection-sqlite": "^1.0.18",
+        "meadow-connection-sqlite": "^1.0.19",
         "pict-docuserve": "^0.1.5",
         "quackage": "^1.1.2"
     },
@@ -75,8 +75,8 @@
         "fable-serviceproviderbase": "^3.0.19",
         "fast-xml-parser": "^4.4.1",
         "meadow": "^2.0.37",
-        "meadow-connection-mssql": "^1.0.21",
-        "meadow-connection-mysql": "^1.0.17",
+        "meadow-connection-mssql": "^1.0.22",
+        "meadow-connection-mysql": "^1.0.18",
         "orator": "^6.1.0",
         "orator-serviceserver-restify": "^2.0.10",
         "pict-section-flow": "^0.0.17",
