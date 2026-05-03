@@ -27,7 +27,7 @@
 			"ConnectionPoolLimit": 20
 		}
 	},
-	"SchemaPath": "./schema/Model-Extended.json",
+	"SchemaPath": "",
 	"Sync":
 	{
 		"DefaultSyncMode": "Initial",

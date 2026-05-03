@@ -12,6 +12,7 @@ RUN cd /service_root && npm install --omit=dev
 
 ADD source /service_root/source
 ADD scripts /service_root/scripts
+ADD schema /service_root/schema
 
 WORKDIR /service_root
 

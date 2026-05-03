@@ -43,7 +43,17 @@
         "start": "node source/cli/Meadow-Integration-CLI-Run.js",
         "tests": "npx quack test -g",
         "coverage": "npx quack coverage",
-        "build": "npx quack build"
+        "build": "npx quack build",
+        "prepublishOnly": "npm test",
+        "postversion": "npx quack release postversion",
+        "postpublish": "npx quack release postpublish",
+        "publish:docker": "npx quack release publish --image",
+        "release:patch": "npx quack release patch",
+        "release:minor": "npx quack release minor",
+        "release:major": "npx quack release major",
+        "release:patch:image": "npx quack release patch --image",
+        "release:minor:image": "npx quack release minor --image",
+        "release:major:image": "npx quack release major --image"
     },
     "author": "steven velozo <steven@velozo.com>",
     "license": "MIT",

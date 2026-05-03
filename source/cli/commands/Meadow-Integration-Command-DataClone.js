@@ -1,11 +1,41 @@
 const libCLICommandLineCommand = require('pict-service-commandlineutility').ServiceCommandLineCommand;
 
+const libFs = require('fs');
 const libPath = require('path');
 
 const libMeadowConnectionManager = require('../../services/clone/Meadow-Service-ConnectionManager.js');
 const libMeadowCloneRestClient = require('../../services/clone/Meadow-Service-RestClient.js');
 const libMeadowSync = require('../../services/clone/Meadow-Service-Sync.js');
 const libSessionManagerSetup = require('../../Meadow-Integration-SessionManagerSetup.js');
+
+// Resolve an env var with the standard `_FILE` suffix fallback for
+// secrets — so docker / k8s secret mounts work without bespoke wiring.
+// Returns undefined when neither the var nor its `_FILE` companion is
+// set; existing JSON-config + CLI-override layers then take effect
+// unchanged.
+function _envOrFile(pVarName)
+{
+	let tmpValue = process.env[pVarName];
+	if (tmpValue !== undefined && tmpValue !== '')
+	{
+		return tmpValue;
+	}
+	let tmpFilePath = process.env[pVarName + '_FILE'];
+	if (tmpFilePath)
+	{
+		try
+		{
+			return libFs.readFileSync(tmpFilePath, 'utf8').replace(/\s+$/, '');
+		}
+		catch (pErr)
+		{
+			// Soft fail — fall through to undefined so the config-file
+			// layer (or CLI flag) still has a chance.
+			console.warn(`Meadow-Integration: ${pVarName}_FILE=${tmpFilePath} unreadable: ${pErr.message}`);
+		}
+	}
+	return undefined;
+}
 
 class DataClone extends libCLICommandLineCommand
 {
@@ -23,13 +53,13 @@ class DataClone extends libCLICommandLineCommand
 		this.options.CommandOptions.push({ Name: '-p, --api_password [api_password]', Description: 'The API password to authenticate with.' });
 
 		this.options.CommandOptions.push({ Name: '-d, --db_provider [db_provider]', Description: 'The database provider (MySQL or MSSQL). Default is MySQL.', DefaultValue: 'MySQL' });
-		this.options.CommandOptions.push({ Name: '-dh, --db_host [db_host]', Description: 'The database host address.' });
-		this.options.CommandOptions.push({ Name: '-dp, --db_port [db_port]', Description: 'The database port.' });
-		this.options.CommandOptions.push({ Name: '-du, --db_username [db_username]', Description: 'The database username.' });
-		this.options.CommandOptions.push({ Name: '-dw, --db_password [db_password]', Description: 'The database password.' });
-		this.options.CommandOptions.push({ Name: '-dn, --db_name [db_name]', Description: 'The database name.' });
+		this.options.CommandOptions.push({ Name: '--db_host [db_host]', Description: 'The database host address.' });
+		this.options.CommandOptions.push({ Name: '--db_port [db_port]', Description: 'The database port.' });
+		this.options.CommandOptions.push({ Name: '--db_username [db_username]', Description: 'The database username.' });
+		this.options.CommandOptions.push({ Name: '--db_password [db_password]', Description: 'The database password.' });
+		this.options.CommandOptions.push({ Name: '--db_name [db_name]', Description: 'The database name.' });
 
-		this.options.CommandOptions.push({ Name: '-sp, --schema_path [schema_path]', Description: 'Path to the Meadow extended schema JSON file.' });
+		this.options.CommandOptions.push({ Name: '--schema_path [schema_path]', Description: 'Path to the Meadow extended schema JSON file.' });
 
 		this.options.CommandOptions.push({ Name: '-s, --sync_mode [sync_mode]', Description: 'The sync mode: "Initial" or "Ongoing". Default is "Initial".', DefaultValue: 'Initial' });
 
@@ -41,6 +71,11 @@ class DataClone extends libCLICommandLineCommand
 	_resolveConfig()
 	{
 		const tmpConfig = JSON.parse(JSON.stringify(this.fable.ProgramConfiguration));
+
+		// Layer 1: env vars (overlay on top of the config-file values).
+		// Layer 2 (CLI flags) below still wins — keeps the existing
+		// precedence intact for standalone CLI users.
+		this._applyEnvOverrides(tmpConfig);
 
 		// Apply command-line overrides for Source (API)
 		if (!tmpConfig.Source)
@@ -106,6 +141,21 @@ class DataClone extends libCLICommandLineCommand
 			tmpConfig.SchemaPath = this.CommandOptions.schema_path;
 		}
 
+		// Final fallback: a bundled sample schema ships with the
+		// package at <pkg>/schema/default.json (BookStore reference
+		// model). Lets containerized launches succeed out of the box
+		// even when no SchemaPath is configured, so operators get a
+		// "yes it ran" smoke test before wiring their real schema.
+		if (!tmpConfig.SchemaPath)
+		{
+			let tmpBundled = libPath.resolve(__dirname, '..', '..', '..', 'schema', 'default.json');
+			if (libFs.existsSync(tmpBundled))
+			{
+				tmpConfig.SchemaPath = tmpBundled;
+				this.log.info(`No SchemaPath configured; falling back to bundled default at ${tmpBundled}`);
+			}
+		}
+
 		// Sync config
 		if (!tmpConfig.Sync)
 		{
@@ -113,6 +163,52 @@ class DataClone extends libCLICommandLineCommand
 		}
 
 		return tmpConfig;
+	}
+
+	// Overlay MEADOW_INTEGRATION_* env vars onto the config object in
+	// place. Mutates pConfig; called between the config-file load and
+	// the CLI-override pass so the layering stays predictable
+	// (CLI > env > file > defaults). Honors the `_FILE` suffix on
+	// secret-bearing keys.
+	_applyEnvOverrides(pConfig)
+	{
+		// Source (API) ----------------------------------------------
+		let tmpApiServer = _envOrFile('MEADOW_INTEGRATION_API_SERVER');
+		let tmpApiUser   = _envOrFile('MEADOW_INTEGRATION_API_USERNAME');
+		let tmpApiPass   = _envOrFile('MEADOW_INTEGRATION_API_PASSWORD');
+		if (tmpApiServer || tmpApiUser || tmpApiPass)
+		{
+			if (!pConfig.Source) { pConfig.Source = {}; }
+			if (tmpApiServer) { pConfig.Source.ServerURL = tmpApiServer; }
+			if (tmpApiUser)   { pConfig.Source.UserID    = tmpApiUser; }
+			if (tmpApiPass)   { pConfig.Source.Password  = tmpApiPass; }
+		}
+
+		// Destination (Database) ------------------------------------
+		let tmpDbProvider = _envOrFile('MEADOW_INTEGRATION_DB_PROVIDER');
+		let tmpDbHost     = _envOrFile('MEADOW_INTEGRATION_DB_HOST');
+		let tmpDbPort     = _envOrFile('MEADOW_INTEGRATION_DB_PORT');
+		let tmpDbUser     = _envOrFile('MEADOW_INTEGRATION_DB_USERNAME');
+		let tmpDbPass     = _envOrFile('MEADOW_INTEGRATION_DB_PASSWORD');
+		let tmpDbName     = _envOrFile('MEADOW_INTEGRATION_DB_NAME');
+		let tmpHasDb = tmpDbProvider || tmpDbHost || tmpDbPort || tmpDbUser || tmpDbPass || tmpDbName;
+		if (tmpHasDb)
+		{
+			if (!pConfig.Destination) { pConfig.Destination = {}; }
+			if (tmpDbProvider) { pConfig.Destination.Provider = tmpDbProvider; }
+			let tmpProviderKey = pConfig.Destination.Provider || 'MySQL';
+			if (!pConfig.Destination[tmpProviderKey]) { pConfig.Destination[tmpProviderKey] = {}; }
+			let tmpProviderCfg = pConfig.Destination[tmpProviderKey];
+			if (tmpDbHost) { tmpProviderCfg.server   = tmpDbHost; }
+			if (tmpDbPort) { tmpProviderCfg.port     = parseInt(tmpDbPort, 10); }
+			if (tmpDbUser) { tmpProviderCfg.user     = tmpDbUser; }
+			if (tmpDbPass) { tmpProviderCfg.password = tmpDbPass; }
+			if (tmpDbName) { tmpProviderCfg.database = tmpDbName; }
+		}
+
+		// Schema path -----------------------------------------------
+		let tmpSchemaPath = _envOrFile('MEADOW_INTEGRATION_SCHEMA_PATH');
+		if (tmpSchemaPath) { pConfig.SchemaPath = tmpSchemaPath; }
 	}
 
 	onRunAsync(fCallback)
