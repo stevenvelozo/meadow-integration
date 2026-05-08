@@ -60,7 +60,7 @@
     "devDependencies": {
         "meadow-connection-sqlite": "^1.0.19",
         "pict-docuserve": "^0.1.5",
-        "quackage": "^1.2.2"
+        "quackage": "^1.2.3"
     },
     "mocha": {
         "diff": true,
@@ -81,14 +81,14 @@
         ]
     },
     "dependencies": {
-        "fable": "^3.1.71",
+        "fable": "^3.1.72",
         "fable-serviceproviderbase": "^3.0.19",
         "fast-xml-parser": "^4.4.1",
-        "meadow": "^2.0.37",
+        "meadow": "^2.0.38",
         "meadow-connection-mssql": "^1.0.23",
         "meadow-connection-mysql": "^1.0.19",
-        "orator": "^6.1.1",
-        "orator-serviceserver-restify": "^2.0.10",
+        "orator": "^6.1.2",
+        "orator-serviceserver-restify": "^2.0.11",
         "pict-section-flow": "^0.0.17",
         "pict-service-commandlineutility": "^1.0.19",
         "pict-sessionmanager": "^1.0.2",
