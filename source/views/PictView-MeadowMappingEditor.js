@@ -106,7 +106,7 @@ const _ViewConfiguration =
 		}
 		.meadow-mapping-btn-primary {
 			background: var(--facto-brand, #18a5a0);
-			color: #fff;
+			color: var(--theme-color-background-panel, #fff);
 			border-color: var(--facto-brand, #18a5a0);
 		}
 		.meadow-mapping-btn-primary:hover {
@@ -121,9 +121,9 @@ const _ViewConfiguration =
 			background: var(--facto-border-subtle, #e8ddc8);
 		}
 		.meadow-mapping-btn-danger {
-			background: #e74c3c;
-			color: #fff;
-			border-color: #e74c3c;
+			background: var(--theme-color-status-error, #e74c3c);
+			color: var(--theme-color-background-panel, #fff);
+			border-color: var(--theme-color-status-error, #e74c3c);
 		}
 		.meadow-mapping-btn-danger:hover {
 			opacity: 0.88;
@@ -147,7 +147,7 @@ const _ViewConfiguration =
 		}
 		.meadow-schema-mode-tab.active {
 			background: var(--facto-brand, #18a5a0);
-			color: #fff;
+			color: var(--theme-color-background-panel, #fff);
 			border-color: var(--facto-brand, #18a5a0);
 		}
 		.meadow-section-title {

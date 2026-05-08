@@ -61,7 +61,7 @@
 	/* ── Header ── */
 	.demo-header {
 		background: var(--text);
-		color: #fff;
+		color: var(--theme-color-background-panel, #fff);
 		padding: 1.25rem 2rem;
 		display: flex;
 		align-items: center;
@@ -80,7 +80,7 @@
 	.demo-badge {
 		margin-left: auto;
 		background: var(--brand);
-		color: #fff;
+		color: var(--theme-color-background-panel, #fff);
 		padding: 0.25em 0.7em;
 		border-radius: 999px;
 		font-size: 0.72rem;
@@ -113,7 +113,7 @@
 	}
 	.pipeline-step:hover { background: var(--border-sub); color: var(--text); }
 	.pipeline-step.done  { color: var(--text-mid); }
-	.pipeline-step.done .step-num { background: var(--success); color: #fff; }
+	.pipeline-step.done .step-num { background: var(--success); color: var(--theme-color-background-panel, #fff); }
 	.pipeline-step .step-num {
 		width: 1.5em; height: 1.5em;
 		border-radius: 50%;
@@ -189,7 +189,7 @@
 		border-radius: 5px;
 		cursor: pointer;
 		transition: opacity 0.15s, transform 0.1s;
-		color: #fff;
+		color: var(--theme-color-background-panel, #fff);
 	}
 	.run-btn:hover  { opacity: 0.88; }
 	.run-btn:active { transform: scale(0.98); }
@@ -275,7 +275,7 @@
 		overflow-y: auto;
 	}
 	.json-key    { color: #2980b9; }
-	.json-string { color: #27ae60; }
+	.json-string { color: var(--theme-color-status-success, #27ae60); }
 	.json-number { color: #8e44ad; }
 	.json-bool   { color: var(--warn); }
 
@@ -300,7 +300,7 @@
 		display: inline-block;
 		width: 0.9em; height: 0.9em;
 		border: 2px solid rgba(255,255,255,0.4);
-		border-top-color: #fff;
+		border-top-color: var(--theme-color-background-panel, #fff);
 		border-radius: 50%;
 		animation: spin 0.6s linear infinite;
 	}
