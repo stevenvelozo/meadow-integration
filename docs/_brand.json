@@ -1,0 +1,18 @@
+{
+	"Hash": "meadow-integration",
+	"Name": "Meadow Integration",
+	"Tagline": "Data integration tools for CSV import, schema mapping, and centralized format transformations",
+	"Palette": "mix",
+	"Icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\" width=\"96\" height=\"96\">\n\t\t<defs>\n\t\t\t<clipPath id=\"frame-meadow-integration-filled-light\">\n\t\t\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\"/>\n\t\t\t</clipPath>\n\t\t</defs>\n\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\" fill=\"#c67445\"/>\n\t\t<g clip-path=\"url(#frame-meadow-integration-filled-light)\"><path d=\"M 16 70 L 48 30 L 80 70 Z\" fill=\"rgba(255,255,255,0.18)\"/>\n\t\t\t\t\t<path d=\"M 24 80 L 48 52 L 72 80 Z\" fill=\"#49b2c1\" opacity=\"0.9\"/></g>\n\t\t<text x=\"48\" y=\"50\" text-anchor=\"middle\" dominant-baseline=\"central\"\n\t\t\tfont-family=\"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\"\n\t\t\tfont-size=\"38\" font-weight=\"700\"\n\t\t\tfill=\"#ffffff\" letter-spacing=\"-1\">MI</text>\n\t</svg>",
+	"IconType": "svg",
+	"Favicon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\" width=\"96\" height=\"96\">\n\t\t<defs>\n\t\t\t<clipPath id=\"fav-meadow-integration-light\">\n\t\t\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\"/>\n\t\t\t</clipPath>\n\t\t</defs>\n\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\" fill=\"#c67445\"/>\n\t\t<g clip-path=\"url(#fav-meadow-integration-light)\"><path d=\"M 16 70 L 48 30 L 80 70 Z\" fill=\"rgba(255,255,255,0.22)\"/></g>\n\t\t<text x=\"48\" y=\"50\" text-anchor=\"middle\" dominant-baseline=\"central\"\n\t\t\tfont-family=\"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\"\n\t\t\tfont-size=\"60\" font-weight=\"800\"\n\t\t\tfill=\"#ffffff\" letter-spacing=\"-1\">M</text>\n\t</svg>",
+	"FaviconDark": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\" width=\"96\" height=\"96\">\n\t\t<defs>\n\t\t\t<clipPath id=\"fav-meadow-integration-dark\">\n\t\t\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\"/>\n\t\t\t</clipPath>\n\t\t</defs>\n\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\" fill=\"#d7aa90\"/>\n\t\t<g clip-path=\"url(#fav-meadow-integration-dark)\"><path d=\"M 16 70 L 48 30 L 80 70 Z\" fill=\"rgba(255,255,255,0.22)\"/></g>\n\t\t<text x=\"48\" y=\"50\" text-anchor=\"middle\" dominant-baseline=\"central\"\n\t\t\tfont-family=\"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\"\n\t\t\tfont-size=\"60\" font-weight=\"800\"\n\t\t\tfill=\"#101418\" letter-spacing=\"-1\">M</text>\n\t</svg>",
+	"Colors": {
+		"Primary": "#c67445",
+		"Secondary": "#49b2c1",
+		"PrimaryLight": "#c67445",
+		"PrimaryDark": "#d7aa90",
+		"SecondaryLight": "#49b2c1",
+		"SecondaryDark": "#92ccd4"
+	}
+}
