@@ -40,21 +40,21 @@ const _ViewConfiguration =
 			font-weight: 600;
 			text-transform: uppercase;
 			letter-spacing: 0.5px;
-			color: var(--facto-text-tertiary, #a09070);
+			color: var(--theme-color-text-muted, #a09070);
 			padding: 0.5em 0.4em;
-			border-bottom: 1px solid var(--facto-border, #d6c8ae);
+			border-bottom: 1px solid var(--theme-color-border-default, #d6c8ae);
 		}
 		.meadow-mapping-list-table td {
 			padding: 0.35em 0.4em;
-			border-bottom: 1px solid var(--facto-border-subtle, #e8ddc8);
+			border-bottom: 1px solid var(--theme-color-border-light, #e8ddc8);
 			vertical-align: middle;
 		}
 		.meadow-flow-container {
 			width: 100%;
 			height: 500px;
-			border: 1px solid var(--facto-border, #d6c8ae);
+			border: 1px solid var(--theme-color-border-default, #d6c8ae);
 			border-radius: 6px;
-			background: var(--facto-bg-surface, #fcf8f0);
+			background: var(--theme-color-background-secondary, #fcf8f0);
 			margin-bottom: 0.75em;
 		}
 		.meadow-mapping-json-editor {
@@ -63,10 +63,10 @@ const _ViewConfiguration =
 			font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
 			font-size: 0.85em;
 			padding: 0.75em;
-			border: 1px solid var(--facto-border, #d6c8ae);
+			border: 1px solid var(--theme-color-border-default, #d6c8ae);
 			border-radius: 6px;
-			background: var(--facto-bg-input, #fcf8f0);
-			color: var(--facto-text, #3a3020);
+			background: var(--theme-color-background-panel, #fcf8f0);
+			color: var(--theme-color-text-primary, #3a3020);
 			resize: vertical;
 			tab-size: 4;
 		}
@@ -83,13 +83,13 @@ const _ViewConfiguration =
 			font-size: 0.82em;
 			cursor: pointer;
 			padding: 0.3em 0.5em;
-			border: 1px solid var(--facto-border-subtle, #e8ddc8);
+			border: 1px solid var(--theme-color-border-light, #e8ddc8);
 			border-radius: 4px;
-			background: var(--facto-bg-input, #fcf8f0);
+			background: var(--theme-color-background-panel, #fcf8f0);
 		}
 		.meadow-mapping-store-checklist label:has(input:checked) {
-			border-color: var(--facto-brand, #18a5a0);
-			background: var(--facto-brand-a12, rgba(24,165,160,0.12));
+			border-color: var(--theme-color-brand-primary, #18a5a0);
+			background: var(--theme-color-background-selected, rgba(24,165,160,0.12));
 		}
 		.meadow-mapping-btn {
 			display: inline-flex;
@@ -105,20 +105,20 @@ const _ViewConfiguration =
 			line-height: 1.4;
 		}
 		.meadow-mapping-btn-primary {
-			background: var(--facto-brand, #18a5a0);
+			background: var(--theme-color-brand-primary, #18a5a0);
 			color: var(--theme-color-background-panel, #fff);
-			border-color: var(--facto-brand, #18a5a0);
+			border-color: var(--theme-color-brand-primary, #18a5a0);
 		}
 		.meadow-mapping-btn-primary:hover {
 			opacity: 0.88;
 		}
 		.meadow-mapping-btn-secondary {
-			background: var(--facto-bg-input, #fcf8f0);
-			color: var(--facto-text, #3a3020);
-			border-color: var(--facto-border, #d6c8ae);
+			background: var(--theme-color-background-panel, #fcf8f0);
+			color: var(--theme-color-text-primary, #3a3020);
+			border-color: var(--theme-color-border-default, #d6c8ae);
 		}
 		.meadow-mapping-btn-secondary:hover {
-			background: var(--facto-border-subtle, #e8ddc8);
+			background: var(--theme-color-border-light, #e8ddc8);
 		}
 		.meadow-mapping-btn-danger {
 			background: var(--theme-color-status-error, #e74c3c);
@@ -139,23 +139,23 @@ const _ViewConfiguration =
 		.meadow-schema-mode-tab {
 			padding: 0.25em 0.75em;
 			font-size: 0.8em;
-			border: 1px solid var(--facto-border, #d6c8ae);
+			border: 1px solid var(--theme-color-border-default, #d6c8ae);
 			border-radius: 4px;
 			cursor: pointer;
-			background: var(--facto-bg-input, #fcf8f0);
-			color: var(--facto-text, #3a3020);
+			background: var(--theme-color-background-panel, #fcf8f0);
+			color: var(--theme-color-text-primary, #3a3020);
 		}
 		.meadow-schema-mode-tab.active {
-			background: var(--facto-brand, #18a5a0);
+			background: var(--theme-color-brand-primary, #18a5a0);
 			color: var(--theme-color-background-panel, #fff);
-			border-color: var(--facto-brand, #18a5a0);
+			border-color: var(--theme-color-brand-primary, #18a5a0);
 		}
 		.meadow-section-title {
 			font-size: 0.72em;
 			font-weight: 600;
 			text-transform: uppercase;
 			letter-spacing: 0.5px;
-			color: var(--facto-text-tertiary, #a09070);
+			color: var(--theme-color-text-muted, #a09070);
 		}
 	`,
 
@@ -186,12 +186,12 @@ const _ViewConfiguration =
 		<div id="MeadowMap-Detail" style="display:none;">
 			<div style="display:flex; gap:0.5em; align-items:center; margin-bottom:0.75em;">
 				<label style="font-size:0.78em; font-weight:600;">Mapping Name</label>
-				<input type="text" id="MeadowMap-Name" placeholder="Mapping name" style="flex:1; padding:0.3em 0.5em; font-size:0.85em; border:1px solid var(--facto-border); border-radius:4px; background:var(--facto-bg-input); color:var(--facto-text);">
+				<input type="text" id="MeadowMap-Name" placeholder="Mapping name" style="flex:1; padding:0.3em 0.5em; font-size:0.85em; border:1px solid var(--theme-color-border-default); border-radius:4px; background:var(--theme-color-background-panel); color:var(--theme-color-text-primary);">
 			</div>
 
 			<div style="display:flex; gap:0.5em; align-items:center; margin-bottom:0.75em;">
 				<label style="font-size:0.78em; font-weight:600;">Source</label>
-				<select id="MeadowMap-Source" style="flex:1; padding:0.3em 0.5em; font-size:0.85em; border:1px solid var(--facto-border); border-radius:4px;"></select>
+				<select id="MeadowMap-Source" style="flex:1; padding:0.3em 0.5em; font-size:0.85em; border:1px solid var(--theme-color-border-default); border-radius:4px;"></select>
 				<button class="meadow-mapping-btn meadow-mapping-btn-secondary meadow-mapping-btn-small" onclick="{~P~}.views['MeadowMappingEditor'].discoverSourceFields()">Discover Fields</button>
 			</div>
 
@@ -204,7 +204,7 @@ const _ViewConfiguration =
 			</div>
 
 			<div style="margin-top:0.75em;">
-				<div style="font-size:0.72em; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--facto-text-tertiary); margin-bottom:0.35em;">Target Stores</div>
+				<div style="font-size:0.72em; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--theme-color-text-muted); margin-bottom:0.35em;">Target Stores</div>
 				<div id="MeadowMap-Stores" class="meadow-mapping-store-checklist"></div>
 			</div>
 
@@ -428,7 +428,7 @@ class MeadowMappingEditorView extends libPictView
 
 		if (this._CurrentMappings.length === 0)
 		{
-			tmpContainer.innerHTML = '<div style="text-align:center; padding:1.5em; color:var(--facto-text-tertiary, #a09070);">No mappings yet. Create one to map source fields to target columns.</div>';
+			tmpContainer.innerHTML = '<div style="text-align:center; padding:1.5em; color:var(--theme-color-text-muted, #a09070);">No mappings yet. Create one to map source fields to target columns.</div>';
 			return;
 		}
 
@@ -725,7 +725,7 @@ class MeadowMappingEditorView extends libPictView
 
 		if (this._MappingStores.length === 0)
 		{
-			tmpContainer.innerHTML = '<div style="font-size:0.82em; color:var(--facto-text-tertiary, #a09070);">No stores configured yet.</div>';
+			tmpContainer.innerHTML = '<div style="font-size:0.82em; color:var(--theme-color-text-muted, #a09070);">No stores configured yet.</div>';
 			return;
 		}
 
@@ -1035,7 +1035,7 @@ class MeadowMappingEditorView extends libPictView
 		catch (pFlowError)
 		{
 			this.log.error('Failed to initialize flow view: ' + pFlowError.message);
-			tmpFlowContainer.innerHTML = '<div style="padding:2em; text-align:center; color:var(--facto-text-tertiary, #a09070);">Flow editor could not be loaded. Use JSON Config mode instead.</div>';
+			tmpFlowContainer.innerHTML = '<div style="padding:2em; text-align:center; color:var(--theme-color-text-muted, #a09070);">Flow editor could not be loaded. Use JSON Config mode instead.</div>';
 		}
 	}
 

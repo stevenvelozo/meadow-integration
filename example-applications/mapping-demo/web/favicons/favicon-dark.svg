@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96">
+		<defs>
+			<clipPath id="fav-mapping-demo-dark">
+				<path d="M 24 2
+		H 72
+		Q 94 2 94 24
+		V 72
+		Q 94 94 72 94
+		H 24
+		Q 2 94 2 72
+		V 24
+		Q 2 2 24 2 Z"/>
+			</clipPath>
+		</defs>
+		<path d="M 24 2
+		H 72
+		Q 94 2 94 24
+		V 72
+		Q 94 94 72 94
+		H 24
+		Q 2 94 2 72
+		V 24
+		Q 2 2 24 2 Z" fill="#8dcb7b"/>
+		<g clip-path="url(#fav-mapping-demo-dark)"><circle cx="37.5" cy="48" r="34" fill="#e6d989"/>
+					<circle cx="58.5" cy="48" r="34" fill="rgba(255,255,255,0.22)"/></g>
+		<text x="48" y="50" text-anchor="middle" dominant-baseline="central"
+			font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+			font-size="60" font-weight="800"
+			fill="#101418" letter-spacing="-1">M</text>
+	</svg>

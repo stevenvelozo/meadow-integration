@@ -5,10 +5,34 @@
 	"main": "server.js",
 	"scripts": {
 		"start": "node server.js",
+		"brand": "node ../../node_modules/pict-section-theme/bin/pict-section-theme-brand.js --palette forest --display-name \"Mapping Demo\" --tagline \"Meadow-Integration mapping editor showcase\" --favicons web/favicons",
+		"prebuild": "npm run brand",
 		"build": "node generate-build-config.js && ../../node_modules/.bin/quack build",
 		"demo": "npm run build && node server.js"
 	},
 	"author": "steven velozo <steven@velozo.com>",
 	"license": "MIT",
-	"dependencies": {}
+	"retold": {
+		"brand": {
+			"Hash": "mapping-demo",
+			"Name": "Mapping Demo",
+			"Tagline": "Meadow-Integration mapping editor showcase",
+			"Palette": "forest",
+			"Icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\" width=\"96\" height=\"96\">\n\t\t<defs>\n\t\t\t<clipPath id=\"frame-mapping-demo-filled-light\">\n\t\t\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\"/>\n\t\t\t</clipPath>\n\t\t</defs>\n\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\" fill=\"#55af3b\"/>\n\t\t<g clip-path=\"url(#frame-mapping-demo-filled-light)\"><circle cx=\"37.5\" cy=\"48\" r=\"30\" fill=\"#ddc536\" opacity=\"0.85\"/>\n\t\t\t\t\t<circle cx=\"58.5\" cy=\"48\" r=\"30\" fill=\"rgba(255,255,255,0.32)\" opacity=\"0.95\"/></g>\n\t\t<text x=\"48\" y=\"50\" text-anchor=\"middle\" dominant-baseline=\"central\"\n\t\t\tfont-family=\"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\"\n\t\t\tfont-size=\"38\" font-weight=\"600\"\n\t\t\tfill=\"#ffffff\" letter-spacing=\"-1\">MD</text>\n\t</svg>",
+			"IconType": "svg",
+			"Favicon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\" width=\"96\" height=\"96\">\n\t\t<defs>\n\t\t\t<clipPath id=\"fav-mapping-demo-light\">\n\t\t\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\"/>\n\t\t\t</clipPath>\n\t\t</defs>\n\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\" fill=\"#55af3b\"/>\n\t\t<g clip-path=\"url(#fav-mapping-demo-light)\"><circle cx=\"37.5\" cy=\"48\" r=\"34\" fill=\"#ddc536\"/>\n\t\t\t\t\t<circle cx=\"58.5\" cy=\"48\" r=\"34\" fill=\"rgba(255,255,255,0.22)\"/></g>\n\t\t<text x=\"48\" y=\"50\" text-anchor=\"middle\" dominant-baseline=\"central\"\n\t\t\tfont-family=\"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\"\n\t\t\tfont-size=\"60\" font-weight=\"800\"\n\t\t\tfill=\"#ffffff\" letter-spacing=\"-1\">M</text>\n\t</svg>",
+			"FaviconDark": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 96 96\" width=\"96\" height=\"96\">\n\t\t<defs>\n\t\t\t<clipPath id=\"fav-mapping-demo-dark\">\n\t\t\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\"/>\n\t\t\t</clipPath>\n\t\t</defs>\n\t\t<path d=\"M 24 2\n\t\tH 72\n\t\tQ 94 2 94 24\n\t\tV 72\n\t\tQ 94 94 72 94\n\t\tH 24\n\t\tQ 2 94 2 72\n\t\tV 24\n\t\tQ 2 2 24 2 Z\" fill=\"#8dcb7b\"/>\n\t\t<g clip-path=\"url(#fav-mapping-demo-dark)\"><circle cx=\"37.5\" cy=\"48\" r=\"34\" fill=\"#e6d989\"/>\n\t\t\t\t\t<circle cx=\"58.5\" cy=\"48\" r=\"34\" fill=\"rgba(255,255,255,0.22)\"/></g>\n\t\t<text x=\"48\" y=\"50\" text-anchor=\"middle\" dominant-baseline=\"central\"\n\t\t\tfont-family=\"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\"\n\t\t\tfont-size=\"60\" font-weight=\"800\"\n\t\t\tfill=\"#101418\" letter-spacing=\"-1\">M</text>\n\t</svg>",
+			"Colors": {
+				"Primary": "#55af3b",
+				"Secondary": "#ddc536",
+				"PrimaryLight": "#55af3b",
+				"PrimaryDark": "#8dcb7b",
+				"SecondaryLight": "#ddc536",
+				"SecondaryDark": "#e6d989"
+			}
+		}
+	},
+	"devDependencies": {
+		"retold-sharp": "^1.0.0"
+	}
 }
