@@ -135,19 +135,27 @@ Entities are synced in the order they appear in this list.
 
 #### SyncEntityOptions
 
-Per-entity overrides, keyed by entity name:
+Per-entity overrides, keyed by entity name. Values are merged on top of the global `Sync.*` defaults at entity construction (any key accepted by the entity constructor).
+
+When the config is consumed via the data-cloner headless pipeline (`retold-data-service-clone --config`, or the `/clone/sync/start` POST route), the following keys also take effect as **runtime overrides per entity** and win over the global runtime values: `BackSyncTimeLimit`, `MaxRecordsPerEntity`, `DateTimePrecisionMS`, `TrueUpPageSize`, `UseAdvancedIDPagination`, `SyncDeletedRecords`.
 
 ```json
 {
     "Sync": {
+        "BackSyncTimeLimit": 30000,
         "SyncEntityOptions": {
             "AuditLog": {
                 "PageSize": 500
+            },
+            "Document": {
+                "BackSyncTimeLimit": 600000
             }
         }
     }
 }
 ```
+
+In the example above, `Document` gets a 600s bisection budget while every other entity uses the global 30s. Unknown entity names in `SyncEntityOptions` are logged as a warning and ignored.
 
 ## CLI Flag Overrides
 
