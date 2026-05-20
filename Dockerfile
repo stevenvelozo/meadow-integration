@@ -1,4 +1,4 @@
-FROM node:20-bookworm AS base
+FROM node:22-bookworm AS base
 MAINTAINER steven velozo <steven@velozo.com>
 
 RUN apt-get update && apt-get -y --force-yes install curl vim nano less \
