@@ -1,8 +1,25 @@
 {
-	"Generated": "2026-04-10T17:21:41.193Z",
+	"Generated": "2026-05-21T17:36:27.317Z",
 	"GitHubOrg": "stevenvelozo",
 	"DefaultBranch": "master",
 	"Groups": [
+		{
+			"Name": ".github",
+			"Key": ".github",
+			"Description": "",
+			"Modules": [
+				{
+					"Name": "workflows",
+					"Repo": "workflows",
+					"Group": ".github",
+					"Branch": "master",
+					"HasDocs": false,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": []
+				}
+			]
+		},
 		{
 			"Name": "Dist",
 			"Key": "dist",
@@ -78,18 +95,6 @@
 					"Sidebar": [],
 					"DocFiles": [
 						"comprehension-push/configuration.md"
-					]
-				},
-				{
-					"Name": "css",
-					"Repo": "css",
-					"Group": "docs",
-					"Branch": "master",
-					"HasDocs": true,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": [
-						"css/docuserve.css"
 					]
 				},
 				{
