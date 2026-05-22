@@ -552,18 +552,28 @@ function setupSQLiteProvider(pFable, fCallback)
 
 function seedLocalBooks(pFable, pBooks)
 {
-	const tmpInsert = pFable.MeadowSQLiteProvider.db.prepare(`
+	// node:sqlite's DatabaseSync has no `.transaction(fn)` helper (that was
+	// a better-sqlite3 idiom).  Bracket the bulk insert manually so seeding
+	// many thousands of rows doesn't pay per-row commit overhead.
+	const tmpDB = pFable.MeadowSQLiteProvider.db;
+	const tmpInsert = tmpDB.prepare(`
 		INSERT OR REPLACE INTO Book (IDBook, GUIDBook, CreateDate, CreatingIDUser, UpdateDate, UpdatingIDUser, Deleted, DeleteDate, DeletingIDUser, Title, Type, Genre, PublicationYear)
 		VALUES (@IDBook, @GUIDBook, @CreateDate, @CreatingIDUser, @UpdateDate, @UpdatingIDUser, @Deleted, @DeleteDate, @DeletingIDUser, @Title, @Type, @Genre, @PublicationYear)
 	`);
-	const tmpInsertMany = pFable.MeadowSQLiteProvider.db.transaction((pRecords) =>
+	tmpDB.exec('BEGIN');
+	try
 	{
-		for (const tmpRecord of pRecords)
+		for (const tmpRecord of pBooks)
 		{
 			tmpInsert.run(tmpRecord);
 		}
-	});
-	tmpInsertMany(pBooks);
+		tmpDB.exec('COMMIT');
+	}
+	catch (pError)
+	{
+		tmpDB.exec('ROLLBACK');
+		throw pError;
+	}
 }
 
 function getLocalBookCount(pFable)
