@@ -1,7 +1,7 @@
 {
 	"Name": "meadow-integration",
-	"Version": "1.0.40",
+	"Version": "1.0.41",
 	"Description": "Meadow Data Integration",
-	"GeneratedAt": "2026-05-21T17:36:27.541Z",
-	"GitCommit": "278227d"
+	"GeneratedAt": "2026-05-22T05:40:25.601Z",
+	"GitCommit": "a399ef2"
 }
