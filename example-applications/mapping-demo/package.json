@@ -31,8 +31,5 @@
 				"SecondaryDark": "#e6d989"
 			}
 		}
-	},
-	"devDependencies": {
-		"retold-sharp": "^1.0.0"
 	}
 }
