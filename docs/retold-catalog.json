@@ -1,287 +1,391 @@
 {
-	"Generated": "2026-05-25T03:24:35.092Z",
-	"GitHubOrg": "stevenvelozo",
+	"Generated": "2026-05-26T18:19:50.959Z",
+	"Mode": "module",
+	"GitHubOrg": "fable-retold",
 	"DefaultBranch": "master",
-	"Groups": [
-		{
-			"Name": ".github",
-			"Key": ".github",
-			"Description": "",
-			"Modules": [
-				{
-					"Name": "workflows",
-					"Repo": "workflows",
-					"Group": ".github",
-					"Branch": "master",
-					"HasDocs": false,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": []
-				}
-			]
-		},
-		{
-			"Name": "Dist",
-			"Key": "dist",
-			"Description": "",
-			"Modules": [
-				{
-					"Name": "indoctrinate_content_staging",
-					"Repo": "indoctrinate_content_staging",
-					"Group": "dist",
-					"Branch": "master",
-					"HasDocs": false,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": []
-				}
-			]
-		},
-		{
-			"Name": "Docs",
-			"Key": "docs",
-			"Description": "",
-			"Modules": [
-				{
-					"Name": "api",
-					"Repo": "api",
-					"Group": "docs",
-					"Branch": "master",
-					"HasDocs": true,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": [
-						"api/clone-rest-client.md",
-						"api/connection-manager.md",
-						"api/guid-map.md",
-						"api/integration-adapter.md",
-						"api/operation.md",
-						"api/sync-entity-initial.md",
-						"api/sync-entity-ongoing.md",
-						"api/sync.md",
-						"api/tabular-check.md",
-						"api/tabular-transform.md"
-					]
-				},
-				{
-					"Name": "cli",
-					"Repo": "cli",
-					"Group": "docs",
-					"Branch": "master",
-					"HasDocs": true,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": [
-						"cli/comprehensionarray.md",
-						"cli/comprehensionintersect.md",
-						"cli/csvcheck.md",
-						"cli/csvtransform.md",
-						"cli/data-clone.md",
-						"cli/jsonarraytransform.md",
-						"cli/load-comprehension.md",
-						"cli/objectarraytocsv.md",
-						"cli/overview.md",
-						"cli/serve.md",
-						"cli/tsvtransform.md"
-					]
-				},
-				{
-					"Name": "comprehension-push",
-					"Repo": "comprehension-push",
-					"Group": "docs",
-					"Branch": "master",
-					"HasDocs": true,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": [
-						"comprehension-push/configuration.md"
-					]
-				},
-				{
-					"Name": "data-clone",
-					"Repo": "data-clone",
-					"Group": "docs",
-					"Branch": "master",
-					"HasDocs": true,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": [
-						"data-clone/configuration.md",
-						"data-clone/connection-manager.md",
-						"data-clone/docker.md",
-						"data-clone/overview.md",
-						"data-clone/sync-modes.md"
-					]
-				},
-				{
-					"Name": "examples",
-					"Repo": "examples",
-					"Group": "docs",
-					"Branch": "master",
-					"HasDocs": true,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": [
-						"examples/bookstore/.gitignore",
-						"examples/bookstore/BookData.md",
-						"examples/bookstore/Generate_Bookstore_Comprehension.sh",
-						"examples/bookstore/mapping_books_BookAuthorJoin.json",
-						"examples/bookstore/mapping_books_author.json",
-						"examples/bookstore/mapping_books_book.json",
-						"examples/data/books.csv",
-						"examples/data/seattle_neighborhoods/Seattle_Data_Information.md",
-						"examples/data/seattle_neighborhoods/housing_characteristics_Neighborhoods.csv",
-						"examples/data/seattle_neighborhoods/housing_costs_Neighborhoods.csv",
-						"examples/data/seattle_neighborhoods/race_ethnicity_Neighborhoods.csv",
-						"examples/multi_set_integration/multi_set_step_by_step.md",
-						"examples/multi_set_integration/multi_set_step_by_step_overview_diagram.excalidraw.svg",
-						"examples/multi_set_integration/part_1_getting_data.md"
-					]
-				},
-				{
-					"Name": "rest",
-					"Repo": "rest",
-					"Group": "docs",
-					"Branch": "master",
-					"HasDocs": true,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": [
-						"rest/comprehension-push.md",
-						"rest/comprehension.md",
-						"rest/csv.md",
-						"rest/entity-generation.md",
-						"rest/json-array.md",
-						"rest/overview.md",
-						"rest/status.md",
-						"rest/tsv.md"
-					]
-				},
-				{
-					"Name": "vocabulary",
-					"Repo": "vocabulary",
-					"Group": "docs",
-					"Branch": "master",
-					"HasDocs": true,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": [
-						"vocabulary/Column.md",
-						"vocabulary/Comprehension.md",
-						"vocabulary/Confidence.md",
-						"vocabulary/Data Capture Date.md",
-						"vocabulary/Data Entry Date.md",
-						"vocabulary/Entity.md",
-						"vocabulary/Format.md",
-						"vocabulary/GUID.md",
-						"vocabulary/Join.md",
-						"vocabulary/Record.md",
-						"vocabulary/Schema.md",
-						"vocabulary/Set.md",
-						"vocabulary/Snapshot.md",
-						"vocabulary/Source.md",
-						"vocabulary/Version.md"
-					]
-				}
-			]
-		},
-		{
-			"Name": "Example-applications",
-			"Key": "example-applications",
-			"Description": "",
-			"Modules": [
-				{
-					"Name": "mapping-demo",
-					"Repo": "mapping-demo",
-					"Group": "example-applications",
-					"Branch": "master",
-					"HasDocs": false,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": []
-				}
-			]
-		},
-		{
-			"Name": "Examples",
-			"Key": "examples",
-			"Description": "",
-			"Modules": [
-				{
-					"Name": "output",
-					"Repo": "output",
-					"Group": "examples",
-					"Branch": "master",
-					"HasDocs": false,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": []
-				}
-			]
-		},
-		{
-			"Name": "Source",
-			"Key": "source",
-			"Description": "",
-			"Modules": [
-				{
-					"Name": "cli",
-					"Repo": "cli",
-					"Group": "source",
-					"Branch": "master",
-					"HasDocs": false,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": []
-				},
-				{
-					"Name": "restserver",
-					"Repo": "restserver",
-					"Group": "source",
-					"Branch": "master",
-					"HasDocs": false,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": []
-				},
-				{
-					"Name": "services",
-					"Repo": "services",
-					"Group": "source",
-					"Branch": "master",
-					"HasDocs": false,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": []
-				},
-				{
-					"Name": "views",
-					"Repo": "views",
-					"Group": "source",
-					"Branch": "master",
-					"HasDocs": false,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": []
-				}
-			]
-		},
-		{
-			"Name": "Test",
-			"Key": "test",
-			"Description": "",
-			"Modules": [
-				{
-					"Name": "data",
-					"Repo": "data",
-					"Group": "test",
-					"Branch": "master",
-					"HasDocs": false,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": []
-				}
-			]
-		}
-	]
+	"Module": {
+		"Name": "meadow-integration",
+		"Repo": "meadow-integration",
+		"Group": "",
+		"Branch": "master",
+		"HasDocs": true,
+		"HasCover": true,
+		"Sidebar": [
+			{
+				"Title": "Getting Started",
+				"Children": [
+					{
+						"Title": "Introduction",
+						"Path": "README.md"
+					},
+					{
+						"Title": "Quick Start",
+						"Path": "quickstart.md"
+					},
+					{
+						"Title": "Overview",
+						"Path": "overview.md"
+					}
+				]
+			},
+			{
+				"Title": "Architecture",
+				"Children": [
+					{
+						"Title": "Design",
+						"Path": "architecture.md"
+					},
+					{
+						"Title": "Implementation Reference",
+						"Path": "implementation-reference.md"
+					}
+				]
+			},
+			{
+				"Title": "Data Transformation",
+				"Children": [
+					{
+						"Title": "Comprehensions",
+						"Path": "comprehensions.md"
+					},
+					{
+						"Title": "Mapping Files",
+						"Path": "mapping-files.md"
+					}
+				]
+			},
+			{
+				"Title": "Comprehension Push",
+				"Children": [
+					{
+						"Title": "Integration Adapter",
+						"Path": "integration-adapter.md"
+					},
+					{
+						"Title": "Push Configuration",
+						"Path": "comprehension-push/configuration.md"
+					}
+				]
+			},
+			{
+				"Title": "Data Synchronization",
+				"Children": [
+					{
+						"Title": "Data Clone Overview",
+						"Path": "data-clone/overview.md"
+					},
+					{
+						"Title": "Connection Manager",
+						"Path": "data-clone/connection-manager.md"
+					},
+					{
+						"Title": "Sync Modes",
+						"Path": "data-clone/sync-modes.md"
+					},
+					{
+						"Title": "Clone Configuration",
+						"Path": "data-clone/configuration.md"
+					},
+					{
+						"Title": "Docker Deployment",
+						"Path": "data-clone/docker.md"
+					}
+				]
+			},
+			{
+				"Title": "CLI Reference",
+				"Children": [
+					{
+						"Title": "CLI Overview",
+						"Path": "cli/overview.md"
+					},
+					{
+						"Title": "csvcheck",
+						"Path": "cli/csvcheck.md"
+					},
+					{
+						"Title": "csvtransform",
+						"Path": "cli/csvtransform.md"
+					},
+					{
+						"Title": "tsvtransform",
+						"Path": "cli/tsvtransform.md"
+					},
+					{
+						"Title": "jsonarraytransform",
+						"Path": "cli/jsonarraytransform.md"
+					},
+					{
+						"Title": "comprehensionintersect",
+						"Path": "cli/comprehensionintersect.md"
+					},
+					{
+						"Title": "comprehensionarray",
+						"Path": "cli/comprehensionarray.md"
+					},
+					{
+						"Title": "objectarraytocsv",
+						"Path": "cli/objectarraytocsv.md"
+					},
+					{
+						"Title": "load_comprehension",
+						"Path": "cli/load-comprehension.md"
+					},
+					{
+						"Title": "data-clone",
+						"Path": "cli/data-clone.md"
+					},
+					{
+						"Title": "serve",
+						"Path": "cli/serve.md"
+					}
+				]
+			},
+			{
+				"Title": "REST API Reference",
+				"Children": [
+					{
+						"Title": "REST Overview",
+						"Path": "rest/overview.md"
+					},
+					{
+						"Title": "Status",
+						"Path": "rest/status.md"
+					},
+					{
+						"Title": "CSV Operations",
+						"Path": "rest/csv.md"
+					},
+					{
+						"Title": "TSV Operations",
+						"Path": "rest/tsv.md"
+					},
+					{
+						"Title": "JSON Array Operations",
+						"Path": "rest/json-array.md"
+					},
+					{
+						"Title": "Comprehension Operations",
+						"Path": "rest/comprehension.md"
+					},
+					{
+						"Title": "Entity Generation",
+						"Path": "rest/entity-generation.md"
+					},
+					{
+						"Title": "Comprehension Push",
+						"Path": "rest/comprehension-push.md"
+					}
+				]
+			},
+			{
+				"Title": "API Reference",
+				"Children": [
+					{
+						"Title": "ConnectionManager",
+						"Path": "api/connection-manager.md"
+					},
+					{
+						"Title": "CloneRestClient",
+						"Path": "api/clone-rest-client.md"
+					},
+					{
+						"Title": "Sync",
+						"Path": "api/sync.md"
+					},
+					{
+						"Title": "SyncEntityInitial",
+						"Path": "api/sync-entity-initial.md"
+					},
+					{
+						"Title": "SyncEntityOngoing",
+						"Path": "api/sync-entity-ongoing.md"
+					},
+					{
+						"Title": "Operation",
+						"Path": "api/operation.md"
+					},
+					{
+						"Title": "IntegrationAdapter",
+						"Path": "api/integration-adapter.md"
+					},
+					{
+						"Title": "GUIDMap",
+						"Path": "api/guid-map.md"
+					},
+					{
+						"Title": "TabularCheck",
+						"Path": "api/tabular-check.md"
+					},
+					{
+						"Title": "TabularTransform",
+						"Path": "api/tabular-transform.md"
+					}
+				]
+			},
+			{
+				"Title": "Examples",
+				"Children": [
+					{
+						"Title": "Examples Walkthrough",
+						"Path": "examples-walkthrough.md"
+					},
+					{
+						"Title": "Bookstore Example",
+						"Path": "examples/bookstore/BookData.md"
+					},
+					{
+						"Title": "Seattle Multi-Set",
+						"Path": "examples/multi_set_integration/multi_set_step_by_step.md"
+					}
+				]
+			},
+			{
+				"Title": "Vocabulary",
+				"Children": [
+					{
+						"Title": "Comprehension",
+						"Path": "vocabulary/Comprehension.md"
+					},
+					{
+						"Title": "Entity",
+						"Path": "vocabulary/Entity.md"
+					},
+					{
+						"Title": "GUID",
+						"Path": "vocabulary/GUID.md"
+					},
+					{
+						"Title": "Schema",
+						"Path": "vocabulary/Schema.md"
+					},
+					{
+						"Title": "Set",
+						"Path": "vocabulary/Set.md"
+					},
+					{
+						"Title": "Source",
+						"Path": "vocabulary/Source.md"
+					},
+					{
+						"Title": "Column",
+						"Path": "vocabulary/Column.md"
+					},
+					{
+						"Title": "Record",
+						"Path": "vocabulary/Record.md"
+					},
+					{
+						"Title": "Format",
+						"Path": "vocabulary/Format.md"
+					},
+					{
+						"Title": "Join",
+						"Path": "vocabulary/Join.md"
+					},
+					{
+						"Title": "Snapshot",
+						"Path": "vocabulary/Snapshot.md"
+					},
+					{
+						"Title": "Version",
+						"Path": "vocabulary/Version.md"
+					},
+					{
+						"Title": "Confidence",
+						"Path": "vocabulary/Confidence.md"
+					}
+				]
+			}
+		],
+		"DocFiles": [
+			".nojekyll",
+			"README.md",
+			"_brand.json",
+			"_cover.md",
+			"_sidebar.md",
+			"_topbar.md",
+			"_version.json",
+			"api/clone-rest-client.md",
+			"api/connection-manager.md",
+			"api/guid-map.md",
+			"api/integration-adapter.md",
+			"api/operation.md",
+			"api/sync-entity-initial.md",
+			"api/sync-entity-ongoing.md",
+			"api/sync.md",
+			"api/tabular-check.md",
+			"api/tabular-transform.md",
+			"architecture.md",
+			"cli/comprehensionarray.md",
+			"cli/comprehensionintersect.md",
+			"cli/csvcheck.md",
+			"cli/csvtransform.md",
+			"cli/data-clone.md",
+			"cli/jsonarraytransform.md",
+			"cli/load-comprehension.md",
+			"cli/objectarraytocsv.md",
+			"cli/overview.md",
+			"cli/serve.md",
+			"cli/tsvtransform.md",
+			"cli-reference.md",
+			"comprehension-push/configuration.md",
+			"comprehensions.md",
+			"css/docuserve.css",
+			"data-clone/configuration.md",
+			"data-clone/connection-manager.md",
+			"data-clone/docker.md",
+			"data-clone/overview.md",
+			"data-clone/sync-modes.md",
+			"examples/bookstore/.gitignore",
+			"examples/bookstore/BookData.md",
+			"examples/bookstore/Generate_Bookstore_Comprehension.sh",
+			"examples/bookstore/mapping_books_BookAuthorJoin.json",
+			"examples/bookstore/mapping_books_author.json",
+			"examples/bookstore/mapping_books_book.json",
+			"examples/data/books.csv",
+			"examples/data/seattle_neighborhoods/Seattle_Data_Information.md",
+			"examples/data/seattle_neighborhoods/housing_characteristics_Neighborhoods.csv",
+			"examples/data/seattle_neighborhoods/housing_costs_Neighborhoods.csv",
+			"examples/data/seattle_neighborhoods/race_ethnicity_Neighborhoods.csv",
+			"examples/multi_set_integration/multi_set_step_by_step.md",
+			"examples/multi_set_integration/multi_set_step_by_step_overview_diagram.excalidraw.svg",
+			"examples/multi_set_integration/part_1_getting_data.md",
+			"examples-walkthrough.md",
+			"implementation-reference.md",
+			"index.html",
+			"integration-adapter.md",
+			"mapping-files.md",
+			"overview.md",
+			"programmatic-api.md",
+			"quickstart.md",
+			"rest/comprehension-push.md",
+			"rest/comprehension.md",
+			"rest/csv.md",
+			"rest/entity-generation.md",
+			"rest/json-array.md",
+			"rest/overview.md",
+			"rest/status.md",
+			"rest/tsv.md",
+			"rest-api-reference.md",
+			"retold-catalog.json",
+			"retold-keyword-index.json",
+			"vocabulary/Column.md",
+			"vocabulary/Comprehension.md",
+			"vocabulary/Confidence.md",
+			"vocabulary/Data Capture Date.md",
+			"vocabulary/Data Entry Date.md",
+			"vocabulary/Entity.md",
+			"vocabulary/Format.md",
+			"vocabulary/GUID.md",
+			"vocabulary/Join.md",
+			"vocabulary/Record.md",
+			"vocabulary/Schema.md",
+			"vocabulary/Set.md",
+			"vocabulary/Snapshot.md",
+			"vocabulary/Source.md",
+			"vocabulary/Version.md"
+		]
+	},
+	"Groups": []
 }
