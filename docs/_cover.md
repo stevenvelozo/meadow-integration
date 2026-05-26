@@ -8,5 +8,5 @@
 - Synchronize remote Meadow APIs to local databases
 - CLI utility, programmatic API, and REST integration
 
-[GitHub](https://github.com/stevenvelozo/meadow-integration)
+[GitHub](https://github.com/fable-retold/meadow-integration)
 [Get Started](#meadow-integration)

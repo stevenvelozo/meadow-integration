@@ -39,7 +39,7 @@ the plain `release:patch` ships to npm and skips the image rebuild.
   `npm login`.
 - **Git remote configured** — `git remote get-url origin` should print
   the GitHub HTTPS or SSH URL. If not, `git remote add origin
-  git@github.com:stevenvelozo/meadow-integration.git`.
+  git@github.com:fable-retold/meadow-integration.git`.
 - **Push access to the repo** — required so `postversion` /
   `postpublish` can push the tag. The GHCR workflow runs under
   `GITHUB_TOKEN` so no extra registry auth needed for image pushing.
@@ -187,7 +187,7 @@ After `release:patch` completes:
 1. **npm**: `npm view meadow-integration version` should print the new
    version (may take ~30s for the registry to update).
 2. **GHCR workflow**: visit
-   `https://github.com/stevenvelozo/meadow-integration/actions` and
+   `https://github.com/fable-retold/meadow-integration/actions` and
    confirm the "Publish container image" run succeeded.
 3. **Image**: `docker pull ghcr.io/stevenvelozo/meadow-integration:<version>`
    should succeed. The image is also tagged as `latest`, `<major>`, and

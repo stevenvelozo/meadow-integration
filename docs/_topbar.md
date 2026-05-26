@@ -6,4 +6,4 @@
 - [API Reference](programmatic-api.md)
 - [Data Clone](data-clone/overview.md)
 - [Examples](examples-walkthrough.md)
-- [GitHub](https://github.com/stevenvelozo/meadow-integration)
+- [GitHub](https://github.com/fable-retold/meadow-integration)

@@ -1,6 +1,6 @@
 # Meadow Integration
 
-> **[&#9654; Read the Meadow-Integration Documentation](https://stevenvelozo.github.io/meadow-integration/)** &mdash; interactive docs with the full API reference.
+> **[&#9654; Read the Meadow-Integration Documentation](https://fable-retold.github.io/meadow-integration/)** &mdash; interactive docs with the full API reference.
 
 A suite of tools for managing data into a centralized non-specific schema format called a **Comprehension**.
 
@@ -330,13 +330,13 @@ npm test
 
 ## Related Packages
 
-- [meadow](https://github.com/stevenvelozo/meadow) - Data access and ORM
-- [meadow-endpoints](https://github.com/stevenvelozo/meadow-endpoints) - Auto-generated REST endpoints
-- [meadow-connection-mysql](https://github.com/stevenvelozo/meadow-connection-mysql) - MySQL database provider for Meadow
-- [meadow-connection-mssql](https://github.com/stevenvelozo/meadow-connection-mssql) - MSSQL database provider for Meadow
-- [orator](https://github.com/stevenvelozo/orator) - API server abstraction
-- [fable](https://github.com/stevenvelozo/fable) - Application services framework
-- [pict-service-commandlineutility](https://github.com/stevenvelozo/pict-service-commandlineutility) - CLI framework with cascading configuration
+- [meadow](https://github.com/fable-retold/meadow) - Data access and ORM
+- [meadow-endpoints](https://github.com/fable-retold/meadow-endpoints) - Auto-generated REST endpoints
+- [meadow-connection-mysql](https://github.com/fable-retold/meadow-connection-mysql) - MySQL database provider for Meadow
+- [meadow-connection-mssql](https://github.com/fable-retold/meadow-connection-mssql) - MSSQL database provider for Meadow
+- [orator](https://github.com/fable-retold/orator) - API server abstraction
+- [fable](https://github.com/fable-retold/fable) - Application services framework
+- [pict-service-commandlineutility](https://github.com/fable-retold/pict-service-commandlineutility) - CLI framework with cascading configuration
 
 ## License
 
