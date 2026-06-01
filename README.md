@@ -1,10 +1,10 @@
 # Meadow Integration
 
-> **[&#9654; Read the Meadow-Integration Documentation](https://fable-retold.github.io/meadow-integration/)** &mdash; interactive docs with the full API reference.
+> **[Read the Meadow-Integration Documentation](https://fable-retold.github.io/meadow-integration/)** - interactive docs with the full API reference.
 
 A suite of tools for managing data into a centralized non-specific schema format called a **Comprehension**.
 
-These tools are built to be usable from the command-line, as a web service, or within your own codebase.  This module presents these behaviors both as a suite of externally usable fable services, a command-line utility to leverage them and a set of web service behaviors.
+These tools are built to be usable from the command-line, as a web service, or within your own codebase.  This module presents these behaviors both as a suite of externally usable fable services, a command-line utility to use them and a set of web service behaviors.
 
 ## What is a Comprehension?
 
