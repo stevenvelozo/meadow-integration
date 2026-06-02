@@ -1,0 +1,8 @@
+flowchart LR
+    IMP["Implicit\n(auto-detected from\nfirst record)"]
+    EXP["Explicit\n(mapping file\nvia -m flag)"]
+    USR["User\n(CLI flags:\n-e, -g, -n, -c)"]
+
+    IMP -->|"base"| FINAL["Final Mapping Config"]
+    EXP -->|"overrides"| FINAL
+    USR -->|"overrides"| FINAL

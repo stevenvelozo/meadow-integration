@@ -1,0 +1,42 @@
+flowchart TB
+    subgraph Config["Configuration"]
+        MCFG[".meadow.config.json"]
+        SCHEMA["Extended Schema JSON\n(from Stricture)"]
+        CLIOPTS["CLI Overrides\n(--api_server, --db_host, etc.)"]
+    end
+
+    subgraph Auth["1. Authenticate"]
+        CRC["CloneRestClient"]
+        SESSION["Session Management\n(cookie / token)"]
+    end
+
+    subgraph Connect["2. Connect"]
+        CM["ConnectionManager"]
+        POOL["Connection Pool\n(MySQL or MSSQL)"]
+    end
+
+    subgraph Init["3. Initialize Schema"]
+        LOAD["Load Extended Schema"]
+        CREATE["Create Tables\n(if not exist)"]
+        INDEX["Create Indexes\n(GUID unique, Deleted)"]
+    end
+
+    subgraph Sync["4. Sync Entities"]
+        COMPARE["Compare\nlocal vs. remote\n(max ID, count, UpdateDate)"]
+        DOWNLOAD["Download Pages\n(filtered + sorted)"]
+        WRITE["Marshal + Write\n(create or update)"]
+        PROGRESS["Progress Tracking\n(Operation service)"]
+    end
+
+    MCFG --> CRC
+    CLIOPTS --> CRC
+    MCFG --> CM
+    CLIOPTS --> CM
+    SCHEMA --> LOAD
+
+    CRC --> SESSION --> DOWNLOAD
+    CM --> POOL --> WRITE
+    LOAD --> CREATE --> INDEX
+
+    COMPARE --> DOWNLOAD --> WRITE
+    WRITE --> PROGRESS

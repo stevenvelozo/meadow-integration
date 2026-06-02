@@ -1,0 +1,66 @@
+flowchart TB
+    subgraph External["External Data Sources"]
+        CSV["CSV Files"]
+        TSV["TSV Files"]
+        JSON["JSON Arrays"]
+        API["Remote Meadow API"]
+    end
+
+    subgraph Interfaces["Interfaces"]
+        CLI["CLI Program\n(pict-service-commandlineutility)"]
+        REST["REST Server\n(Orator + Restify)"]
+        PROG["Programmatic API\n(require meadow-integration)"]
+    end
+
+    subgraph Services["Core Services"]
+        TC["TabularCheck"]
+        TT["TabularTransform"]
+        IA["IntegrationAdapter"]
+        GM["GUIDMap"]
+        CM["ConnectionManager"]
+        CRC["CloneRestClient"]
+        SYNC["Sync"]
+        SEI["SyncEntityInitial"]
+        SEO["SyncEntityOngoing"]
+        OP["Operation"]
+    end
+
+    subgraph Targets["Targets"]
+        MAPI["Meadow REST API\n(write)"]
+        DB["Local Database\n(MySQL / MSSQL)"]
+    end
+
+    CSV --> CLI
+    TSV --> CLI
+    JSON --> CLI
+    CSV --> REST
+    TSV --> REST
+    JSON --> REST
+
+    CLI --> TC
+    CLI --> TT
+    CLI --> IA
+    CLI --> SYNC
+    REST --> TC
+    REST --> TT
+    REST --> IA
+    PROG --> TC
+    PROG --> TT
+    PROG --> IA
+    PROG --> SYNC
+
+    TT --> IA
+    IA --> GM
+    IA --> MAPI
+
+    API --> CRC
+    CRC --> SYNC
+    SYNC --> SEI
+    SYNC --> SEO
+    SEI --> CM
+    SEO --> CM
+    CM --> DB
+
+    SYNC --> OP
+    SEI --> OP
+    SEO --> OP

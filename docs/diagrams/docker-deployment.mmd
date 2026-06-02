@@ -1,0 +1,23 @@
+flowchart LR
+    subgraph Build["Docker Build"]
+        BASE["node:20-bookworm"]
+        DEPS["npm install --omit=dev"]
+        SRC["Copy source + scripts"]
+    end
+
+    subgraph Runtime["Docker Runtime"]
+        CFG[".meadow.config.json\n(volume mount)"]
+        SCHEMA["Extended Schema\n(volume mount)"]
+        RUN["scripts/run.sh"]
+    end
+
+    subgraph External["External"]
+        REMOTE["Remote Meadow API"]
+        LOCAL["Local Database"]
+    end
+
+    BASE --> DEPS --> SRC --> RUN
+    CFG --> RUN
+    SCHEMA --> RUN
+    RUN --> REMOTE
+    RUN --> LOCAL

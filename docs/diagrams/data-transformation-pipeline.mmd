@@ -1,0 +1,31 @@
+flowchart LR
+    subgraph Input["1. Parse"]
+        FILE["Source File\n(CSV / TSV / JSON)"]
+        PARSE["Stream Parser\n(csv-parser / JSON.parse)"]
+    end
+
+    subgraph Transform["2. Transform"]
+        RECORD["Raw Record"]
+        MAPPING["Mapping Config\n(Implicit + Explicit + User)"]
+        TEMPLATE["Pict Template Engine\n({~D:Record.col~})"]
+        SOLVER["Solvers\n(Expression Parser)"]
+    end
+
+    subgraph Collect["3. Collect"]
+        COMP["Comprehension\n{Entity: {GUID: Record}}"]
+        MERGE["Intersect\n(merge by GUID)"]
+    end
+
+    subgraph Push["4. Push"]
+        ADAPTER["IntegrationAdapter"]
+        MARSHAL["Marshal Record\n(schema validation,\nstring truncation,\nGUID prefixing)"]
+        GUIDMAP["GUIDMap\n(external <-> Meadow IDs)"]
+        UPSERT["Upsert\n(single or bulk)"]
+    end
+
+    FILE --> PARSE --> RECORD
+    MAPPING --> TEMPLATE
+    RECORD --> TEMPLATE --> COMP
+    RECORD --> SOLVER --> COMP
+    COMP --> MERGE --> COMP
+    COMP --> ADAPTER --> MARSHAL --> GUIDMAP --> UPSERT

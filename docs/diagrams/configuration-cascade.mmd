@@ -1,0 +1,8 @@
+flowchart LR
+    DEF["Default Configuration\n(Default-Meadow-Integration-\nConfiguration.json)"]
+    FILE[".meadow.config.json\n(working directory)"]
+    CLI["Command-Line Flags\n(--api_server, --db_host, etc.)"]
+
+    DEF -->|"base"| MERGED["Resolved Configuration"]
+    FILE -->|"overrides"| MERGED
+    CLI -->|"overrides"| MERGED

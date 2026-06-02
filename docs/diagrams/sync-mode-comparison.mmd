@@ -1,0 +1,33 @@
+flowchart TB
+    subgraph Initial["Initial Sync"]
+        I1["Query local max ID"]
+        I2["Query remote max ID + count"]
+        I3["Generate paginated URL partials\n(filter: ID > local max)"]
+        I4["Download each page"]
+        I5["For each record:\nRead local by ID"]
+        I6{"Record\nexists?"}
+        I7["Skip"]
+        I8["Create with\nidentity insert"]
+
+        I1 --> I2 --> I3 --> I4 --> I5 --> I6
+        I6 -->|"yes"| I7
+        I6 -->|"no"| I8
+    end
+
+    subgraph Ongoing["Ongoing Sync"]
+        O1["Query local max ID + UpdateDate"]
+        O2["Query remote max ID + UpdateDate + count"]
+        O3["Iterate all records\n(paginated, ID ascending)"]
+        O4["For each record:\nRead local by ID"]
+        O5{"Record\nexists?"}
+        O6{"UpdateDate\ndifference\n> 5ms?"}
+        O7["Update record"]
+        O8["Skip"]
+        O9["Create with\nidentity insert"]
+
+        O1 --> O2 --> O3 --> O4 --> O5
+        O5 -->|"yes"| O6
+        O5 -->|"no"| O9
+        O6 -->|"yes"| O7
+        O6 -->|"no"| O8
+    end
