@@ -1,0 +1,8 @@
+server.js
+├── SQLite (in-memory)          ← meadow-connection-sqlite
+├── Meadow DAL (Book entity)    ← meadow + inline schema
+├── meadow-endpoints (Book)     ← auto-generates /1.0/Book(s) REST routes
+├── Demo pipeline endpoints     ← /1.0/Demo/*
+│   ├── TabularTransform        ← parse + map = comprehension
+│   └── IntegrationAdapter      ← comprehension → upsert via REST
+└── Static web UI               ← web/index.html

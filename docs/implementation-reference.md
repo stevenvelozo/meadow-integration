@@ -4,64 +4,8 @@ This document covers the internal structure of Meadow Integration, including mod
 
 ## Module Structure
 
-```
-meadow-integration/
-├── package.json
-├── Dockerfile
-├── docker-compose.yml
-├── scripts/
-│   └── run.sh
-├── source/
-│   ├── Meadow-Integration.js                          # Main export (programmatic API)
-│   ├── Meadow-Service-Integration-Adapter.js          # IntegrationAdapter service
-│   ├── Meadow-Service-Integration-GUIDMap.js          # GUIDMap service
-│   ├── cli/
-│   │   ├── Meadow-Integration-CLI-Program.js          # CLI program setup
-│   │   ├── Meadow-Integration-CLI-Run.js              # CLI entry point
-│   │   ├── Default-Meadow-Integration-Configuration.json
-│   │   └── commands/
-│   │       ├── Meadow-Integration-Command-CSVCheck.js
-│   │       ├── Meadow-Integration-Command-CSVTransform.js
-│   │       ├── Meadow-Integration-Command-TSVCheck.js
-│   │       ├── Meadow-Integration-Command-TSVTransform.js
-│   │       ├── Meadow-Integration-Command-JSONArrayTransform.js
-│   │       ├── Meadow-Integration-Command-ComprehensionIntersect.js
-│   │       ├── Meadow-Integration-Command-ComprehensionArray.js
-│   │       ├── Meadow-Integration-Command-ComprehensionPush.js
-│   │       ├── Meadow-Integration-Command-ObjectArrayToCSV.js
-│   │       ├── Meadow-Integration-Command-EntityFromTabularFolder.js
-│   │       ├── Meadow-Integration-Command-DataClone.js
-│   │       ├── Meadow-Integration-Command-ConvertXLSMToXLSX.js
-│   │       └── Meadow-Integration-Command-Serve.js
-│   ├── restserver/
-│   │   ├── Meadow-Integration-Server.js               # REST server class
-│   │   ├── Meadow-Integration-Server-Endpoints.js     # Endpoint registration
-│   │   └── endpoints/
-│   │       ├── Endpoint-CSVCheck.js
-│   │       ├── Endpoint-CSVTransform.js
-│   │       ├── Endpoint-TSVCheck.js
-│   │       ├── Endpoint-TSVTransform.js
-│   │       ├── Endpoint-JSONArrayTransform.js
-│   │       ├── Endpoint-ComprehensionIntersect.js
-│   │       ├── Endpoint-ComprehensionArray.js
-│   │       ├── Endpoint-ComprehensionPush.js
-│   │       ├── Endpoint-ObjectArrayToCSV.js
-│   │       └── Endpoint-EntityFromTabularFolder.js
-│   └── services/
-│       ├── clone/
-│       │   ├── Meadow-Service-ConnectionManager.js    # Database connection pooling
-│       │   ├── Meadow-Service-RestClient.js           # Authenticated REST client
-│       │   ├── Meadow-Service-Sync.js                 # Sync orchestrator
-│       │   ├── Meadow-Service-Sync-Entity-Initial.js  # Initial sync strategy
-│       │   ├── Meadow-Service-Sync-Entity-Ongoing.js  # Ongoing sync strategy
-│       │   └── Meadow-Service-Operation.js            # Timing and progress tracking
-│       └── tabular/
-│           ├── Service-TabularCheck.js                # Statistics collection
-│           └── Service-TabularTransform.js            # Record transformation
-├── test/
-├── examples/
-└── docs/
-```
+<!-- bespoke diagram: edit diagrams/module-structure.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-integration/docs -->
+![Module Structure](diagrams/module-structure.svg)
 
 ## Service Registration Patterns
 

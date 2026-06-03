@@ -85,15 +85,7 @@ tracks these in a `GUIDMap` so repeat loads are safe upserts.
 
 ## Architecture
 
-```
-server.js
-├── SQLite (in-memory)          ← meadow-connection-sqlite
-├── Meadow DAL (Book entity)    ← meadow + inline schema
-├── meadow-endpoints (Book)     ← auto-generates /1.0/Book(s) REST routes
-├── Demo pipeline endpoints     ← /1.0/Demo/*
-│   ├── TabularTransform        ← parse + map = comprehension
-│   └── IntegrationAdapter      ← comprehension → upsert via REST
-└── Static web UI               ← web/index.html
-```
+<!-- bespoke diagram: edit diagrams/architecture.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-integration/example-applications/mapping-demo -->
+![Architecture](diagrams/architecture.svg)
 
 All components run on a single Orator (Restify) server at port 8092.
