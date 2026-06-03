@@ -1,0 +1,8 @@
+graph LR
+    SourceAPI["Source Meadow<br/>API Server"] <-->|"HTTPS/HTTP<br/>GET /Entity/...<br/>Session Auth"| RestClient["RestClient<br/>(MeadowClone RestClient)"]
+    RestClient --> MeadowSync["MeadowSync<br/>(Orchestrator)"]
+    MeadowSync --> SyncInitial["SyncEntity<br/>Initial"]
+    MeadowSync --> SyncOngoing["SyncEntity<br/>Ongoing"]
+    SyncInitial --> ConnMgr["ConnectionManager<br/>(MySQL / MSSQL)"]
+    SyncOngoing --> ConnMgr
+    ConnMgr --> LocalDB["Local Database<br/>(MySQL / MSSQL)"]

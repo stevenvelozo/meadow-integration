@@ -132,38 +132,8 @@ fable.MeadowCloneRestClient.authenticate((pAuthError) => {
 
 ## Architecture Diagram
 
-```
-+-------------------+       HTTPS/HTTP       +-------------------+
-|  Source Meadow    |  <-------------------> |  RestClient       |
-|  API Server       |    GET /Entity/...     |  (MeadowClone     |
-+-------------------+    Session Auth        |   RestClient)     |
-                                             +--------+----------+
-                                                      |
-                                                      v
-                                             +-------------------+
-                                             |  MeadowSync       |
-                                             |  (Orchestrator)   |
-                                             +--------+----------+
-                                                      |
-                                         +------------+------------+
-                                         |                         |
-                                  +------+------+          +-------+-------+
-                                  | SyncEntity  |          | SyncEntity    |
-                                  | Initial     |          | Ongoing       |
-                                  +------+------+          +-------+-------+
-                                         |                         |
-                                         v                         v
-                                  +------+-------------------------+------+
-                                  |       ConnectionManager               |
-                                  |       (MySQL / MSSQL)                 |
-                                  +---------------------------------------+
-                                                      |
-                                                      v
-                                             +-------------------+
-                                             |  Local Database   |
-                                             |  (MySQL / MSSQL)  |
-                                             +-------------------+
-```
+<!-- bespoke diagram: edit diagrams/architecture-diagram.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-integration/docs/data-clone -->
+![Architecture Diagram](diagrams/architecture-diagram.svg)
 
 ## Related Documentation
 
