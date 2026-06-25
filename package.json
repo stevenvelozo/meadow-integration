@@ -1,6 +1,6 @@
 {
     "name": "meadow-integration",
-    "version": "1.0.42",
+    "version": "1.0.43",
     "description": "Meadow Data Integration",
     "retoldBeacon": {
         "displayName": "Meadow Integration",
