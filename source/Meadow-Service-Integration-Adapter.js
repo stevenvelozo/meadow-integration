@@ -1,5 +1,6 @@
 const libFableServiceProviderBase = require('fable-serviceproviderbase');
 const libGUIDMap = require('./Meadow-Service-Integration-GUIDMap.js');
+const libGUIDComposer = require('./services/guid/Meadow-Integration-GUIDComposer.js');
 
 const defaultMeadowIntegrationAdapterOptions = (
 	{
@@ -26,6 +27,11 @@ const defaultMeadowIntegrationAdapterOptions = (
 		// exceeds the maximum allowed length.
 		// When true, the prefix is truncated to fit while preserving the full external GUID.
 		"AllowGUIDTruncation": false,
+
+		// How to shrink an over-length marshaled GUID when AllowGUIDTruncation is on:
+		//   "substring" (default) — truncate the prefix, keep the external GUID whole (current behavior).
+		//   "hash"                — keep the prefix, deterministically hash the external GUID to fit (stable).
+		"GUIDTruncationStrategy": "substring",
 
 		// When true, only marshal fields that are present in the schema (no passthrough of unknown fields).
 		"SimpleMarshal": false,
@@ -105,6 +111,7 @@ class MeadowIntegrationAdapter extends libFableServiceProviderBase
 			this.GUIDMaxLength = this.options.DefaultGUIDColumnSize;
 		}
 		this.AllowGUIDTruncation = this.options.AllowGUIDTruncation;
+		this.GUIDTruncationStrategy = this.options.GUIDTruncationStrategy || 'substring';
 
 		// Integration Adapter Controls
 		this._PerformUpserts = this.options.PerformUpserts;
@@ -214,19 +221,33 @@ class MeadowIntegrationAdapter extends libFableServiceProviderBase
 			}
 
 			// AllowGUIDTruncation is on — the external GUID is sacrosanct, so truncate the prefix instead.
-			let tmpAvailablePrefixLength = this.GUIDMaxLength - pExternalGUID.length;
-
-			if (tmpAvailablePrefixLength <= 0)
+			if (this.GUIDTruncationStrategy === 'hash')
 			{
-				// External GUID alone meets or exceeds the limit; drop the prefix entirely.
-				this.log.warn(`External GUID [${pExternalGUID}] for [${this.Entity}] is ${pExternalGUID.length} characters which meets or exceeds the GUID max length of ${this.GUIDMaxLength}.  Using external GUID with no prefix.`);
-				tmpFullGUID = pExternalGUID.substring(0, this.GUIDMaxLength);
+				// Hash strategy: keep the prefix; deterministically hash the external GUID into the remaining
+				// budget so the result stays stable across runs (idempotent) rather than losing prefix chars.
+				let tmpHashBudget = Math.max(8, this.GUIDMaxLength - this.GUIDPrefix.length);
+				let tmpHashedExternal = libGUIDComposer.hashSegment(pExternalGUID, tmpHashBudget);
+				tmpFullGUID = `${this.GUIDPrefix}${tmpHashedExternal}`;
+				if (tmpFullGUID.length > this.GUIDMaxLength) { tmpFullGUID = tmpFullGUID.substring(0, this.GUIDMaxLength); }
+				this.log.warn(`Generated GUID for [${this.Entity}] exceeded ${this.GUIDMaxLength} chars; external GUID hashed (GUIDTruncationStrategy=hash) to [${tmpHashedExternal}].`);
 			}
 			else
 			{
-				let tmpTruncatedPrefix = this.GUIDPrefix.substring(0, tmpAvailablePrefixLength);
-				tmpFullGUID = `${tmpTruncatedPrefix}${pExternalGUID}`;
-				this.log.warn(`Generated GUID for [${this.Entity}] would be ${this.GUIDPrefix.length + pExternalGUID.length} characters (limit ${this.GUIDMaxLength}); prefix truncated from [${this.GUIDPrefix}] to [${tmpTruncatedPrefix}].`);
+				// Substring strategy (default): the external GUID is sacrosanct, so truncate the prefix instead.
+				let tmpAvailablePrefixLength = this.GUIDMaxLength - pExternalGUID.length;
+
+				if (tmpAvailablePrefixLength <= 0)
+				{
+					// External GUID alone meets or exceeds the limit; drop the prefix entirely.
+					this.log.warn(`External GUID [${pExternalGUID}] for [${this.Entity}] is ${pExternalGUID.length} characters which meets or exceeds the GUID max length of ${this.GUIDMaxLength}.  Using external GUID with no prefix.`);
+					tmpFullGUID = pExternalGUID.substring(0, this.GUIDMaxLength);
+				}
+				else
+				{
+					let tmpTruncatedPrefix = this.GUIDPrefix.substring(0, tmpAvailablePrefixLength);
+					tmpFullGUID = `${tmpTruncatedPrefix}${pExternalGUID}`;
+					this.log.warn(`Generated GUID for [${this.Entity}] would be ${this.GUIDPrefix.length + pExternalGUID.length} characters (limit ${this.GUIDMaxLength}); prefix truncated from [${this.GUIDPrefix}] to [${tmpTruncatedPrefix}].`);
+				}
 			}
 		}
 

@@ -1,5 +1,7 @@
 const libFableService = require('fable-serviceproviderbase');
 
+const libGUIDComposer = require('../guid/Meadow-Integration-GUIDComposer.js');
+
 /*
 		// Comprehension Parameters
 		// This can be *either* a mapping file, in the following format, or a set of parameters listed below.  The mapping file lets you map columns way easier!
@@ -134,7 +136,17 @@ class MeadowIntegrationTabularTransform extends libFableService
 	{
 		let tmpRecord = ((typeof(pRecordPrototype) == 'object') && (pRecordPrototype != null)) ? JSON.parse(JSON.stringify(pRecordPrototype)) : {};
 
-		tmpRecord[pMapping.GUIDName] = this.fable.parseTemplate(pMapping.GUIDTemplate, pRecord);
+		// Opt-in context-aware GUID strategy: compose the entity's own GUID + its foreign-key GUID/ID
+		// fields from a structured spec (length-safe + deterministic). Falls back to the flat GUIDTemplate
+		// when no strategy is attached, so every existing mapping behaves exactly as before.
+		if (pMapping.GUIDStrategy)
+		{
+			this._applyGUIDStrategy(tmpRecord, pMapping.GUIDStrategy, pRecord);
+		}
+		else
+		{
+			tmpRecord[pMapping.GUIDName] = this.fable.parseTemplate(pMapping.GUIDTemplate, pRecord);
+		}
 
 		let tmpKeys = Object.keys(pMapping.Mappings);
 		for (let i = 0; i < tmpKeys.length; i++)
@@ -151,6 +163,56 @@ class MeadowIntegrationTabularTransform extends libFableService
 		}
 
 		return tmpRecord;
+	}
+
+	/**
+	 * Resolve a GUID compose spec's segment value-templates against the row, then run the deterministic
+	 * length-safe composer. The compiler (Meadow-Integration-GUIDStrategy) produced the spec.
+	 * @param {Record<string, any>} pComposeSpec @param {Record<string, any>} pRecord
+	 * @returns {string}
+	 */
+	composeGUIDFromSpec(pComposeSpec, pRecord)
+	{
+		let tmpSegments = (Array.isArray(pComposeSpec.segments) ? pComposeSpec.segments : []).map((pSegment) =>
+		{
+			return {
+				abbrev: pSegment.abbrev,
+				value: pSegment.valueTemplate ? this.fable.parseTemplate(pSegment.valueTemplate, pRecord) : '',
+			};
+		});
+		return libGUIDComposer.composeGUID(
+			{
+				prefix: pComposeSpec.prefix,
+				separator: pComposeSpec.separator,
+				maxLength: pComposeSpec.maxLength,
+				hashLength: pComposeSpec.hashLength,
+				segments: tmpSegments,
+			});
+	}
+
+	/**
+	 * Stamp an entity's own GUID + its foreign-key fields onto the record from a compiled GUID strategy.
+	 * Own / each join is one of: prefixed (Compose spec) or raw/rawid (a resolved source-column template).
+	 * @param {Record<string, any>} pTargetRecord @param {Record<string, any>} pStrategy @param {Record<string, any>} pRecord
+	 */
+	_applyGUIDStrategy(pTargetRecord, pStrategy, pRecord)
+	{
+		let tmpOwn = pStrategy.Own || {};
+		if (tmpOwn.FieldName)
+		{
+			pTargetRecord[tmpOwn.FieldName] = tmpOwn.Compose
+				? this.composeGUIDFromSpec(tmpOwn.Compose, pRecord)
+				: (tmpOwn.ValueTemplate ? this.fable.parseTemplate(tmpOwn.ValueTemplate, pRecord) : '');
+		}
+		let tmpJoins = Array.isArray(pStrategy.Joins) ? pStrategy.Joins : [];
+		for (let i = 0; i < tmpJoins.length; i++)
+		{
+			let tmpJoin = tmpJoins[i];
+			if (!tmpJoin || !tmpJoin.FieldName) { continue; }
+			pTargetRecord[tmpJoin.FieldName] = tmpJoin.Compose
+				? this.composeGUIDFromSpec(tmpJoin.Compose, pRecord)
+				: (tmpJoin.ValueTemplate ? this.fable.parseTemplate(tmpJoin.ValueTemplate, pRecord) : '');
+		}
 	}
 
 	addRecordToComprehension(pIncomingRecord, pMappingOutcome, pNewRecordPrototype, pGUIDUniquenessString)

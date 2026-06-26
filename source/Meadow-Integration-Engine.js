@@ -24,6 +24,13 @@ const MeadowIntegrationTabularTransform = require('./services/tabular/Service-Ta
 const MeadowIntegrationAdapter = require('./Meadow-Service-Integration-Adapter.js');
 const MeadowGUIDMap = require('./Meadow-Service-Integration-GUIDMap.js');
 
+// Opt-in context-aware GUID layer (pure, dependency-light): compose deterministic, length-safe GUIDs that
+// embed parent context (e.g. `UI_C10_P01278_LI8675309`) + a compiler that turns a per-entity strategy
+// config into the structured spec the TabularTransform stamps. Reusable by the CLI, the server endpoints,
+// and the browser import wizard alike.
+const MeadowIntegrationGUIDComposer = require('./services/guid/Meadow-Integration-GUIDComposer.js');
+const MeadowIntegrationGUIDStrategy = require('./services/guid/Meadow-Integration-GUIDStrategy.js');
+
 module.exports =
 {
 	MeadowIntegrationTabularTransform,
@@ -31,4 +38,10 @@ module.exports =
 	MeadowGUIDMap,
 	// The per-entity adapter factory (caches on fable.servicesMap.IntegrationAdapter[Entity]).
 	getAdapter: MeadowIntegrationAdapter.getAdapter,
+
+	// Context-aware GUID composition + strategy compilation.
+	MeadowIntegrationGUIDComposer,
+	MeadowIntegrationGUIDStrategy,
+	composeGUID: MeadowIntegrationGUIDComposer.composeGUID,
+	compileGUIDStrategy: MeadowIntegrationGUIDStrategy.compile,
 };
