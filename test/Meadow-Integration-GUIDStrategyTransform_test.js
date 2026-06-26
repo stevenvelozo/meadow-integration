@@ -130,6 +130,38 @@ suite
 		);
 		test
 		(
+			'a long parent key hashes IDENTICALLY for the own GUID and a cross-session FK (catalog GUIDSize fallback)',
+			() =>
+			{
+				// Mirrors the live failure: a parent key long enough to overflow the parent's GUID column.
+				// The parent's OWN GUID is hashed to fit (its schema width is loaded during the parent import);
+				// the child is imported SEPARATELY, so only the CHILD's schema width is loaded — the parent's
+				// width has to come from the host catalog, or the FK is composed unbounded and never matches.
+				const tmpCatalog = { Material: { Abbrev: 'M', GUIDSize: 36 }, Product: { Abbrev: 'PR', GUIDSize: 96 } };
+				const tmpLongKey = 'ZZHASHKEY_' + 'A'.repeat(32); // UI_M + 42 chars overflows 36 -> must hash
+
+				// Parent import — Material's 36-char column width is present in SchemaSizes.
+				const tmpMaterialStrategy = libEngine.compileGUIDStrategy(
+					{ Prefix: 'UI', Entities: { Material: { Mode: 'prefixed', OwnKeyColumn: 'MaterialKey' } } },
+					{ Catalog: tmpCatalog, SchemaSizes: { Material: 36 } }).Strategies.Material;
+				const tmpMaterialComp = runOneEntity(newTransform(), { Entity: 'Material', GUIDName: 'GUIDMaterial', GUIDStrategy: tmpMaterialStrategy, Mappings: {} }, { MaterialKey: tmpLongKey });
+				const tmpMaterialGUID = Object.keys(tmpMaterialComp)[0];
+				Expect(tmpMaterialGUID.length, 'parent own GUID fits its 36-char column').to.be.at.most(36);
+				Expect(tmpMaterialGUID.indexOf('AAAA'), 'parent own GUID was hashed, not raw').to.equal(-1);
+
+				// Child import (separate session) — ONLY Product's width is in SchemaSizes; Material's width must
+				// come from the catalog for the FK to hash the same way.
+				const tmpProductStrategy = libEngine.compileGUIDStrategy(
+					{ Prefix: 'UI', Entities: { Product: { Mode: 'prefixed', OwnKeyColumn: 'ProductKey', Joins: [ { ParentEntity: 'Material', Mode: 'prefixed', KeyColumn: 'MaterialKey', CrossSession: true } ] } } },
+					{ Catalog: tmpCatalog, SchemaSizes: { Product: 96 } }).Strategies.Product;
+				const tmpProductComp = runOneEntity(newTransform(), { Entity: 'Product', GUIDName: 'GUIDProduct', GUIDStrategy: tmpProductStrategy, Mappings: {} }, { ProductKey: 'PRLONG1', MaterialKey: tmpLongKey });
+				const tmpProductGUID = Object.keys(tmpProductComp)[0];
+
+				Expect(tmpProductComp[tmpProductGUID]._GUIDMaterial, 'long-key FK hashes identically to the parent own GUID').to.equal(tmpMaterialGUID);
+			}
+		);
+		test
+		(
 			'a non-strategy mapping still uses the flat GUIDTemplate (no behavior change)',
 			() =>
 			{

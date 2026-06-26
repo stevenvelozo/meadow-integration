@@ -50,12 +50,29 @@ function abbreviationFor(pEntityName, pContext)
 	return _deriveAbbreviation(pEntityName);
 }
 
-/** The GUID column width for an entity (from the live schema), or 0 (unbounded) if unknown. */
+/**
+ * The GUID column width for an entity, or 0 (unbounded) if unknown.
+ *
+ * Prefers the live schema width (`SchemaSizes`, populated for the entity actually being imported), then
+ * falls back to the host catalog's declared `GUIDSize`. The fallback is LOAD-BEARING for JOIN compose:
+ * when a child references a parent (e.g. Product → Material), only the CHILD's schema is loaded, so
+ * `SchemaSizes` has no entry for the parent. Without the catalog width the parent's foreign-key GUID is
+ * composed unbounded (never hashed) while the parent's OWN GUID was hashed to fit its column — so a long
+ * key makes the two diverge and the cross-session match silently breaks. The catalog `GUIDSize` MUST
+ * therefore match the parent's real GUID column width for long keys to resolve.
+ */
 function _maxLengthFor(pEntityName, pContext)
 {
 	const tmpSizes = (pContext && pContext.SchemaSizes) || {};
-	const tmpSize = Number(tmpSizes[pEntityName] || 0);
-	return (tmpSize > 0) ? tmpSize : 0;
+	const tmpSchemaSize = Number(tmpSizes[pEntityName] || 0);
+	if (tmpSchemaSize > 0)
+	{
+		return tmpSchemaSize;
+	}
+	const tmpCatalog = (pContext && pContext.Catalog) || {};
+	const tmpEntry = tmpCatalog[pEntityName];
+	const tmpCatalogSize = tmpEntry ? Number(tmpEntry.GUIDSize || 0) : 0;
+	return (tmpCatalogSize > 0) ? tmpCatalogSize : 0;
 }
 
 /** Build a compose spec (prefix + ordered segments + length budget) for an entity's fullGUID. */
